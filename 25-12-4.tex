@@ -1,0 +1,206 @@
+\documentclass[onecolumn]{jarticle}
+\usepackage{tam}
+\usepackage{fancybox}
+\usepackage{ascmac}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{url}
+\usepackage{here}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage{amsmath, amssymb}
+\usepackage{physics}
+\usepackage{cases}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{lastpage}
+\usepackage{float}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{framed}
+
+
+\title{列プール戦略を用いた時間空間ネットワークによる\\大規模スタッフスケジューリングの高速化手法}
+\author{氏名：[あなたの名前]}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{はじめに}
+本資料では，多様な勤務制約と個人の勤務趣向を厳密に考慮したスタッフスケジューリング問題に対し，列生成法（Column Generation）に基づく解法を提案する．
+特に，時間空間ネットワーク上の最短路探索に伴う計算負荷を軽減するため，過去に生成された列（シフトパターン）を保持・再利用する「列プール戦略」を導入し，大規模問題に対する実用的な計算効率を実現するアルゴリズムを構築する．
+
+\section{数理モデル：主問題（RMP）}
+
+問題をDantzig-Wolfe分解し，グループ単位でのパターン選択を行う主問題（Restricted Master Problem: RMP）を定義する．
+
+\subsection{記号の定義}
+\begin{itemize}
+    \item $T$: 時間帯集合 ($t \in T$)
+    \item $S$: スキル集合 ($s \in S$) \quad \textbf{← 追加}
+    \item $K$: 従業員グループ集合 ($k \in K$)
+    \item $h_{ks}$: グループ $k$ がスキル $s$ を保有していれば1，そうでなければ0 \quad \textbf{← 追加}
+    \item $D_{ts}$: 時間帯 $t$ において必要なスキル $s$ の人数 \quad \textbf{← 変更}
+    \item $\Omega_k$: グループ $k$ の全実行可能シフトパターン集合
+    \item $\Omega'_k (\subset \Omega_k)$: 現在RMPに組み込まれている列の部分集合
+    \item $c_{kp}$: パターン $p$ のコスト（人件費＋趣向ペナルティ）
+    \item $a_{tp}$: パターン $p$ の時間帯 $t$ における勤務状態（0/1）
+    \item $x_{kp}$: パターン $p$ の採用人数（決定変数）
+\end{itemize}
+
+\subsection{従業員グループの定義と分類基準}
+本モデルでは，計算規模を抑制しつつ個人の特性を反映させるため，従業員を共通の属性を持つ「グループ（タイプ） $k$」に分類して扱う．グルーピングは以下の2つの基準に基づく．
+
+\begin{enumerate}
+    \item \textbf{保有スキル}:
+    各従業員が保有するスキルセット（例：レジ，調理，接客など）が一致する従業員同士を同一グループとする．パラメータ $h_{ks}$ により，グループ $k$ がスキル $s \in S$ を提供可能か定義される．
+    \item \textbf{勤務嗜好（タイムウィンドウ）}:
+    従業員のライフスタイル（朝型，夜型，短時間希望など）に基づき，勤務可能な時間帯や選好が類似する従業員をまとめる．これにより，グループごとに異なるネットワーク構造（勤務可能開始時刻や最大勤務時間）を適用することが可能となる．
+\end{enumerate}
+
+\subsection{定式化}
+\begin{align}
+    \text{[RMP]} \quad \min \quad & Z = \sum_{k \in K} \sum_{p \in \Omega'_k} c_{kp} x_{kp} + \sum_{t \in T} \sum_{s \in S} M_{ts} \delta_{ts} \label{eq:obj} \\
+    \text{s.t.} \quad 
+    % スキル制約への変更
+    & \sum_{k \in K} h_{ks} \left( \sum_{p \in \Omega'_k} a_{tp} x_{kp} \right) + \delta_{ts} \ge D_{ts} \quad (\forall t \in T, \forall s \in S) \quad [\pi_{ts}] \\
+    & \sum_{p \in \Omega'_k} x_{kp} \le N_k \quad (\forall k \in K) \quad [\mu_k] \\
+    & x_{kp} \ge 0, \quad \delta_{ts} \ge 0
+\end{align}
+ここで，$\delta_{ts}$ は不足人数を表すスラック変数，$[\pi_{ts}], [\mu_k]$ は双対変数を表す．
+式(2)は，各時間帯 $t$ において，要求される各スキル $s$ の需要 $D_{ts}$ を満たすことを保証する制約である．
+\section{パターン生成とネットワークモデル}
+
+主問題を改善する新たな列は，以下の被約費用 $\bar{c}_{kp}$ を最小化することで探索される．
+\begin{equation}
+    \bar{c}_{kp} = c_{kp} - \sum_{t \in T} \left( \sum_{s \in S} \pi_{ts} h_{ks} \right) a_{tp} - \mu_k \label{eq:rc}
+\end{equation}
+
+\subsection{グループごとの勤務制約の詳細定式化}
+各グループ $k$ の実行可能パターン集合 $\Omega_k$ は，労働法規およびグループ特有の契約条件を満たす列のみで構成される．
+具体的には，ある列 $p$（ベクトル $\bm{a}_p = \{a_{1p}, \dots, a_{Tp}\}$）が $\Omega_k$ に含まれるための条件は以下のように定式化される．
+
+\begin{enumerate}
+    \item \textbf{勤務時間枠制約}:
+    グループ $k$ の勤務可能開始時刻 $T^{start}_k$ および終了時刻 $T^{end}_k$ の範囲外では勤務しない．
+    \begin{equation}
+        a_{tp} = 0 \quad (\forall t \notin [T^{start}_k, T^{end}_k])
+    \end{equation}
+    
+    \item \textbf{最大・最小勤務時間制約}:
+    1日あたりの総実労働時間は，所定の範囲 $[W^{\min}_k, W^{\max}_k]$ 内である．
+    \begin{equation}
+        W^{\min}_k \le \sum_{t \in T} a_{tp} \cdot \Delta t \le W^{\max}_k
+    \end{equation}
+    ここで $\Delta t$ は1タイムスロットの長さ（例：0.25時間）である．
+
+    \item \textbf{連続勤務制約}:
+    一度勤務を開始したら，休憩を除き連続して勤務しなければならない（中抜け禁止）．これはネットワーク上でのフロー保存則により保証される．
+    
+    \item \textbf{休憩取得規則}:
+    連続勤務時間が $H_{break}$ を超える場合，少なくとも $R_{min}$ 時間の休憩を付与しなければならない．
+\end{enumerate}
+
+これらの制約は，時間空間ネットワーク $G_k$ のノードおよびアークの接続構造として埋め込まれるため，ネットワーク上のパス探索を行うだけで自動的に満たされる．
+
+\subsection{時間空間ネットワークの構築}
+厳密なパターン生成のため，タイプ $k$ ごとにグラフ $G_k=(V_k, A_k)$ を構築する．
+\begin{itemize}
+    \item \textbf{ノード}: $(t, l)$ （$t$:時刻, $l$:連続勤務時間）
+    \item \textbf{アーク}: 勤務継続，休憩，退勤などの遷移を表す．
+    \item \textbf{アークコスト}: $\tilde{c}_{uv} = (\text{本来のコスト}) - \pi_t$
+\end{itemize}
+このネットワーク上で Source から Sink への最短路を探索することで，最適な新規パターン $p^*$ を生成できる．
+
+\section{列プールによる計算効率化}
+
+ネットワーク $G_k$ 上の最短路探索（Exact Pricing）は，複雑な制約を網羅できる反面，反復ごとに実行するには計算コストが高い．
+そこで，生成された列を蓄積する「列プール（Column Pool）」を導入し，探索を階層化する．
+
+\subsection{列プール $\mathcal{P}_k$ の定義と運用}
+プール $\mathcal{P}_k$ は，過去の反復で生成された全ての（あるいは有望な）パターン $p$ を保持する集合である．
+
+\begin{itemize}
+    \item \textbf{Heuristic Pricing（プール探索）}:
+    グラフ探索を行わず，プール $\mathcal{P}_k$ 内の既存パターンに対して最新の双対変数 $\pi, \mu$ を用いて被約費用 $\bar{c}_{kp}$ を再計算する．これは単純なベクトル演算であるため極めて高速である．
+    \item \textbf{Exact Pricing（グラフ探索）}:
+    プール内に有効な（$\bar{c}_{kp} < 0$ となる）列が存在しない場合に限り，ネットワーク $G_k$ 上で最短路問題を解き，真に新しい列を生成する．
+\end{itemize}
+
+この戦略により，高コストなグラフ探索の実行回数を最小限に抑えつつ，列生成法の厳密性を維持することが可能となる．
+
+\section{フェーズ2：個人割り当て（Rostering）}
+列生成完了後，得られた最適人数 $x^*_{kp}$（整数解）を基に，以下の割当問題を解き，個々の従業員 $e \in E_k$ を特定する．
+\begin{align}
+    \min \quad & \sum_{e \in E_k} \sum_{p} \text{preference}_{ep} \cdot z_{ep} \\
+    \text{s.t.} \quad & \sum_{p} z_{ep} = 1, \quad \sum_{e} z_{ep} = x^*_{kp}
+\end{align}
+
+\section{統合アルゴリズム}
+
+前述の全ての要素（RMP，プール戦略，Aging，Phase 2）を統合した全体の処理フローを Algorithm \ref{alg:integrated} に示す．
+
+\begin{algorithm}[H]
+\caption{Integrated Column Generation with Pooling Strategy}
+\label{alg:integrated}
+\begin{algorithmic}[1]
+\REQUIRE Demand $D_t$, Employee Info $K, E_k$, Network $G_k$
+\ENSURE Individual Shift Schedule $z_{ep}$
+
+\STATE \textbf{=== Phase 1: Pattern Optimization ===}
+\STATE Initialize $\Omega'_k$ with dummy columns.
+\STATE Initialize Column Pool $\mathcal{P}_k \leftarrow \emptyset$ for all $k$.
+
+\WHILE{Optimality condition is not met}
+    \STATE \textbf{1. Solve RMP (Linear Relaxation)}
+    \STATE Solve linear program defined in Eq.(\ref{eq:obj})--(\ref{eq:rc}).
+    \STATE Get dual variables $\pi^*, \mu^*$.
+
+    \STATE \textbf{2. Column Management (Aging)}
+    \STATE Move non-basic columns from $\Omega'_k$ to $\mathcal{P}_k$ if inactive for $\tau$ iterations.
+
+    \STATE \textbf{3. Pricing Step}
+    \FOR{each group $k \in K$}
+        \STATE $found \leftarrow \text{FALSE}$
+        
+        \STATE \textit{// (A) Heuristic Pricing: Check Pool}
+        \FOR{$p \in \mathcal{P}_k$}
+            \STATE Calculate $\bar{c}_{kp} = c_{kp} - \pi^* a_{p} - \mu^*_k$.
+            \IF{$\bar{c}_{kp} < -\epsilon$}
+                \STATE Add $p$ to $\Omega'_k$.
+                \STATE $found \leftarrow \text{TRUE}$
+            \ENDIF
+        \ENDFOR
+        
+        \STATE \textit{// (B) Exact Pricing: Solve Shortest Path}
+        \IF{$found$ is $\text{FALSE}$}
+            \STATE Update arc costs in $G_k$ using $\pi^*$.
+            \STATE Solve Shortest Path Problem on $G_k$ to get path $p^*$.
+            \IF{$\bar{c}_{kp^*} < -\epsilon$}
+                \STATE Add $p^*$ to $\Omega'_k$ and $\mathcal{P}_k$.
+            \ENDIF
+        \ENDIF
+    \ENDFOR
+    
+    \IF{No columns added in entire iteration}
+        \STATE \textbf{BREAK} (Global Optimum Reached)
+    \ENDIF
+\ENDWHILE
+
+\STATE \textbf{4. Integer Solution}
+\STATE Solve RMP with integer constraints ($x_{kp} \in \mathbb{Z}_{\ge 0}$) using current $\Omega'_k$.
+\STATE Let $x^*_{kp}$ be the optimal number of employees for pattern $p$.
+
+\STATE \textbf{=== Phase 2: Individual Assignment ===}
+\FOR{each group $k \in K$}
+    \STATE Solve Assignment Problem (Section 5) using $x^*_{kp}$.
+    \STATE Determine individual assignment $z_{ep}$.
+\ENDFOR
+
+\RETURN $z_{ep}$
+\end{algorithmic}
+\end{algorithm}
+
+
+\end{document}

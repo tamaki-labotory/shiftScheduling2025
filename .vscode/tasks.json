@@ -1,0 +1,32 @@
+// .vscode/tasks.json
+{
+    // タスク構成のバージョン
+    "version": "2.0.0",
+  
+    // （任意）全タスク共通のシェル設定。ここで bash を指定すると、各タスクは bash で動きます。
+    "options": {
+      "shell": {
+        "executable": "bash",      // or "/usr/bin/bash"
+        "args": ["-l", "-c"]       // ログインシェルとして起動し、-c でコマンドを実行
+      }
+    },
+  
+    // タスク一覧
+    "tasks": [
+      {
+        "label": "Run Bash Script",     // タスク名（Command Palette に表示される）
+        "type": "shell",                // シェルタスクとして動作させる
+        "command": "bash",              // さらに明示的に bash を呼ぶ場合
+        "args": [
+          "-c",
+          "echo Hello && ./build.sh"    // ここに実行したいコマンド／スクリプト
+        ],
+        "group": {
+          "kind": "build",              // ビルドタスクとして扱う
+          "isDefault": true             // Ctrl+Shift+B でデフォルト実行
+        },
+        "problemMatcher": []            // エラー検出が不要なら空配列
+      }
+    ]
+  }
+  
