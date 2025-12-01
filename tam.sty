@@ -1,0 +1,449 @@
+%  14/08/28 modified by Haji
+
+% Hisashi TAMAKI (November 29, 1991)
+% Sun Sep 29 14:37:14 JST 1991
+% $Header: tamrep.sty,v 1.1 91/10/15 07:59:29 tamaki Locked $
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% a4j.sty %%%%%
+%
+% "a4j" document style option.
+%
+% \topmargin-.3in
+% \oddsidemargin0pt
+% \evensidemargin0pt
+% \parindent1zw
+\@ifundefined{@twoc}{%
+\@ifundefined{@lands}{\ifcase \@ptsize
+    % mods for 10 pt
+    \textheight43\baselineskip
+    \textwidth47zw
+\or % mods for 11 pt 
+    \textheight42\baselineskip
+    \textwidth43zw
+\or % mods for 12 pt
+    \textheight39\baselineskip
+    \textwidth40zw
+\fi}{\ifcase\@ptsize
+    % mods for 10 pt, landscap
+    \textheight27\baselineskip
+    \textwidth73zw
+\or % mods for 11 pt, landscap
+    \textheight26\baselineskip
+    \textwidth68zw
+\or % mods for 12 pt, landscap
+    \textheight25\baselineskip
+    \textwidth61zw
+\fi}
+\advance\textheight\topskip
+\def\@ps@{1}}{\@warning{Sorry, I ignored `a4j' style}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% layout %%%%%
+\def\topfraction{0.99}
+\def\bottomfraction{0.99}
+\def\textfraction{0.01}
+\def\dbltopfraction{0.99}
+\def\baselinestretch{1.1}
+
+\topmargin    -15mm
+\oddsidemargin  5mm
+\evensidemargin 5mm
+\parindent      1zw
+\textheight   250mm
+\textwidth    155mm
+\columnsep      8mm
+\parskip        2pt plus 1pt minus 1pt
+\footskip      35pt
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% title %%%%%
+\def\maketitle{
+  \par
+  \begingroup
+  \def\thefootnote{\fnsymbol{footnote}}
+  \def\@makefnmark{
+    \hbox 
+    to 0pt{$^{\@thefnmark}$\hss}
+  } 
+  \if@twocolumn 
+    \twocolumn[\@maketitle] 
+  \else
+    \newpage
+    \global\@topnum\z@
+    \@maketitle
+  \fi
+% \thispagestyle{plain}
+  \@thanks
+  \endgroup
+  \setcounter{footnote}{0}
+  \let\maketitle\relax
+  \let\@maketitle\relax
+  \gdef\@thanks{}\gdef\@author{}\gdef\@title{}\let\thanks\relax
+}
+
+\def\@maketitle{
+  \newpage
+% \null
+  \def\@today{
+    \ifcase\month\or January\or February\or March\or
+      April\or May\or June\or July\or August\or
+      September\or October\or November\or December
+    \fi
+    \space\number\day, \number\year
+  }
+  \ifx\@date\space \let\@date=\@today \fi
+  \ifx\@date\@empty \let\@date=\@today \fi
+  \ifx\@date\  \let\@date=\@today \fi
+  \begin{flushleft}
+    {\large\bf \@title} \hfill {\normalsize \@date} \\
+    \hfill {\normalsize \@author}
+  \end{flushleft}
+  \par \vskip 1.5ex
+}
+\def\abstract{
+  \if@twocolumn
+    \section*{Abstract}
+  \else
+    \small 
+    \begin{center}
+      {\bf Abstract\vspace{-.5em}\vspace{0pt}} 
+    \end{center}
+    \quotation 
+  \fi
+}
+\def\endabstract{\if@twocolumn\else\endquotation\fi}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% section %%%%%
+\def\part{
+  \par \addvspace{4ex} \@afterindenttrue \secdef\@part\@spart
+} 
+\def\@part[#1]#2{
+  \ifnum \c@secnumdepth >\m@ne \refstepcounter{part}
+  \addcontentsline{toc}{part}{\thepart \hspace{1em}#1}\else
+  \addcontentsline{toc}{part}{#1}\fi {
+    \parindent 0pt \raggedright 
+    \ifnum \c@secnumdepth >\m@ne \Large \bf Part \thepart \par
+    \nobreak \fi \huge \bf #2\markboth{}{}\par
+  }
+  \nobreak \vskip 3ex \@afterheading
+} 
+\def\@spart#1{
+  {\parindent 0pt \raggedright \huge \bf #1\par}
+  \nobreak \vskip 3ex \@afterheading
+} 
+
+\def\section{
+  \@startsection{section}{1}{\z@}%
+  {2.0ex plus 0.2ex minus 0.2ex}%
+  {0.8ex plus 0.1ex}%
+  {\large\bf}}
+  
+\def\subsection{
+  \@startsection {subsection}{2}{\z@}
+  {1.2ex plus 0.2ex minus 0.2ex}
+  {0.5ex plus 0.1ex}
+  {\normalsize\bf}}
+  
+\def\subsubsection{
+  \@startsection {subsubsection}{3}{\z@}
+  {0.8ex plus 0.2ex minus 0.2ex}
+  {0.3ex plus 0.1ex}
+  {\normalsize\bf}}
+  
+\def\paragraph{
+  \@startsection {paragraph}{4}{\z@}
+  {1.0ex plus 0.2ex minus 0.2ex}
+  {-1em}
+  {\normalsize\bf}}
+  
+\def\subparagraph{
+  \@startsection {subparagraph}{4}
+  {\parindent}
+  {1.0ex plus 0.2ex minus 0.2ex}
+  {-1em}
+  {\normalsize\bf}}
+
+\def\@sect#1#2#3#4#5#6[#7]#8{\ifnum #2>\c@secnumdepth
+  \def\@svsec{}\else
+  \refstepcounter{#1}\edef\@svsec{\csname the#1\endcsname.\hskip0.5em}\fi
+  \@tempskipa #5\relax
+  \ifdim \@tempskipa>\z@
+    \begingroup
+      #6\relax
+      \@hangfrom{\hskip #3\relax\@svsec}{\interlinepenalty \@M #8\par}%
+    \endgroup
+    \csname #1mark\endcsname{#7}\addcontentsline
+      {toc}{#1}{\ifnum #2>\c@secnumdepth \else
+        \protect\numberline{\csname the#1\endcsname}\fi #7}%
+  \else
+    \def\@svsechd{#6\hskip #3\@svsec #8\csname #1mark\endcsname
+      {#7}\addcontentsline{toc}{#1}{\ifnum #2>\c@secnumdepth \else
+        \protect\numberline{\csname the#1\endcsname}\fi #7}}%
+  \fi \@xsect{#5}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% listcompress %%%%%
+\def\labelenumi{\theenumi.} 
+\def\theenumi{\alph{enumi}} 
+\def\labelenumii{(\theenumii)}
+\def\theenumii{\arabic{enumii}}
+\def\p@enumii{\theenumi}
+\def\labelenumiii{\theenumiii.}
+\def\theenumiii{\roman{enumiii}}
+\def\p@enumiii{\theenumi(\theenumii)}
+\def\labelenumiv{\theenumiv.}
+\def\theenumiv{\Alph{enumiv}} 
+\def\p@enumiv{\p@enumiii\theenumiii}
+
+\def\labelitemi{$\bullet$}
+\def\labelitemii{\bf --}
+\def\labelitemiii{$\ast$}
+\def\labelitemiv{$\cdot$}
+
+\def\@listI{
+  \leftmargin\leftmargini
+  \topsep 0.2ex plus 0.2ex minus 0.1ex
+  \parsep 0.2ex plus 0.1ex minus 0.1ex
+  \itemsep 0.2ex plus 0.2ex minus 0.1ex
+}
+\let\@listi\@listI
+\@listi 
+\def\@listii{
+  \leftmargin\leftmarginii
+  \labelwidth\leftmarginii\advance\labelwidth-\labelsep
+  \topsep 0.3ex plus 0.1ex minus 0.1ex
+  \parsep 0.2ex plus 0.1ex minus 0.1ex
+  \itemsep 0.3ex plus 0.1ex minus 0.1ex
+}
+\def\@listiii{
+  \leftmargin\leftmarginiii
+  \labelwidth\leftmarginiii\advance\labelwidth-\labelsep
+  \topsep 0.2ex plus 0.1ex minus 0.1ex
+  \parsep \z@
+  \partopsep 0.2ex plus 0.1ex minus 0.1ex
+  \itemsep \topsep
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% subequations %%%%%
+% subequations environment:
+% changes the numbering from 1, 2, 3 to 1a, 1b, 1c.
+%
+% This style option is designed to work with LaTeX version 2.09.
+% Copyright (c) 1990 by Stephen Gildea
+% Permission to copy all or part of this work is granted, provided
+% that the copies are not made or distributed for resale, and that
+% the copyright notice and this notice are retained.
+%
+% THIS WORK IS PROVIDED ON AN "AS IS" BASIS.  THE AUTHOR PROVIDES NO
+% WARRANTY WHATSOEVER, EITHER EXPRESS OR IMPLIED, REGARDING THE WORK,
+% INCLUDING WARRANTIES WITH RESPECT TO ITS MERCHANTABILITY OR FITNESS
+% FOR ANY PARTICULAR PURPOSE.
+%
+% If you make any improvements, I'd like to hear about them.
+%
+% Stephen Gildea
+% MIT Earth Resources Lab
+% Cambridge, Mass. 02139
+% mit-erl!gildea
+% gildea@erl.mit.edu
+
+% Original version by mit-erl!gildea August 1986.
+% @ignoretrue fix from Johannes Braams
+%     <BRAAMS%HLSDNL5.BITNET> 16 Jan 89
+% use refstepcounter from Rick Zaccone
+%     <zaccone@rigel.bucknell.edu> 13 Feb 90
+
+% Within the subequations environment, the only change is that
+% equations are labeled differently.  The number stays the same,
+% and lower case letters are appended.  For example, if after doing
+% three equations, numbered 1, 2, and 3, you start a subequations
+% environmment and do three more equations, they will be numbered
+% 4a, 4b, and 4c.  After you end the subequations environment, the
+% next equation will be numbered 5.
+%
+% Both text and equations can be put inside the subequations
+% environment.
+%
+% Of course, you can use this idea to create your own subfigures and
+% subtables environments, too.
+
+% \newtoks\@stequation
+% 
+% \def\subequations{\refstepcounter{equation}%
+%   \edef\@savedequation{\the\c@equation}%
+%   \@stequation=\expandafter{\theequation}%   %only want \theequation
+%   \edef\@savedtheequation{\the\@stequation}% % expanded once
+%   \edef\oldtheequation{\theequation}%
+%   \setcounter{equation}{0}%
+%   \def\theequation{\oldtheequation\alph{equation}}}
+% 
+% \def\endsubequations{\setcounter{equation}{\@savedequation}%
+%   \@stequation=\expandafter{\@savedtheequation}%
+%   \edef\theequation{\the\@stequation}\global\@ignoretrue}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% footnote %%%%%
+
+\def\newfnsymbol#1{\@newfnsymbol{\@nameuse{c@#1}}}
+\def\@newfnsymbol#1{%
+  \ifcase #1
+    \or \dag\or  \ddag\or         \dag\dag%
+    \or \ddag\ddag\or *\or       **%
+    \or \dag\dag\dag\or \ddag\ddag\ddag ***%
+%    \or \dagger\or  \ddagger\or         \dagger\dagger%
+%    \or \ddagger\ddagger\or *\or       **%
+%    \or \dagger\dagger\dagger\or \ddagger\ddagger\ddagger ***%
+  \else \@ctrerr
+  \fi
+  \relax
+}
+
+\long\def\@makefntext#1{% 			from "kueethesis.sty"
+  \begin{list}{}{%
+    \topsep = 0pt \partopsep = 0pt \itemsep = 0pt \parsep = 0pt
+    \labelwidth = 4pt \labelsep = 2pt
+    \leftmargin = \labelwidth \advance\leftmargin + \labelsep
+  }%
+    \item[\hss$^{\@thefnmark}$] #1%
+  \end{list}%
+}
+
+\def\thefootnote{\newfnsymbol{footnote}}
+\@addtoreset{footnote}{page} % modified by H.T.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% macro %%%%%
+\def\dd{{\rm d}}				% derivative
+\def\ee{{\rm e}}				% e 
+\def\TT{^{\rm T}}				% transpose
+\def\degree{\mbox{$^\circ$}}	% degree
+
+\newcommand{\req}[1]{式~(\ref{#1})}
+\newcommand{\rtab}[1]{表~\ref{#1}}
+\newcommand{\rfig}[1]{図~\ref{#1}}
+\newcommand{\rsec}[1]{{\bf \ref{#1}}}
+\newcommand{\sub}[1]{_{\rm #1}}
+\newcommand{\vct}[1]{\mbox{\boldmath $#1$}}
+
+\newcommand{\lw}[1]{\smash{\lower1.5ex\hbox{#1}}}
+\newcommand{\uw}[1]{\smash{\lower-1.5ex\hbox{#1}}}
+\newenvironment{c-cap}{\begin{center}\small}{\end{center}}
+\newenvironment{q-cap}{\begin{center}\small \begin{tabular}{p{130mm}}}%
+	{\end{tabular}\end{center}}
+
+% \input oddchar.sty
+
+\def\maru#1{%
+  \setlength{\@tempdima}{\unitlength}%
+  \raisebox{-.35zh}[1.15zh][0.45zh]{%
+  \setlength{\unitlength}{1zh}%
+  \begin{picture}(1.5,1.4)(0,0)
+  \put(0.75,0.7){\circle{1.4}}
+  \put(0.75,0.7){\makebox(0,0){#1}}
+  \end{picture}}%
+  \setlength{\unitlength}{\@tempdima}%
+}
+
+\def\marufour#1{%
+  \setlength{\@tempdima}{\unitlength}%
+  \raisebox{-.35zh}[1.15zh][0.45zh]{%
+  \setlength{\unitlength}{1zh}%
+  \begin{picture}(5.5,1.4)(0,0)
+% \put(0.75,0.7){\circle{1.4}}
+  \put(2.75,0.7){\oval(5.0,1.4)}
+  \put(2.75,0.7){\makebox(0,0){#1}}
+  \end{picture}}%
+  \setlength{\unitlength}{\@tempdima}%
+}
+
+\newcounter{enumsave}
+\newcommand{\inenum}{\setcounter{enumsave}{\value{enumi}}}
+\newcommand{\exenum}{\setcounter{enumi}{\value{enumsave}}}
+
+\long\def\@makefigurecaption#1#2{\vskip -1mm
+  \begin{center}{{\bf #1} \hskip 1.5mm #2}\end{center} \vskip 0.5mm}
+\long\def\@maketablecaption#1#2{
+  \begin{center}{{\bf #1} \hskip 1.5mm #2}\end{center} \vskip 0.5mm}
+\long\def\@makecaption#1#2{
+  \begin{center}{{\bf #1} \hskip 1.5mm #2}\end{center} \vskip 0.5mm}
+
+\def\fnum@figure{図\thefigure}
+\def\figure{\let\@makecaption\@makefigurecaption \@float{figure}}
+\def\fnum@table{表\thetable}
+\def\table{\let\@makecaption\@maketablecaption \@float{table}}
+
+
+% bibliography citation
+\def\@citex[#1]#2{\if@filesw\immediate\write\@auxout{\string\citation{#2}}\fi
+  \def\@citea{}\@cite{\@for\@citeb:=#2\do
+    {\@citea\def\@citea{,\penalty\@m}\@ifundefined
+       {b@\@citeb}{{\bf ?}\@warning
+       {Citation `\@citeb' on page \thepage \space undefined}}%
+{\csname b@\@citeb\endcsname}}}{#1}} % \hbox removed
+% \def\@cite#1#2{[{#1\if@tempswa , #2\fi}]} % original
+\def\@cite#1#2{\if@tempswa #1#2)\else $^{#1)}$\fi}
+
+\def\thebibliography#1{\section*{参考文献\markboth
+ {参 考 文 献}{参 考 文 献}}\list
+ {\arabic{enumi})}{\settowidth\labelwidth{#1)}\leftmargin\labelwidth
+ \advance\leftmargin\labelsep
+ \usecounter{enumi}}
+ \def\newblock{\hskip .11em plus .33em minus .07em}
+ \sloppy
+ \sfcode`\.=1000\relax}
+\let\endthebibliography=\endlist
+
+\newcommand{\setTBstruts}{%
+  \def\T{\rule{0pt}{3.2ex}}%
+  \def\B{\rule[-1.5ex]{0pt}{0ex}}}
+
+\def\LaTeXe{{\LaTeX}2\smash{\lower0.6ex\hbox{$\varepsilon$}}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Page numbering
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \def\enddocument{%
+%   \@checkend{document}\nyanend\clearpage\begingroup  
+%   \if@filesw \immediate\closeout\@mainaux 
+%   \def\global\@namedef##1##2{}\def\newlabel{\@testdef r}%
+%   \def\bibcite{\@testdef b}\@tempswafalse \makeatletter\input \jobname.aux
+%   \if@tempswa \@warning{Label(s) may have changed.  Rerun to get
+%   cross-references right}\fi\fi\endgroup\deadcycles\z@\@@end
+% }
+% 
+% \def\nyan@totalpage{}
+% \def\nyantotalpage#1{\gdef\nyan@totalpage{/#1}}
+% \def\nyanend{\write\@auxout{\if@filesw{\string
+%       \nyantotalpage{\thepage}}\fi}}
+% \def\@oddfoot{\rm\hfil\thepage \nyan@totalpage\hfil}
+% \def\@evenfoot{\@oddfoot}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Page numbering (ver.2)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\lastpage@putlabel{\addtocounter{page}{-1}%
+   \immediate\write\@auxout{\string
+   \newlabel{LastPage}{{}{\thepage}}}%
+   \addtocounter{page}{1}}
+\AtEndDocument{%
+   \message{AED: lastpage setting LastPage}%
+   \clearpage\lastpage@putlabel}%
+
+%\makeatletter
+%\def\ps@plain{\let\@mkboth\@gobbletwo
+     \def\@oddfoot{\hfill \footnotesize{\thepage/\pageref{LastPage}}\hfill}
+     \def\@evenfoot{}\let\@evenfoot\@oddfoot
+%     \def\@oddhead{\hfill \footnotesize{Page \thepage\ of \pageref{LastPage}}}
+%     \def\@evenhead{}\let\@evenhead\@oddhead
+%}
+%\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%If you want to include many figures in a page, just include the following lines:
+\renewcommand{\textfraction}{0.0}
+\renewcommand{\floatpagefraction}{0.99}
+\renewcommand{\topfraction}{0.99}
+\renewcommand{\bottomfraction}{0.99}
+

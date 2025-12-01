@@ -468,6 +468,7 @@ class CompactExactSolver:
         self.prob = problem
 
     def build_graph_for_group(self, k):
+<<<<<<< HEAD
         """
         修正版: Rest経由の遷移を強化し、再出勤コストを正しく設定
         """
@@ -538,6 +539,53 @@ class CompactExactSolver:
         # 簡易実装として、最終時刻に Work 状態で終わるパスは Sink へつなぐ
         # (厳密には最終時刻でのmin_workチェックが必要だが、T-1までループしているので
         #  そこで (T-1, 'rest') に落ちているはず)
+=======
+        # グラフ構築ロジック（変更なし）
+        group = self.prob.groups[k]
+        G = nx.DiGraph()
+        source, sink = 'S', 'E'
+        
+        # 1. Source -> Start
+        for t in range(self.prob.T):
+            if t + group['min_work'] > self.prob.T: continue
+            c = group['base_cost'] + group['preference_penalty'][t]
+            G.add_edge(source, (t, 1, 0), weight=c, type='start', time=t)
+
+        # 2. Transitions
+        for t in range(self.prob.T - 1):
+            for d in range(1, group['max_work'] + 1):
+                for stat in [0, 1]:
+                    u = (t, d, stat)
+                    if not G.has_node(u) and d > 1: continue
+
+                    cost_next = group['preference_penalty'][t+1]
+                    
+                    # (A) Work Continuation
+                    if d < group['max_work']:
+                        if stat == 0:
+                            if d < group['break_threshold']:
+                                G.add_edge(u, (t+1, d+1, 0), weight=cost_next, type='work', time=t+1)
+                            if d >= 2:
+                                # Break
+                                G.add_edge(u, (t+1, d, 1), weight=0, type='break', time=t+1)
+                        else:
+                            G.add_edge(u, (t+1, d+1, 1), weight=cost_next, type='work', time=t+1)
+                    
+                    # (B) Work -> Rest/End
+                    if d >= group['min_work']:
+                        G.add_edge(u, (t, 'rest'), weight=0, type='rest_start', time=t)
+                        G.add_edge(u, sink, weight=0, type='end', time=None)
+
+            # (C) Rest Transitions
+            if t > 0:
+                G.add_edge((t, 'rest'), (t+1, 'rest'), weight=0, type='rest_cont', time=t+1)
+                c_restart = group['preference_penalty'][t+1]
+                G.add_edge((t, 'rest'), (t+1, 1, 0), weight=c_restart, type='restart', time=t+1)
+        
+        for t in range(self.prob.T):
+            if G.has_node((t, 'rest')):
+                G.add_edge((t, 'rest'), sink, weight=0, type='end', time=None)
+>>>>>>> a0d66887023dca6da83f77fbc0d22b4f9993c99c
                 
         return G, source, sink
 
