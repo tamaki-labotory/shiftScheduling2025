@@ -468,7 +468,6 @@ class CompactExactSolver:
         self.prob = problem
 
     def build_graph_for_group(self, k):
-<<<<<<< HEAD
         """
         修正版: Rest経由の遷移を強化し、再出勤コストを正しく設定
         """
@@ -539,11 +538,8 @@ class CompactExactSolver:
         # 簡易実装として、最終時刻に Work 状態で終わるパスは Sink へつなぐ
         # (厳密には最終時刻でのmin_workチェックが必要だが、T-1までループしているので
         #  そこで (T-1, 'rest') に落ちているはず)
-=======
-        # グラフ構築ロジック（変更なし）
-        group = self.prob.groups[k]
-        G = nx.DiGraph()
-        source, sink = 'S', 'E'
+                
+        return G, source, sink
         
         # 1. Source -> Start
         for t in range(self.prob.T):
@@ -585,7 +581,6 @@ class CompactExactSolver:
         for t in range(self.prob.T):
             if G.has_node((t, 'rest')):
                 G.add_edge((t, 'rest'), sink, weight=0, type='end', time=None)
->>>>>>> a0d66887023dca6da83f77fbc0d22b4f9993c99c
                 
         return G, source, sink
 
@@ -646,7 +641,7 @@ class CompactExactSolver:
         model += pulp.lpSum(objective_terms) + pulp.lpSum([big_m_penalty * s for s in slack_vars])
 
         print("Solving Exact MIP...")
-        model.solve(pulp.PULP_CBC_CMD(msg=1, timeLimit=600)) 
+        model.solve(pulp.PULP_CBC_CMD(msg=1, timeLimit=1200)) 
         
         total_time = time.time() - start_time
         obj = pulp.value(model.objective)
