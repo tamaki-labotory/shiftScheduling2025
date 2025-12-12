@@ -9,7 +9,7 @@ import time
 # 1. 問題設定: データ生成クラス
 # ==========================================
 class ShiftSchedulingProblem:
-    def __init__(self, n_weeks=1):
+    def __init__(self, n_weeks=4):
         # 期間設定: 1週間 = 168時間
         self.T = 168 * n_weeks
         self.hours = np.arange(self.T)
@@ -53,6 +53,7 @@ class ShiftSchedulingProblem:
             'min_work': 8,
             'max_work': 10,
             'rest_interval': 8, # 勤務間インターバル
+            'max_shifts': 5,
             'color': 'tab:blue'
         })
 
@@ -74,6 +75,7 @@ class ShiftSchedulingProblem:
             'min_work': 4,
             'max_work': 6,
             'rest_interval': 8,
+            'max_shifts': 5,
             'color': 'tab:orange'
         })
 
@@ -95,6 +97,7 @@ class ShiftSchedulingProblem:
             'min_work': 3,
             'max_work': 8,
             'rest_interval': 8, # 若いので回復が早い(仮定)
+            'max_shifts': 5,
             'color': 'tab:green'
         })
         
@@ -199,10 +202,9 @@ class AdvancedColumnGenerationSolver:
 
     def build_time_expanded_network(self, group_id, dual_demand):
         """
-        状態拡張型時間空間ネットワークの構築
-        Nodes: (t, duration, state)
-               state 0: WORK, duration = 連続勤務時間
-               state 1: REST, duration = 連続休息時間
+        1ヶ月対応・週次リセット付きネットワーク構築
+        Nodes: (t, duration, state, shift_count)
+               shift_count: 「その週における」勤務開始回数 (0 ~ max_shifts)
         """
         group = self.prob.groups[group_id]
         G = nx.DiGraph()
@@ -211,69 +213,92 @@ class AdvancedColumnGenerationSolver:
         T = self.prob.T
         min_w, max_w = group['min_work'], group['max_work']
         min_rest = group['rest_interval']
+        max_shifts = group.get('max_shifts', 5)
         
-        # --- 1. ノードとアークの構築 ---
-        
-        # Sourceからの遷移 (初期出勤)
-        # t=0からt=T-min_wまで出勤可能
+        # --- 1. Sourceからの遷移 ---
+        # 最初の週の1回目の勤務 (k=1)
         for t in range(T - min_w + 1):
-            # 出勤コスト: 基本給 + 時間給 - 双対変数
-            # t時間目のコスト
             cost = group['base_cost'] + \
                    (group['hourly_cost'] + group['preference_penalty'][t]) - dual_demand[t]
-            
-            # (t, 1, WORK) へ遷移
-            G.add_edge(source, (t, 1, 0), weight=cost)
+            # 初期状態なので k=1 スタート
+            G.add_edge(source, (t, 1, 0, 1), weight=cost)
 
-        # タイムステップごとの遷移
-        for t in range(T - 1):
-            
-            # --- State 0: WORK (勤務中) ---
-            for d in range(1, max_w + 1):
-                u = (t, d, 0) # (時刻t, 勤務d時間目, WORK)
+        # --- 2. タイムステップごとの遷移 ---
+        # k: 現在の週の勤務回数 (0回〜max_shifts回)
+        # ※ k=0 は「週が変わってリセットされた直後」の状態を表すために必要
+        for k in range(0, max_shifts + 1):
+            for t in range(T - 1):
                 
-                # 次の時刻のコスト計算
+                # --- 週またぎ判定 ---
+                # t+1 が 168の倍数なら、次の時刻は「新しい週の始まり」
+                is_new_week = ((t + 1) % 168 == 0)
+                
+                # 次の時刻の k (ベース)
+                # 新しい週なら 0 にリセット、そうでなければ k を維持
+                k_next_base = 0 if is_new_week else k
+                
+                # コスト計算
                 cost_next = (group['hourly_cost'] + group['preference_penalty'][t+1]) - dual_demand[t+1]
-                
-                # (A) 勤務継続: duration < max_w なら継続可能
-                if d < max_w:
-                    v_cont = (t+1, d+1, 0)
-                    G.add_edge(u, v_cont, weight=cost_next)
-                
-                # (B) 退勤: duration >= min_w なら休息へ移行可能
-                if d >= min_w:
-                    v_rest = (t+1, 1, 1) # 休息1時間目へ
-                    G.add_edge(u, v_rest, weight=0)
+
+                # === State 0: WORK (勤務中) ===
+                # ルール: 勤務中の週またぎは、勤務開始時点の週カウントに属するとみなすのが一般的だが、
+                # ここではシンプルに「週が変わったら回数カウントは0(新規週分)扱い」に移行する実装にします。
+                for d in range(1, max_w + 1):
+                    u = (t, d, 0, k)
                     
-                    # 期間終了ならSinkへ
+                    # (A) 勤務継続
+                    if d < max_w:
+                        v_cont = (t+1, d+1, 0, k_next_base) # 新週ならk=0, 同週ならk維持
+                        G.add_edge(u, v_cont, weight=cost_next)
+                    
+                    # (B) 退勤 -> 休息へ
+                    if d >= min_w:
+                        v_rest = (t+1, 1, 1, k_next_base)
+                        G.add_edge(u, v_rest, weight=0)
+                        
+                        # 期間終了ならSinkへ
+                        G.add_edge(u, sink, weight=0)
+
+                # === State 1: REST (休息中) ===
+                for r in range(1, min_rest + 1):
+                    u = (t, r, 1, k)
+                    
+                    # (C) 休息継続
+                    next_r = min(r + 1, min_rest)
+                    v_cont = (t+1, next_r, 1, k_next_base)
+                    G.add_edge(u, v_cont, weight=0)
+                    
+                    # (D) 再出勤 (重要)
+                    # 条件: 休息十分 AND ( (新週である) OR (同週内で回数上限未満) )
+                    can_start_work = False
+                    next_work_k = -1
+                    
+                    if r >= min_rest:
+                        if is_new_week:
+                            # 新しい週なので、無条件で1回目(k=1)として出勤可
+                            can_start_work = True
+                            next_work_k = 1
+                        elif k < max_shifts:
+                            # 同週内なら、上限未満の場合のみ出勤可(k -> k+1)
+                            can_start_work = True
+                            next_work_k = k + 1
+                    
+                    if can_start_work:
+                        v_work = (t+1, 1, 0, next_work_k)
+                        cost_work = group['base_cost'] + cost_next
+                        G.add_edge(u, v_work, weight=cost_work)
+                    
+                    # Sinkへの接続
                     G.add_edge(u, sink, weight=0)
 
-            # --- State 1: REST (休息中) ---
-            # 休息時間は min_rest まで管理し、それ以上は min_rest に丸める
+        # 最終時刻 T-1 の処理
+        for k in range(0, max_shifts + 1): # k=0も処理対象
+            for d in range(min_w, max_w + 1):
+                if G.has_node((T-1, d, 0, k)):
+                    G.add_edge((T-1, d, 0, k), sink, weight=0)
             for r in range(1, min_rest + 1):
-                u = (t, r, 1)
-                
-                # (C) 休息継続
-                next_r = min(r + 1, min_rest)
-                v_cont = (t+1, next_r, 1)
-                G.add_edge(u, v_cont, weight=0)
-                
-                # (D) 再出勤: duration >= min_rest なら出勤可能
-                if r >= min_rest:
-                    v_work = (t+1, 1, 0) # 勤務1時間目へ
-                    cost_work = group['base_cost'] + cost_next # 再出勤時はBaseCostがかかる(シフト単位定義による)
-                    G.add_edge(u, v_work, weight=cost_work)
-                
-                # Sinkへの接続 (いつでも終了可)
-                G.add_edge(u, sink, weight=0)
-
-        # 最終時刻 T-1 の処理 (Sinkへ)
-        for d in range(min_w, max_w + 1):
-            if G.has_node((T-1, d, 0)):
-                G.add_edge((T-1, d, 0), sink, weight=0)
-        for r in range(1, min_rest + 1):
-            if G.has_node((T-1, r, 1)):
-                G.add_edge((T-1, r, 1), sink, weight=0)
+                if G.has_node((T-1, r, 1, k)):
+                    G.add_edge((T-1, r, 1, k), sink, weight=0)
                 
         return G, source, sink
 
@@ -340,7 +365,7 @@ class AdvancedColumnGenerationSolver:
                             pass
                         else:
                             # ノード形式 v = (時刻t, 継続時間d, 状態state)
-                            t, d, state = v
+                            t, d, state, k_count = v
                             
                             # state 0 (WORK) の場合のみ勤務フラグを立てる
                             if state == 0: 
@@ -623,11 +648,11 @@ if __name__ == "__main__":
     print("=== Column Generation Staff Scheduling ===")
     
     # 1. 問題生成 (1週間分)
-    problem = ShiftSchedulingProblem(n_weeks=1)
+    problem = ShiftSchedulingProblem(n_weeks=4)
     
     # 2. ソルバー初期化と実行
     solver = AdvancedColumnGenerationSolver(problem)
-    final_assignments, history = solver.solve(max_iter=100)
+    final_assignments, history = solver.solve(max_iter=30)
     
     # 3. 結果可視化
     visualize_results(problem, final_assignments)
