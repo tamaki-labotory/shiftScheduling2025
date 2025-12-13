@@ -1,0 +1,97 @@
+==========================================================
+ ANALYSIS REPORT: Week 4
+==========================================================
+
+1. Performance Metrics
+----------------------
+  Objective Value : 3,362,100.00
+  Execution Time  : 656.4770 sec
+  Iterations      : 50
+  RMP Time (LP)   : 8.4342 s
+  RMP Time (MIP)  : 625.2942 s
+  Pool Search Time: 0.0000 s
+  Graph Search Time: 22.7132 s
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 520
+  Pool Hits (Reused from History)   : 0
+  Graph Gen (Newly Created)         : 500
+  Pool Hit Rate                     : 0.0%
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:   51 / Total Gen:  102
+       -> Avg Length of Unique Patterns: 43.7 hours
+  Type: TypeB  | Unique Patterns:   51 / Total Gen:  204
+       -> Avg Length of Unique Patterns: 30.0 hours
+  Type: TypeC  | Unique Patterns:   51 / Total Gen:  204
+       -> Avg Length of Unique Patterns: 20.6 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 47 hours worked
+  Emp 1  (TypeA): 50 hours worked
+  Emp 2  (TypeB): 31 hours worked
+  Emp 3  (TypeB): 34 hours worked
+  Emp 4  (TypeB): 40 hours worked
+  Emp 5  (TypeB): 36 hours worked
+  Emp 6  (TypeC): 23 hours worked
+  Emp 7  (TypeC): 21 hours worked
+  Emp 8  (TypeC): 24 hours worked
+  Emp 9  (TypeC): 30 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | Pool Hits  | Graph Gen 
+--------------------------------------------------
+1     | 229,028,000.00  | 0          | 10        
+2     | 65,326,000.00   | 0          | 10        
+3     | 26,393,600.00   | 0          | 10        
+4     | 15,386,500.00   | 0          | 10        
+5     | 10,385,100.00   | 0          | 10        
+6     | 8,039,400.02    | 0          | 10        
+7     | 6,005,554.51    | 0          | 10        
+8     | 3,870,500.00    | 0          | 10        
+9     | 2,368,999.96    | 0          | 10        
+10    | 2,368,999.96    | 0          | 10        
+11    | 1,549,102.39    | 0          | 10        
+12    | 1,256,963.83    | 0          | 10        
+13    | 872,633.33      | 0          | 10        
+14    | 630,679.99      | 0          | 10        
+15    | 363,162.53      | 0          | 10        
+16    | 359,456.99      | 0          | 10        
+17    | 357,583.47      | 0          | 10        
+18    | 353,584.63      | 0          | 10        
+19    | 348,167.30      | 0          | 10        
+20    | 345,279.16      | 0          | 10        
+21    | 340,580.44      | 0          | 10        
+22    | 337,488.40      | 0          | 10        
+23    | 334,007.59      | 0          | 10        
+24    | 331,855.27      | 0          | 10        
+25    | 330,756.26      | 0          | 10        
+26    | 329,467.92      | 0          | 10        
+27    | 328,805.67      | 0          | 10        
+28    | 326,704.24      | 0          | 10        
+29    | 325,068.33      | 0          | 10        
+30    | 323,926.89      | 0          | 10        
+31    | 323,253.82      | 0          | 10        
+32    | 322,227.01      | 0          | 10        
+33    | 321,604.58      | 0          | 10        
+34    | 320,675.15      | 0          | 10        
+35    | 319,872.34      | 0          | 10        
+36    | 318,889.09      | 0          | 10        
+37    | 317,656.68      | 0          | 10        
+38    | 316,967.65      | 0          | 10        
+39    | 316,275.85      | 0          | 10        
+40    | 315,993.17      | 0          | 10        
+41    | 315,755.63      | 0          | 10        
+42    | 315,383.29      | 0          | 10        
+43    | 314,426.11      | 0          | 10        
+44    | 314,106.87      | 0          | 10        
+45    | 313,422.51      | 0          | 10        
+46    | 312,992.86      | 0          | 10        
+47    | 312,641.16      | 0          | 10        
+48    | 312,373.74      | 0          | 10        
+49    | 312,099.80      | 0          | 10        
+50    | 311,585.46      | 0          | 10        

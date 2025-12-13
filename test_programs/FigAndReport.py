@@ -224,7 +224,10 @@ class BenchmarkReporter:
             f.write(f"  Execution Time  : {elapsed_time:.4f} sec\n")
             if hasattr(solver, 'stats'):
                 f.write(f"  Iterations      : {solver.stats['iterations']}\n")
-                f.write(f"  RMP Solve Time  : {solver.stats['time_rmp']:.4f} s\n")
+                # --- 変更: RMP時間をLPとMIPに分けて出力 ---
+                f.write(f"  RMP Time (LP)   : {solver.stats['time_rmp_lp']:.4f} s\n")
+                f.write(f"  RMP Time (MIP)  : {solver.stats['time_rmp_mip']:.4f} s\n")
+                # ----------------------------------------
                 f.write(f"  Pool Search Time: {solver.stats['time_pool']:.4f} s\n")
                 f.write(f"  Graph Search Time: {solver.stats['time_graph']:.4f} s\n")
             f.write(f"\n")
@@ -378,7 +381,8 @@ class ColumnGenerationSolver:
         self.history = []
         
         self.stats = {
-            'time_rmp': 0.0,
+            'time_rmp_lp': 0.0,   # 変更: LP緩和(双対変数用)の合計時間
+            'time_rmp_mip': 0.0,  # 変更: 最後の整数解構築の合計時間
             'time_pool': 0.0,
             'time_graph': 0.0,
             'count_pool_hit': 0,
@@ -467,7 +471,12 @@ class ColumnGenerationSolver:
             
         solver = pulp.PULP_CBC_CMD(msg=0)
         model.solve(solver)
-        self.stats['time_rmp'] += (time.perf_counter() - t_start)
+
+        elapsed = time.perf_counter() - t_start
+        if integer:
+            self.stats['time_rmp_mip'] += elapsed
+        else:
+            self.stats['time_rmp_lp'] += elapsed
 
         if integer:
             final_schedule = np.zeros((self.prob.K, self.prob.T))
@@ -648,8 +657,11 @@ def run_benchmark():
         
         results.append({
             'Week': w+1,
-            'Time_Prop': time_prop, 'RMP_Time': stats['time_rmp'],
-            'Pool_Time': stats['time_pool'], 'Graph_Time': stats['time_graph']
+            'Time_Prop': time_prop, 
+            'RMP_LP_Time': stats['time_rmp_lp'],   # LP時間
+            'RMP_MIP_Time': stats['time_rmp_mip'], # MIP時間
+            'Pool_Time': stats['time_pool'], 
+            'Graph_Time': stats['time_graph']
         })
         
     return pd.DataFrame(results)
@@ -658,9 +670,20 @@ def plot_breakdown(df):
     plt.figure(figsize=(10, 6))
     weeks = df['Week']
     
-    p1 = plt.bar(weeks, df['RMP_Time'], label='RMP Solve Time')
-    p2 = plt.bar(weeks, df['Pool_Time'], bottom=df['RMP_Time'], label='Pool Search Time')
-    p3 = plt.bar(weeks, df['Graph_Time'], bottom=df['RMP_Time']+df['Pool_Time'], label='Graph Search Time')
+    # 1. RMP (LP) - 一番下
+    p1 = plt.bar(weeks, df['RMP_LP_Time'], label='RMP (LP/Duals)')
+    
+    # 2. RMP (MIP) - その上
+    p2 = plt.bar(weeks, df['RMP_MIP_Time'], bottom=df['RMP_LP_Time'], label='RMP (Final MIP)')
+    
+    # 3. Pool - その上 (LP + MIP の合計がボトムになる)
+    bottom_pool = df['RMP_LP_Time'] + df['RMP_MIP_Time']
+    p3 = plt.bar(weeks, df['Pool_Time'], bottom=bottom_pool, label='Pool Search')
+    
+    # 4. Graph - 一番上
+    bottom_graph = bottom_pool + df['Pool_Time']
+    p4 = plt.bar(weeks, df['Graph_Time'], bottom=bottom_graph, label='Graph Search')
+    # --------------------------------
     
     plt.plot(weeks, df['Time_Prop'], color='black', marker='o', linestyle='-', linewidth=2, label='Total Time (Prop)')
     
