@@ -86,6 +86,11 @@ class BenchmarkReporter:
                 f.write(f"  RMP Time (MIP)  : {solver.stats['time_rmp_mip']:.4f} s\n")
                 f.write(f"  Pool Search Time: {solver.stats['time_pool']:.4f} s\n")
                 f.write(f"  Graph Search Time: {solver.stats['time_graph']:.4f} s\n")
+                
+                # ★修正: MIPで使用された決定変数の総数を表示
+                if 'mip_total_columns' in solver.stats:
+                    f.write(f"  MIP Decision Variables: {solver.stats['mip_total_columns']} (Columns used in Final MIP)\n")
+                    
             f.write(f"\n")
 
             f.write(f"2. Column Generation & Pool Statistics\n")
