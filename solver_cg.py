@@ -24,20 +24,19 @@ class ColumnGenerationSolver:
             'count_graph_skip': 0,
             'iterations': 0,
             'pool_size': 0,
-            'mip_total_columns': 0 # ★追加: 最終MIPで使われた列数
+            'mip_total_columns': 0,
+            'mip_filtered_columns': 0 # ★追加: フィルタリングにより削除された列数
         }
 
     def reset_stats(self):
         self.stats = {k: 0 for k in self.stats}
 
     def reset_for_new_period(self):
-        """期間更新時の処理（ベースクラスはプールリセット）"""
         self.rmp_indices = []
         if not self.use_pool:
             self.pool = []
             self.graphs = {}
             self.pattern_to_id = {} 
-        # ベースクラスでは、use_pool=Trueでもプール掃除は行わず維持するだけ
 
     def initialize_rmp(self):
         self.rmp_indices = []
@@ -101,9 +100,7 @@ class ColumnGenerationSolver:
         if model.status != pulp.LpStatusOptimal: return None
 
         if integer:
-            # ★追加: MIP決定変数の総数を記録
             self.stats['mip_total_columns'] = len(active_cols)
-            
             final_schedule = np.zeros((self.prob.K, self.prob.T))
             for c in active_cols:
                 val = x[c['id']].varValue
@@ -174,81 +171,77 @@ class ColumnGenerationSolver:
         self.stats['time_graph'] += (time.perf_counter() - t_graph_start)
         return pool_added_count, graph_added_count
 
-    def solve(self, max_iter=50, time_limit=300, tol=1e-4, patience=3):
+    def solve(self, max_iter=50, time_limit=300, tol=1e-4, patience=3, mip_rc_threshold=2.0):
         """
-        :param max_iter: 最大反復回数
-        :param time_limit: 制限時間(秒)
-        :param tol: 収束判定の許容誤差率 (例: 1e-4 = 0.01% の改善未満なら停滞とみなす)
-        :param patience: 停滞を何回許容するか (例: 3回連続で改善が小さければ終了)
+        mip_rc_threshold: MIP求解前に、被約費用がこの値を超える列は削除する（フィルタリング）
         """
         start_total = time.time()
         self.reset_stats()
         self.initialize_rmp()
         
         self.history = [] 
-        
-        # 収束判定用の変数
         prev_obj = float('inf')
         no_improve_iter = 0
         
+        # 最終的な双対変数を保持するための変数
+        last_pi = None
+        last_sigma = None
+        
         for i in range(max_iter):
-            # 1. 時間切れチェック
-            if time.time() - start_total > time_limit:
-                print(f"Stopping: Time limit ({time_limit}s) reached.")
-                break
-                
-            # 2. RMP緩和問題を解く
+            if time.time() - start_total > time_limit: break
+            
+            # 1. RMP (LP)
             res = self.solve_rmp(integer=False)
             if res is None: break
             obj, pi, sigma = res
             
-            # --- 収束判定ロジック (ここを追加) ---
-            # 改善率の計算: (前回 - 今回) / 前回
-            # ※初回(prev_obj=inf)はスキップ
+            last_pi, last_sigma = pi, sigma
+            
+            # 収束判定
             if prev_obj != float('inf'):
                 improvement = (prev_obj - obj) / abs(prev_obj + 1e-9)
-                
-                if improvement < tol:
-                    no_improve_iter += 1
-                else:
-                    no_improve_iter = 0 # 改善したらカウンタリセット
-            
+                if improvement < tol: no_improve_iter += 1
+                else: no_improve_iter = 0
             prev_obj = obj
-            # -----------------------------------
 
-            # 3. Pricing（列生成）
+            # 2. Pricing
             pool_add, graph_add = self.pricing(pi, sigma)
             total_added = pool_add + graph_add
             
             self.stats['iterations'] += 1
+            self.history.append({'iter': i + 1, 'obj': obj, 'pool_hits': pool_add, 'graph_gen': graph_add})
             
-            self.history.append({
-                'iter': i + 1,
-                'obj': obj,
-                'pool_hits': pool_add,
-                'graph_gen': graph_add
-            })
+            if total_added == 0: break
+            if no_improve_iter >= patience: break
             
-            # 4. 終了条件のチェック
+        # --- ★MIP前の列フィルタリング (Reduced Cost Filtering) ---
+        if last_pi is not None and last_sigma is not None:
+            filtered_indices = []
+            removed_count = 0
             
-            # A. 完全収束: 負のReduced Costを持つ列が見つからない
-            if total_added == 0:
-                print(f"Converged: Optimal LP solution found at iter {i+1}.")
-                break
+            for idx in self.rmp_indices:
+                col = self.pool[idx]
+                k = col['group_id']
+                # RC = Cost - pi*A - sigma
+                rc = col['cost'] - np.dot(last_pi, col['schedule']) - last_sigma[k]
+                
+                # RCが閾値以下（有望）な列だけ残す
+                # ※閾値は余裕を持たせる（例: 2.0程度）。0に近いほど厳しく削減される。
+                if rc <= mip_rc_threshold:
+                    filtered_indices.append(idx)
+                else:
+                    removed_count += 1
             
-            # B. 早期打ち切り: 改善が停滞している
-            if no_improve_iter >= patience:
-                print(f"Stopping: Objective improvement stalled for {patience} iters (tol={tol}).")
-                break
-            
-        # 5. 最後に整数計画として解く
+            self.rmp_indices = filtered_indices
+            self.stats['mip_filtered_columns'] = removed_count
+            # print(f"DEBUG: Filtered {removed_count} columns before MIP. Remaining: {len(self.rmp_indices)}")
+        
+        # 3. Final MIP
         res_mip = self.solve_rmp(integer=True)
-        if res_mip:
-            final_obj, final_schedule = res_mip
+        if res_mip: final_obj, final_schedule = res_mip
         else:
             final_obj = 0.0
             final_schedule = np.zeros((self.prob.K, self.prob.T))
             
         self.stats['pool_size'] = len(self.pool)
-        
         return final_obj, time.time() - start_total, self.stats, final_schedule
