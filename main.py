@@ -1,4 +1,5 @@
 import os
+import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -7,28 +8,44 @@ import numpy as np
 from problem import ShiftProblemData
 from solver_exact import ExactMIPSolver
 from solver_cg import ColumnGenerationSolver
+from solver_cg_aging import ColumnGenerationSolverWithAging
 from visualization import ScheduleVisualizer, BenchmarkReporter
 
 output_dir = "schedule_plots"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
-def run_benchmark():
+def run_benchmark(solver_type='default'):
+    """
+    solver_type: 'default' (solver_cg) or 'aging' (solver_cg_aging)
+    """
     n_weeks = 5
     prob = ShiftProblemData(n_employees=5)
     
     # ソルバーの初期化
     solver_exact = ExactMIPSolver(prob)
     
-    # ★ポイント: 同じクラスを使い、フラグで挙動（プールあり/なし）を分ける
+    # Standard (比較基準) は常に基本のCGソルバー(プールなし)を使用
     solver_std = ColumnGenerationSolver(prob, use_pool=False)
-    solver_prop = ColumnGenerationSolver(prob, use_pool=True)
+    
+    # Proposed (提案手法) を引数によって切り替え
+    if solver_type == 'aging':
+        print(">>> Using Solver: ColumnGenerationSolverWithAging")
+        SolverClass = ColumnGenerationSolverWithAging
+        prop_label = "Aging"
+    else:
+        print(">>> Using Solver: ColumnGenerationSolver (Default)")
+        SolverClass = ColumnGenerationSolver
+        prop_label = "Prop"
+
+    solver_prop = SolverClass(prob, use_pool=True)
     
     results = []
     
     print(f"Starting Benchmark for {n_weeks} weeks with Visualization & Analysis...")
     print("-" * 120)
-    print(f"{'Week':<4} | {'Exact(s)':<8} | {'Std(s)':<8} | {'Prop(s)':<8} | {'Gap_S%':<7} | {'Gap_P%':<7}")
+    # 出力ヘッダーも動的に変更
+    print(f"{'Week':<4} | {'Exact(s)':<8} | {'Std(s)':<8} | {f'{prop_label}(s)':<8} | {'Gap_S%':<7} | {'Gap_P%':<7}")
     print("-" * 120)
     
     for w in range(n_weeks):
@@ -50,14 +67,18 @@ def run_benchmark():
             f"{output_dir}/analysis_week{w+1}_std.txt", w+1, solver_std, prob, obj_std, time_std, sched_std
         )
         
-        # 3. CG Proposed (With Pool)
+        # 3. CG Proposed (With Pool / Aging)
         solver_prop.reset_for_new_period()
         obj_prop, time_prop, stats, sched_prop = solver_prop.solve(max_iter=50)
+        
+        # ファイル名に識別子を入れる
+        filename_suffix = prop_label.lower() # 'prop' or 'aging'
+        
         ScheduleVisualizer.save_schedule_heatmap(
-            sched_prop, prob, f"Week {w+1} CG_Proposed", f"{output_dir}/schedule_week{w+1}_cg_prop.png"
+            sched_prop, prob, f"Week {w+1} CG_{prop_label}", f"{output_dir}/schedule_week{w+1}_cg_{filename_suffix}.png"
         )
         BenchmarkReporter.save_analysis_report(
-            f"{output_dir}/analysis_week{w+1}_prop.txt", w+1, solver_prop, prob, obj_prop, time_prop, sched_prop
+            f"{output_dir}/analysis_week{w+1}_{filename_suffix}.txt", w+1, solver_prop, prob, obj_prop, time_prop, sched_prop
         )
         
         # 集計
@@ -68,6 +89,7 @@ def run_benchmark():
         
         results.append({
             'Week': w+1,
+            'Solver_Type': prop_label,
             'Time_Prop': time_prop, 
             'RMP_LP_Time': stats['time_rmp_lp'],
             'RMP_MIP_Time': stats['time_rmp_mip'],
@@ -75,9 +97,9 @@ def run_benchmark():
             'Graph_Time': stats['time_graph']
         })
         
-    return pd.DataFrame(results)
+    return pd.DataFrame(results), prop_label
 
-def plot_breakdown(df):
+def plot_breakdown(df, label):
     plt.figure(figsize=(10, 6))
     weeks = df['Week']
     
@@ -91,18 +113,24 @@ def plot_breakdown(df):
     bottom_graph = bottom_pool + df['Pool_Time']
     p4 = plt.bar(weeks, df['Graph_Time'], bottom=bottom_graph, label='Graph Search')
     
-    plt.plot(weeks, df['Time_Prop'], color='black', marker='o', linestyle='-', linewidth=2, label='Total Time (Prop)')
+    plt.plot(weeks, df['Time_Prop'], color='black', marker='o', linestyle='-', linewidth=2, label=f'Total Time ({label})')
     
-    plt.title("Breakdown of Proposed Method Execution Time", fontsize=14)
+    plt.title(f"Breakdown of {label} Method Execution Time", fontsize=14)
     plt.xlabel("Week")
     plt.ylabel("Time (seconds)")
     plt.xticks(weeks)
     plt.legend()
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.tight_layout()
-    plt.savefig(f"{output_dir}/time_breakdown.png")
-    plt.show()
+    plt.savefig(f"{output_dir}/time_breakdown_{label.lower()}.png")
+    # plt.show() # 自動実行時はコメントアウト推奨
 
 if __name__ == "__main__":
-    df = run_benchmark()
-    plot_breakdown(df)
+    parser = argparse.ArgumentParser(description='Run Shift Scheduling Benchmark')
+    parser.add_argument('--solver', type=str, choices=['default', 'aging'], default='default',
+                        help='Choose the solver implementation: "default" (solver_cg) or "aging" (solver_cg_aging)')
+    
+    args = parser.parse_args()
+    
+    df, label_used = run_benchmark(solver_type=args.solver)
+    plot_breakdown(df, label_used)

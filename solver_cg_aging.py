@@ -4,7 +4,7 @@ import numpy as np
 import networkx as nx
 from problem import GraphBuilder
 
-class ColumnGenerationSolver:
+class ColumnGenerationSolverWithAging:
     def __init__(self, problem, use_pool=True, pool_cleanup_threshold=2000):
         """
         :param problem: ShiftProblemData インスタンス
