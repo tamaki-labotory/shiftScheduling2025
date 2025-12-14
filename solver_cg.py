@@ -68,7 +68,7 @@ class ColumnGenerationSolver:
         self.pattern_to_id[pattern_key] = col_id
         return col_id
 
-    def solve_rmp(self, integer=False):
+    def solve_rmp(self, integer=False, mip_time_limit=30, mip_gap=0.05):
         t_start = time.perf_counter()
         model = pulp.LpProblem("RMP", pulp.LpMinimize)
         active_cols = [self.pool[i] for i in self.rmp_indices]
@@ -92,7 +92,15 @@ class ColumnGenerationSolver:
             model += expr == 1
             cons_c.append(model.constraints[list(model.constraints.keys())[-1]])
             
-        solver = pulp.PULP_CBC_CMD(msg=0)
+        # ソルバーの設定を変更
+        if integer:
+            # msg=0: ログなし
+            # timeLimit: 最大秒数（これを超えたらその時点のベスト解を返す）
+            # gapRel: 相対ギャップ（例: 0.05 なら最適解との乖離が5%以内保証で終了）
+            solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=mip_time_limit, gapRel=mip_gap)
+        else:
+            solver = pulp.PULP_CBC_CMD(msg=0) # LPは通常通り解く
+        
         model.solve(solver)
         elapsed = time.perf_counter() - t_start
         if integer: self.stats['time_rmp_mip'] += elapsed
