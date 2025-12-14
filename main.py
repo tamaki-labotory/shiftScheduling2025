@@ -51,35 +51,39 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10):
         prob.generate_new_demand(period=w)
         
         # --- 1. Exact Solver ---
-        # 人数が多い場合はスキップする処理を入れても良い
+        # (Exactにはプールがないので保存不要)
         if n_employees > 20:
              obj_ex, time_ex = 0.0, 0.0
              sched_ex = np.zeros((prob.K, prob.T))
         else:
-             obj_ex, time_ex, sched_ex = solver_exact.solve(time_limit=300)
+             obj_ex, time_ex, sched_ex = solver_exact.solve(time_limit=1200)
              ScheduleVisualizer.save_schedule_heatmap(
                  sched_ex, prob, f"Week {w+1} Exact", f"{output_dir}/wk{w+1}_exact.png"
              )
         
         # --- 2. CG Standard (No Pool) ---
         solver_std.reset_for_new_period()
-        obj_std, time_std, stats_std, sched_std = solver_std.solve(max_iter=200)
+        obj_std, time_std, stats_std, sched_std = solver_std.solve(max_iter=400)
         ScheduleVisualizer.save_schedule_heatmap(
             sched_std, prob, f"Week {w+1} CG_Std", f"{output_dir}/wk{w+1}_cg_std.png"
         )
         BenchmarkReporter.save_analysis_report(
             f"{output_dir}/report_wk{w+1}_std.txt", w+1, solver_std, prob, obj_std, time_std, sched_std
         )
+        # ★追加: スタンダード版のプール保存（その週で作られた列のみ）
+        solver_std.save_pool_to_csv(f"{output_dir}/pool_wk{w+1}_std.csv")
         
         # --- 3. CG Pool (Accumulation) ---
         solver_pool.reset_for_new_period()
-        obj_pool, time_pool, stats_pool, sched_pool = solver_pool.solve(max_iter=200)
+        obj_pool, time_pool, stats_pool, sched_pool = solver_pool.solve(max_iter=400)
         ScheduleVisualizer.save_schedule_heatmap(
             sched_pool, prob, f"Week {w+1} CG_Pool", f"{output_dir}/wk{w+1}_cg_pool.png"
         )
         BenchmarkReporter.save_analysis_report(
             f"{output_dir}/report_wk{w+1}_pool.txt", w+1, solver_pool, prob, obj_pool, time_pool, sched_pool
         )
+        # ★追加: 蓄積版のプール保存（週を追うごとにサイズが増えるはず）
+        solver_pool.save_pool_to_csv(f"{output_dir}/pool_wk{w+1}_pool.csv")
 
         # --- 4. CG Aging (With Removal) ---
         solver_aging.reset_for_new_period()
@@ -90,6 +94,8 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10):
         BenchmarkReporter.save_analysis_report(
             f"{output_dir}/report_wk{w+1}_aging.txt", w+1, solver_aging, prob, obj_aging, time_aging, sched_aging
         )
+        # ★追加: Aging版のプール保存
+        solver_aging.save_pool_to_csv(f"{output_dir}/pool_wk{w+1}_aging.csv")
         
         # --- 集計と表示 ---
         def calc_gap(obj, base):

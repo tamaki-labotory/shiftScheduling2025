@@ -1,3 +1,4 @@
+import pandas as pd
 import pulp
 import time
 import numpy as np
@@ -171,7 +172,7 @@ class ColumnGenerationSolver:
         self.stats['time_graph'] += (time.perf_counter() - t_graph_start)
         return pool_added_count, graph_added_count
 
-    def solve(self, max_iter=50, time_limit=300, tol=1e-4, patience=3, mip_rc_threshold=2.0):
+    def solve(self, max_iter=50, time_limit=300, tol=1e-4, patience=3, mip_rc_threshold=500.0):
         """
         mip_rc_threshold: MIP求解前に、被約費用がこの値を超える列は削除する（フィルタリング）
         """
@@ -245,3 +246,30 @@ class ColumnGenerationSolver:
             
         self.stats['pool_size'] = len(self.pool)
         return final_obj, time.time() - start_total, self.stats, final_schedule
+    
+    def save_pool_to_csv(self, filename):
+        """
+        現在のプール内の列情報をCSVとして保存する
+        """
+        data = []
+        for col in self.pool:
+            # 従業員情報を取得（タイプなどを付記するため）
+            emp = self.prob.employees[col['group_id']]
+            
+            # シフトパターンを文字列化 (例: "011100...") して扱いやすくする
+            # scheduleはnumpy配列またはリストなのでmapで文字列にして結合
+            sched_str = "".join(map(str, map(int, col['schedule'])))
+            
+            data.append({
+                'col_id': col['id'],
+                'emp_id': col['group_id'],
+                'emp_type': emp['type'],
+                'cost': col['cost'],
+                'schedule_pattern': sched_str,
+                # 被約費用なども計算したければここで直前のpi/sigmaを使って計算可能だが、
+                # 基本的なデータとしては上記で十分
+            })
+            
+        df = pd.DataFrame(data)
+        df.to_csv(filename, index=False)
+        print(f"  -> Pool saved to: {filename} (Total {len(df)} columns)")
