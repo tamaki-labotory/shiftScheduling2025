@@ -4,6 +4,10 @@ import numpy as np
 from collections import defaultdict
 
 class ScheduleVisualizer:
+    """
+    スケジュール個別のヒートマップ描画用クラス
+    （変更なし：任意のスケジュール行列を受け取れるため動的対応済み）
+    """
     @staticmethod
     def save_schedule_heatmap(schedule, problem, title, filename):
         K, T = schedule.shape
@@ -69,6 +73,10 @@ class ScheduleVisualizer:
         plt.close()
 
 class BenchmarkReporter:
+    """
+    テキストレポート出力用クラス
+    （変更なし：hasattr等で属性チェックを行っているため、任意のソルバークラスに対応可能）
+    """
     @staticmethod
     def save_analysis_report(filename, week, solver, problem, final_obj, elapsed_time, final_schedule):
         with open(filename, 'w', encoding='utf-8') as f:
@@ -81,15 +89,16 @@ class BenchmarkReporter:
             f.write(f"  Objective Value : {final_obj:,.2f}\n")
             f.write(f"  Execution Time  : {elapsed_time:.4f} sec\n")
             if hasattr(solver, 'stats'):
-                f.write(f"  Iterations      : {solver.stats['iterations']}\n")
-                f.write(f"  RMP Time (LP)   : {solver.stats['time_rmp_lp']:.4f} s\n")
-                f.write(f"  RMP Time (MIP)  : {solver.stats['time_rmp_mip']:.4f} s\n")
-                f.write(f"  Pool Search Time: {solver.stats['time_pool']:.4f} s\n")
-                f.write(f"  Graph Search Time: {solver.stats['time_graph']:.4f} s\n")
+                f.write(f"  Iterations      : {solver.stats.get('iterations', 0)}\n")
+                f.write(f"  RMP Time (LP)   : {solver.stats.get('time_rmp_lp', 0):.4f} s\n")
+                f.write(f"  RMP Time (MIP)  : {solver.stats.get('time_rmp_mip', 0):.4f} s\n")
+                f.write(f"  Pool Search Time: {solver.stats.get('time_pool', 0):.4f} s\n")
+                f.write(f"  Graph Search Time: {solver.stats.get('time_graph', 0):.4f} s\n")
                 
-                # ★修正: MIPで使用された決定変数の総数を表示
                 if 'mip_total_columns' in solver.stats:
                     f.write(f"  MIP Decision Variables: {solver.stats['mip_total_columns']} (Columns used in Final MIP)\n")
+                if 'mip_filtered_columns' in solver.stats:
+                     f.write(f"  MIP Filtered Columns  : {solver.stats['mip_filtered_columns']} (Removed before MIP)\n")
                     
             f.write(f"\n")
 
@@ -100,10 +109,12 @@ class BenchmarkReporter:
                 f.write(f"  Total Columns Generated (History) : {total_pool_size}\n")
                 
                 if hasattr(solver, 'stats'):
-                    f.write(f"  Pool Hits (Reused from History)   : {solver.stats['count_pool_hit']}\n")
-                    f.write(f"  Graph Gen (Newly Created)         : {solver.stats['count_graph_new']}\n")
-                    if solver.stats['count_graph_new'] + solver.stats['count_pool_hit'] > 0:
-                        hit_rate = solver.stats['count_pool_hit'] / (solver.stats['count_pool_hit'] + solver.stats['count_graph_new']) * 100
+                    hits = solver.stats.get('count_pool_hit', 0)
+                    news = solver.stats.get('count_graph_new', 0)
+                    f.write(f"  Pool Hits (Reused from History)   : {hits}\n")
+                    f.write(f"  Graph Gen (Newly Created)         : {news}\n")
+                    if news + hits > 0:
+                        hit_rate = hits / (hits + news) * 100
                         f.write(f"  Pool Hit Rate                     : {hit_rate:.1f}%\n")
             f.write(f"\n")
 
@@ -116,11 +127,13 @@ class BenchmarkReporter:
                 
                 for col in solver.pool:
                     emp_id = col['group_id']
-                    emp_type = problem.employees[emp_id]['type']
-                    pat = tuple(col['schedule'])
-                    if sum(pat) > 0: 
-                        type_patterns[emp_type].add(pat)
-                        type_total_cols[emp_type] += 1
+                    # 問題クラスから従業員情報を引く
+                    if 0 <= emp_id < len(problem.employees):
+                        emp_type = problem.employees[emp_id]['type']
+                        pat = tuple(col['schedule'])
+                        if sum(pat) > 0: 
+                            type_patterns[emp_type].add(pat)
+                            type_total_cols[emp_type] += 1
                 
                 for t_name in sorted(type_patterns.keys()):
                     unique_count = len(type_patterns[t_name])
@@ -132,10 +145,11 @@ class BenchmarkReporter:
 
             f.write(f"\n4. Final Schedule Assignment Breakdown\n")
             f.write(f"--------------------------------------\n")
-            for k in range(problem.K):
-                total_work = np.sum(final_schedule[k])
-                emp_type = problem.employees[k]['type']
-                f.write(f"  Emp {k:<2} ({emp_type}): {int(total_work)} hours worked\n")
+            if final_schedule is not None:
+                for k in range(min(problem.K, 20)): # 多すぎる場合は省略
+                    total_work = np.sum(final_schedule[k])
+                    emp_type = problem.employees[k]['type']
+                    f.write(f"  Emp {k:<2} ({emp_type}): {int(total_work)} hours worked\n")
 
             f.write(f"\n5. Iteration History (Convergence Log)\n")
             f.write(f"--------------------------------------\n")
@@ -147,3 +161,95 @@ class BenchmarkReporter:
                     f.write(f"{log['iter']:<5} | {log['obj']:<15,.2f} | {log['pool_hits']:<10} | {log['graph_gen']:<10}\n")
             else:
                 f.write("No iteration history available.\n")
+
+class ComparisonPlotter:
+    """
+    ★新規追加★
+    動的に選択された複数の手法の比較グラフを描画するクラス
+    """
+    @staticmethod
+    def plot_dynamic_breakdown(df, active_methods, solver_config, output_dir):
+        """
+        実行された手法ごとの処理時間内訳グラフを作成
+        """
+        for name in active_methods:
+            # ExactSolverは内訳データがないためスキップ
+            if name == 'exact': 
+                continue 
+            
+            # 設定情報取得
+            cfg = solver_config.get(name, {})
+            label = cfg.get('label', name)
+            color = cfg.get('color', 'blue')
+            
+            # データフレームに該当列があるか確認
+            if f'{name}_RMP_LP' not in df.columns:
+                continue
+
+            plt.figure(figsize=(8, 5))
+            weeks = df['Week']
+            
+            # データ取得
+            rmp_lp = df[f'{name}_RMP_LP']
+            rmp_mip = df[f'{name}_RMP_MIP']
+            pool_t = df[f'{name}_Pool']
+            graph_t = df[f'{name}_Graph']
+            total_t = df[f'Time_{name}']
+            
+            # 積み上げ棒グラフ
+            p1 = plt.bar(weeks, rmp_lp, label='RMP (LP)', color='#ff9999', alpha=0.8)
+            p2 = plt.bar(weeks, rmp_mip, bottom=rmp_lp, label='RMP (Final MIP)', color='#66b3ff', alpha=0.8)
+            
+            bot_pool = rmp_lp + rmp_mip
+            p3 = plt.bar(weeks, pool_t, bottom=bot_pool, label='Pool Search', color='#99ff99', alpha=0.8)
+            
+            bot_graph = bot_pool + pool_t
+            p4 = plt.bar(weeks, graph_t, bottom=bot_graph, label='Graph Search', color='#ffcc99', alpha=0.8)
+            
+            # トータル時間線
+            plt.plot(weeks, total_t, color=color, marker='o', linestyle='-', linewidth=1.5, label='Total Time')
+            
+            plt.title(f"Time Breakdown: {label}", fontsize=14)
+            plt.xlabel("Week")
+            plt.ylabel("Time (s)")
+            plt.xticks(weeks)
+            # 凡例を外に出す
+            plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+            plt.grid(axis='y', linestyle='--', alpha=0.5)
+            plt.tight_layout()
+            
+            plt.savefig(f"{output_dir}/breakdown_{name}.png")
+            plt.close()
+
+    @staticmethod
+    def plot_overall_comparison(df, active_methods, solver_config, output_dir):
+        """
+        全手法のトータル時間を比較するグラフ
+        """
+        plt.figure(figsize=(10, 6))
+        weeks = df['Week']
+        
+        for name in active_methods:
+            cfg = solver_config.get(name, {})
+            label = cfg.get('label', name)
+            color = cfg.get('color', None)
+            marker = cfg.get('marker', 'o')
+            
+            time_col = f'Time_{name}'
+            if time_col in df.columns:
+                plt.plot(weeks, df[time_col], 
+                         color=color, 
+                         marker=marker, 
+                         linestyle='--' if name == 'exact' else '-',
+                         label=label,
+                         linewidth=2, markersize=8)
+        
+        plt.title("Execution Time Comparison", fontsize=16)
+        plt.xlabel("Week", fontsize=12)
+        plt.ylabel("Time (seconds)", fontsize=12)
+        plt.xticks(weeks)
+        plt.legend(fontsize=12)
+        plt.grid(True, linestyle='--', alpha=0.6)
+        plt.tight_layout()
+        plt.savefig(f"{output_dir}/comparison_total_time.png")
+        plt.close()

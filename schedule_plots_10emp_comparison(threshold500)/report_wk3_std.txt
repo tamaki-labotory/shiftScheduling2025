@@ -5,12 +5,12 @@
 1. Performance Metrics
 ----------------------
   Objective Value : 4,345,500.00
-  Execution Time  : 109.2023 sec
+  Execution Time  : 122.7786 sec
   Iterations      : 135
-  RMP Time (LP)   : 35.6188 s
-  RMP Time (MIP)  : 30.1742 s
-  Pool Search Time: 0.0006 s
-  Graph Search Time: 43.2856 s
+  RMP Time (LP)   : 33.9613 s
+  RMP Time (MIP)  : 49.6275 s
+  Pool Search Time: 0.0004 s
+  Graph Search Time: 39.0861 s
   MIP Decision Variables: 424 (Columns used in Final MIP)
 
 2. Column Generation & Pool Statistics

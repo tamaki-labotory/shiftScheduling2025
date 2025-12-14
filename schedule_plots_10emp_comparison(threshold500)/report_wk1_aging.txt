@@ -4,13 +4,13 @@
 
 1. Performance Metrics
 ----------------------
-  Objective Value : 4,333,600.00
-  Execution Time  : 101.3718 sec
+  Objective Value : 4,329,300.00
+  Execution Time  : 261.3441 sec
   Iterations      : 134
-  RMP Time (LP)   : 32.6070 s
-  RMP Time (MIP)  : 30.1755 s
-  Pool Search Time: 0.1658 s
-  Graph Search Time: 38.3287 s
+  RMP Time (LP)   : 32.8194 s
+  RMP Time (MIP)  : 190.5981 s
+  Pool Search Time: 0.1651 s
+  Graph Search Time: 37.6687 s
   MIP Decision Variables: 440 (Columns used in Final MIP)
 
 2. Column Generation & Pool Statistics
@@ -33,14 +33,14 @@
 --------------------------------------
   Emp 0  (TypeA): 45 hours worked
   Emp 1  (TypeA): 45 hours worked
-  Emp 2  (TypeB): 37 hours worked
-  Emp 3  (TypeB): 34 hours worked
+  Emp 2  (TypeB): 39 hours worked
+  Emp 3  (TypeB): 32 hours worked
   Emp 4  (TypeB): 33 hours worked
-  Emp 5  (TypeB): 34 hours worked
+  Emp 5  (TypeB): 31 hours worked
   Emp 6  (TypeC): 22 hours worked
-  Emp 7  (TypeC): 24 hours worked
-  Emp 8  (TypeC): 21 hours worked
-  Emp 9  (TypeC): 23 hours worked
+  Emp 7  (TypeC): 23 hours worked
+  Emp 8  (TypeC): 23 hours worked
+  Emp 9  (TypeC): 21 hours worked
 
 5. Iteration History (Convergence Log)
 --------------------------------------
