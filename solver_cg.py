@@ -3,6 +3,7 @@ import pulp
 import time
 import numpy as np
 import networkx as nx
+import os  # 追加
 from problem import GraphBuilder
 
 class ColumnGenerationSolver:
@@ -26,9 +27,11 @@ class ColumnGenerationSolver:
             'iterations': 0,
             'pool_size': 0,
             'mip_total_columns': 0,
-            'mip_filtered_columns': 0 # ★追加: フィルタリングにより削除された列数
+            'mip_filtered_columns': 0 
         }
 
+    # ... (既存の reset_stats, reset_for_new_period, initialize_rmp, add_column はそのまま) ...
+    
     def reset_stats(self):
         self.stats = {k: 0 for k in self.stats}
 
@@ -68,6 +71,44 @@ class ColumnGenerationSolver:
         self.pattern_to_id[pattern_key] = col_id
         return col_id
 
+    # === ★ここが追加・変更箇所です★ ===
+    def load_pool_from_csv(self, filename):
+        """
+        保存されたCSVファイルからプールを復元・追加する。
+        既にプールにあるパターンは add_column 内で重複チェックされるため、単純に追加呼び出しでOK。
+        """
+        if not os.path.exists(filename):
+            # ファイルが無い場合は何もしない（初回実行時など）
+            return
+
+        try:
+            df = pd.read_csv(filename)
+            loaded_count = 0
+            
+            for _, row in df.iterrows():
+                k = int(row['emp_id'])
+                # schedule_pattern は "001110..." という文字列で保存されている前提
+                sched_str = str(row['schedule_pattern'])
+                
+                # 文字列を整数のリストに変換
+                schedule = [int(c) for c in sched_str]
+                
+                # 現在のプールの長さを確認（新規追加判定用）
+                prev_pool_size = len(self.pool)
+                
+                # 列を追加 (重複していれば既存IDが返る)
+                self.add_column(k, schedule)
+                
+                if len(self.pool) > prev_pool_size:
+                    loaded_count += 1
+            
+            print(f"  -> Loaded pool from {filename}: Added {loaded_count} new columns (Total pool: {len(self.pool)})")
+            
+        except Exception as e:
+            print(f"  [Warning] Failed to load pool from {filename}: {e}")
+
+    # ... (以下の solve_rmp, pricing, solve, save_pool_to_csv はそのまま) ...
+    
     def solve_rmp(self, integer=False, mip_time_limit=30, mip_gap=0.05):
         t_start = time.perf_counter()
         model = pulp.LpProblem("RMP", pulp.LpMinimize)
@@ -92,14 +133,10 @@ class ColumnGenerationSolver:
             model += expr == 1
             cons_c.append(model.constraints[list(model.constraints.keys())[-1]])
             
-        # ソルバーの設定を変更
         if integer:
-            # msg=0: ログなし
-            # timeLimit: 最大秒数（これを超えたらその時点のベスト解を返す）
-            # gapRel: 相対ギャップ（例: 0.05 なら最適解との乖離が5%以内保証で終了）
             solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=mip_time_limit, gapRel=mip_gap)
         else:
-            solver = pulp.PULP_CBC_CMD(msg=0) # LPは通常通り解く
+            solver = pulp.PULP_CBC_CMD(msg=0)
         
         model.solve(solver)
         elapsed = time.perf_counter() - t_start
@@ -181,9 +218,6 @@ class ColumnGenerationSolver:
         return pool_added_count, graph_added_count
 
     def solve(self, max_iter=50, time_limit=300, tol=1e-4, patience=3, mip_rc_threshold=500.0):
-        """
-        mip_rc_threshold: MIP求解前に、被約費用がこの値を超える列は削除する（フィルタリング）
-        """
         start_total = time.time()
         self.reset_stats()
         self.initialize_rmp()
@@ -191,29 +225,23 @@ class ColumnGenerationSolver:
         self.history = [] 
         prev_obj = float('inf')
         no_improve_iter = 0
-        
-        # 最終的な双対変数を保持するための変数
         last_pi = None
         last_sigma = None
         
         for i in range(max_iter):
             if time.time() - start_total > time_limit: break
             
-            # 1. RMP (LP)
             res = self.solve_rmp(integer=False)
             if res is None: break
             obj, pi, sigma = res
-            
             last_pi, last_sigma = pi, sigma
             
-            # 収束判定
             if prev_obj != float('inf'):
                 improvement = (prev_obj - obj) / abs(prev_obj + 1e-9)
                 if improvement < tol: no_improve_iter += 1
                 else: no_improve_iter = 0
             prev_obj = obj
 
-            # 2. Pricing
             pool_add, graph_add = self.pricing(pi, sigma)
             total_added = pool_add + graph_add
             
@@ -223,29 +251,20 @@ class ColumnGenerationSolver:
             if total_added == 0: break
             if no_improve_iter >= patience: break
             
-        # --- ★MIP前の列フィルタリング (Reduced Cost Filtering) ---
         if last_pi is not None and last_sigma is not None:
             filtered_indices = []
             removed_count = 0
-            
             for idx in self.rmp_indices:
                 col = self.pool[idx]
                 k = col['group_id']
-                # RC = Cost - pi*A - sigma
                 rc = col['cost'] - np.dot(last_pi, col['schedule']) - last_sigma[k]
-                
-                # RCが閾値以下（有望）な列だけ残す
-                # ※閾値は余裕を持たせる（例: 2.0程度）。0に近いほど厳しく削減される。
                 if rc <= mip_rc_threshold:
                     filtered_indices.append(idx)
                 else:
                     removed_count += 1
-            
             self.rmp_indices = filtered_indices
             self.stats['mip_filtered_columns'] = removed_count
-            # print(f"DEBUG: Filtered {removed_count} columns before MIP. Remaining: {len(self.rmp_indices)}")
         
-        # 3. Final MIP
         res_mip = self.solve_rmp(integer=True)
         if res_mip: final_obj, final_schedule = res_mip
         else:
@@ -256,28 +275,17 @@ class ColumnGenerationSolver:
         return final_obj, time.time() - start_total, self.stats, final_schedule
     
     def save_pool_to_csv(self, filename):
-        """
-        現在のプール内の列情報をCSVとして保存する
-        """
         data = []
         for col in self.pool:
-            # 従業員情報を取得（タイプなどを付記するため）
             emp = self.prob.employees[col['group_id']]
-            
-            # シフトパターンを文字列化 (例: "011100...") して扱いやすくする
-            # scheduleはnumpy配列またはリストなのでmapで文字列にして結合
             sched_str = "".join(map(str, map(int, col['schedule'])))
-            
             data.append({
                 'col_id': col['id'],
                 'emp_id': col['group_id'],
                 'emp_type': emp['type'],
                 'cost': col['cost'],
                 'schedule_pattern': sched_str,
-                # 被約費用なども計算したければここで直前のpi/sigmaを使って計算可能だが、
-                # 基本的なデータとしては上記で十分
             })
-            
         df = pd.DataFrame(data)
         df.to_csv(filename, index=False)
         print(f"  -> Pool saved to: {filename} (Total {len(df)} columns)")
