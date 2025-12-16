@@ -11,6 +11,7 @@ from problem import ShiftProblemData
 from solver_exact import ExactMIPSolver
 from solver_cg import ColumnGenerationSolver
 from solver_cg_aging import ColumnGenerationSolverWithAging
+from solver_cg_lru import ColumnGenerationSolverLRU
 from solver_cg_smart import ColumnGenerationSolverSmart
 from visualization import ScheduleVisualizer, BenchmarkReporter, ComparisonPlotter
 
@@ -42,6 +43,14 @@ SOLVER_CONFIG = {
     'aging': {
         'class': ColumnGenerationSolverWithAging,
         'label': 'CG Aging',
+        'color': 'blue',
+        'marker': '^',
+        'needs_history': False,
+        'kwargs': {'use_pool': True}
+    },
+    'lru': {
+        'class': ColumnGenerationSolverLRU,
+        'label': 'CG LRU',
         'color': 'blue',
         'marker': '^',
         'needs_history': False,

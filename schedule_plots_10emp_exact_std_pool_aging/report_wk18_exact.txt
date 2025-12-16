@@ -1,0 +1,31 @@
+==========================================================
+ ANALYSIS REPORT: Week 18
+==========================================================
+
+1. Performance Metrics
+----------------------
+  Objective Value : 316,100.00
+  Execution Time  : 189.0909 sec
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 43 hours worked
+  Emp 1  (TypeA): 41 hours worked
+  Emp 2  (TypeB): 30 hours worked
+  Emp 3  (TypeB): 35 hours worked
+  Emp 4  (TypeB): 29 hours worked
+  Emp 5  (TypeB): 35 hours worked
+  Emp 6  (TypeC): 21 hours worked
+  Emp 7  (TypeC): 26 hours worked
+  Emp 8  (TypeC): 20 hours worked
+  Emp 9  (TypeC): 19 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+No iteration history available.
