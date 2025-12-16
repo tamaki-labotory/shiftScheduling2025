@@ -1,0 +1,41 @@
+==========================================================
+ ANALYSIS REPORT: Week 12
+==========================================================
+
+1. Performance Metrics
+----------------------
+  Objective Value : 659,800.00
+  Execution Time  : 1307.8932 sec
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 44 hours worked
+  Emp 1  (TypeA): 46 hours worked
+  Emp 2  (TypeA): 45 hours worked
+  Emp 3  (TypeA): 47 hours worked
+  Emp 4  (TypeB): 33 hours worked
+  Emp 5  (TypeB): 36 hours worked
+  Emp 6  (TypeB): 34 hours worked
+  Emp 7  (TypeB): 38 hours worked
+  Emp 8  (TypeB): 32 hours worked
+  Emp 9  (TypeB): 32 hours worked
+  Emp 10 (TypeB): 28 hours worked
+  Emp 11 (TypeB): 34 hours worked
+  Emp 12 (TypeC): 22 hours worked
+  Emp 13 (TypeC): 19 hours worked
+  Emp 14 (TypeC): 25 hours worked
+  Emp 15 (TypeC): 26 hours worked
+  Emp 16 (TypeC): 23 hours worked
+  Emp 17 (TypeC): 23 hours worked
+  Emp 18 (TypeC): 24 hours worked
+  Emp 19 (TypeC): 20 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+No iteration history available.

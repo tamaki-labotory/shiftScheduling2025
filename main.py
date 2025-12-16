@@ -192,7 +192,7 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
                     obj_val, elapsed = 0.0, 0.0
                     final_sched = np.zeros((prob.K, prob.T))
                 else:
-                    obj_val, elapsed, final_sched = solver.solve(time_limit=1200)
+                    obj_val, elapsed, final_sched = solver.solve(time_limit=3600)
             else:
                 max_iter = 400 if name == 'std' else 200
                 obj_val, elapsed, stats, final_sched = solver.solve(max_iter=max_iter)

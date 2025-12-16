@@ -1,0 +1,41 @@
+==========================================================
+ ANALYSIS REPORT: Week 4
+==========================================================
+
+1. Performance Metrics
+----------------------
+  Objective Value : 644,400.00
+  Execution Time  : 255.6869 sec
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 46 hours worked
+  Emp 1  (TypeA): 45 hours worked
+  Emp 2  (TypeA): 47 hours worked
+  Emp 3  (TypeA): 45 hours worked
+  Emp 4  (TypeB): 33 hours worked
+  Emp 5  (TypeB): 27 hours worked
+  Emp 6  (TypeB): 38 hours worked
+  Emp 7  (TypeB): 29 hours worked
+  Emp 8  (TypeB): 39 hours worked
+  Emp 9  (TypeB): 29 hours worked
+  Emp 10 (TypeB): 31 hours worked
+  Emp 11 (TypeB): 32 hours worked
+  Emp 12 (TypeC): 24 hours worked
+  Emp 13 (TypeC): 22 hours worked
+  Emp 14 (TypeC): 22 hours worked
+  Emp 15 (TypeC): 22 hours worked
+  Emp 16 (TypeC): 22 hours worked
+  Emp 17 (TypeC): 24 hours worked
+  Emp 18 (TypeC): 24 hours worked
+  Emp 19 (TypeC): 17 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+No iteration history available.
