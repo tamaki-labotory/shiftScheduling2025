@@ -13,7 +13,7 @@ def find_target_directory(emp):
     """
     カレントディレクトリ内で 'schedule_plots_{emp}emp' で始まるフォルダを探す。
     """
-    pattern = f"schedule_plots_{emp}emp_*"
+    pattern = f"noisy_data/schedule_plots_{emp}emp_*"
     dirs = glob.glob(pattern)
     
     if not dirs:
