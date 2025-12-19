@@ -10,7 +10,7 @@ from collections import defaultdict
 from problem import ShiftProblemData
 from solver_exact import ExactMIPSolver
 from solver_cg import ColumnGenerationSolver
-from solver_cg_aging import ColumnGenerationSolverWithAging
+from solver_cg_pruning import ColumnGenerationSolverWithAging
 from solver_cg_lru import ColumnGenerationSolverLRU
 from solver_cg_smart import ColumnGenerationSolverSmart
 from visualization import ScheduleVisualizer, BenchmarkReporter, ComparisonPlotter
@@ -32,7 +32,7 @@ SOLVER_CONFIG = {
         'needs_history': False,
         'kwargs': {'use_pool': False}
     },
-    'pool': {
+    'acc': {
         'class': ColumnGenerationSolver,
         'label': 'CG Pool',
         'color': 'green',
@@ -40,7 +40,7 @@ SOLVER_CONFIG = {
         'needs_history': False,
         'kwargs': {'use_pool': True}
     },
-    'aging': {
+    'pruning': {
         'class': ColumnGenerationSolverWithAging,
         'label': 'CG Aging',
         'color': 'blue',

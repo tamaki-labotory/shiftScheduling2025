@@ -41,7 +41,7 @@ def parse_metrics(filepath):
         'RMP_LP': 0.0,
         'RMP_MIP': 0.0,
         'Pool_Search': 0.0,
-        'Graph_Search': 0.0,
+        'Solving_Shortest_Path_Problem': 0.0,
         'Total_Time': 0.0
     }
 
@@ -50,7 +50,7 @@ def parse_metrics(filepath):
         'RMP_LP': r"RMP Time \(LP\)\s*:\s*([\d\.]+)",
         'RMP_MIP': r"RMP Time \(MIP\)\s*:\s*([\d\.]+)",
         'Pool_Search': r"Pool Search Time\s*:\s*([\d\.]+)",
-        'Graph_Search': r"Graph Search Time\s*:\s*([\d\.]+)",
+        'Solving_Shortest_Path_Problem': r"Graph Search Time\s*:\s*([\d\.]+)",
         'Total_Time': r"Execution Time\s*:\s*([\d\.]+)"
     }
 
@@ -63,7 +63,7 @@ def parse_metrics(filepath):
     # Total_Timeが0または取得失敗の場合、内訳の合計で補完
     if metrics['Total_Time'] == 0.0:
         metrics['Total_Time'] = (metrics['RMP_LP'] + metrics['RMP_MIP'] + 
-                                 metrics['Pool_Search'] + metrics['Graph_Search'])
+                                 metrics['Pool_Search'] + metrics['Solving_Shortest_Path_Problem'])
 
     return metrics
 
@@ -115,7 +115,7 @@ def plot_time_breakdown(df, emp, method, output_dir):
     rmp_lp = subset['RMP_LP']
     rmp_mip = subset['RMP_MIP']
     pool_search = subset['Pool_Search']
-    graph_search = subset['Graph_Search']
+    shortest_path_calculation = subset['Solving_Shortest_Path_Problem']
     total_time = subset['Total_Time']
 
     # 色設定
@@ -126,9 +126,9 @@ def plot_time_breakdown(df, emp, method, output_dir):
 
     # 積み上げ棒グラフ
     ax.bar(weeks, rmp_lp, label='RMP (LP)', color=c_lp)
-    ax.bar(weeks, rmp_mip, bottom=rmp_lp, label='RMP (Final MIP)', color=c_mip)
+    ax.bar(weeks, rmp_mip, bottom=rmp_lp, label='RMP (MIP)', color=c_mip)
     ax.bar(weeks, pool_search, bottom=rmp_lp + rmp_mip, label='Pool Search', color=c_pool)
-    ax.bar(weeks, graph_search, bottom=rmp_lp + rmp_mip + pool_search, label='Graph Search', color=c_graph)
+    ax.bar(weeks, shortest_path_calculation, bottom=rmp_lp + rmp_mip + pool_search, label='Shortest Path Problem', color=c_graph)
 
     # 合計時間の折れ線
     ax.plot(weeks, total_time, color='red', marker='o', linewidth=2, label='Total Time')
@@ -156,7 +156,7 @@ def plot_comparison(df, emp, methods, output_dir):
     if df.empty:
         return
 
-    metrics_keys = ['Objective_Value', 'Total_Time', 'RMP_LP', 'RMP_MIP', 'Pool_Search', 'Graph_Search']
+    metrics_keys = ['Objective_Value', 'Total_Time', 'RMP_LP', 'RMP_MIP', 'Pool_Search', 'Solving_Shortest_Path_Problem']
     
     metric_titles = {
         'Objective_Value': 'Objective Value (Cost)',
@@ -164,7 +164,7 @@ def plot_comparison(df, emp, methods, output_dir):
         'RMP_LP': 'RMP (LP) Time',
         'RMP_MIP': 'RMP (Final MIP) Time',
         'Pool_Search': 'Pool Search Time',
-        'Graph_Search': 'Graph Search Time'
+        'Solving_Shortest_Path_Problem': 'Shortest Path Calculation Time'
     }
 
     markers = ['o', 's', '^', 'D', 'x', '*']
@@ -187,7 +187,7 @@ def plot_comparison(df, emp, methods, output_dir):
                 has_data = True
         
         if has_data:
-            plt.title(f"Comparison: {metric_titles[metric]} (N={emp})", fontsize=14)
+            plt.title(f"{metric_titles[metric]} (N={emp})", fontsize=14)
             plt.xlabel("Week", fontsize=12)
             if metric == 'Objective_Value':
                 plt.ylabel("Cost", fontsize=12)
@@ -210,7 +210,7 @@ def plot_comparison(df, emp, methods, output_dir):
 def main():
     parser = argparse.ArgumentParser(description="Generate ALL graphs (Breakdown & Comparison) in one go.")
     parser.add_argument("emp", type=str, help="Number of employees (e.g., 15)")
-    parser.add_argument("methods", nargs='+', help="List of methods (e.g., exact std pool aging)")
+    parser.add_argument("methods", nargs='+', help="List of methods (e.g., exact std acc pruning)")
     
     args = parser.parse_args()
 
