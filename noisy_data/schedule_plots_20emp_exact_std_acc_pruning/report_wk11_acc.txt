@@ -1,0 +1,100 @@
+==========================================================
+ ANALYSIS REPORT: Week 11
+==========================================================
+
+1. Performance Metrics
+----------------------
+  Objective Value : 10,723,200.00
+  Execution Time  : 64.8001 sec
+  Iterations      : 41
+  RMP Time (LP)   : 23.7880 s
+  RMP Time (MIP)  : 30.4748 s
+  Pool Search Time: 8.1543 s
+  Graph Search Time: 2.2826 s
+  MIP Decision Variables: 772 (Columns used in Final MIP)
+  MIP Filtered Columns  : 768 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 7520
+  Pool Hits (Reused from History)   : 1460
+  Graph Gen (Newly Created)         : 40
+  Pool Hit Rate                     : 97.3%
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:  375 / Total Gen: 1500
+       -> Avg Length of Unique Patterns: 45.4 hours
+  Type: TypeB  | Unique Patterns:  375 / Total Gen: 3000
+       -> Avg Length of Unique Patterns: 33.3 hours
+  Type: TypeC  | Unique Patterns:  375 / Total Gen: 3000
+       -> Avg Length of Unique Patterns: 22.9 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 47 hours worked
+  Emp 1  (TypeA): 46 hours worked
+  Emp 2  (TypeA): 48 hours worked
+  Emp 3  (TypeA): 45 hours worked
+  Emp 4  (TypeB): 36 hours worked
+  Emp 5  (TypeB): 34 hours worked
+  Emp 6  (TypeB): 36 hours worked
+  Emp 7  (TypeB): 40 hours worked
+  Emp 8  (TypeB): 37 hours worked
+  Emp 9  (TypeB): 38 hours worked
+  Emp 10 (TypeB): 39 hours worked
+  Emp 11 (TypeB): 36 hours worked
+  Emp 12 (TypeC): 30 hours worked
+  Emp 13 (TypeC): 21 hours worked
+  Emp 14 (TypeC): 20 hours worked
+  Emp 15 (TypeC): 29 hours worked
+  Emp 16 (TypeC): 22 hours worked
+  Emp 17 (TypeC): 26 hours worked
+  Emp 18 (TypeC): 29 hours worked
+  Emp 19 (TypeC): 27 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | Pool Hits  | Graph Gen 
+--------------------------------------------------
+1     | 568,048,000.00  | 40         | 0         
+2     | 385,234,800.00  | 40         | 0         
+3     | 163,883,366.36  | 40         | 0         
+4     | 66,752,175.00   | 40         | 0         
+5     | 42,524,676.54   | 40         | 0         
+6     | 25,768,192.57   | 40         | 0         
+7     | 17,975,412.28   | 40         | 0         
+8     | 13,614,609.17   | 40         | 0         
+9     | 10,186,905.91   | 40         | 0         
+10    | 8,227,404.66    | 40         | 0         
+11    | 5,433,068.46    | 40         | 0         
+12    | 4,432,019.85    | 40         | 0         
+13    | 3,194,629.21    | 40         | 0         
+14    | 2,348,734.74    | 40         | 0         
+15    | 1,942,256.04    | 40         | 0         
+16    | 1,613,277.21    | 40         | 0         
+17    | 1,072,330.48    | 40         | 0         
+18    | 845,805.38      | 40         | 0         
+19    | 751,388.21      | 40         | 0         
+20    | 749,571.60      | 40         | 0         
+21    | 744,020.61      | 40         | 0         
+22    | 741,080.24      | 40         | 0         
+23    | 739,388.02      | 40         | 0         
+24    | 738,686.52      | 40         | 0         
+25    | 735,131.85      | 40         | 0         
+26    | 733,625.88      | 40         | 0         
+27    | 732,330.34      | 40         | 0         
+28    | 731,903.26      | 40         | 0         
+29    | 731,167.16      | 24         | 0         
+30    | 731,131.49      | 20         | 0         
+31    | 731,127.78      | 0          | 20        
+32    | 718,964.26      | 40         | 0         
+33    | 717,685.81      | 40         | 0         
+34    | 716,268.98      | 40         | 0         
+35    | 714,420.35      | 40         | 0         
+36    | 713,705.48      | 40         | 0         
+37    | 713,143.94      | 40         | 0         
+38    | 712,917.12      | 40         | 0         
+39    | 712,886.67      | 8          | 0         
+40    | 712,884.35      | 8          | 0         
+41    | 712,884.35      | 0          | 20        

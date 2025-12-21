@@ -1,0 +1,93 @@
+==========================================================
+ ANALYSIS REPORT: Week 4
+==========================================================
+
+1. Performance Metrics
+----------------------
+  Objective Value : 9,604,300.00
+  Execution Time  : 54.5265 sec
+  Iterations      : 39
+  RMP Time (LP)   : 17.4357 s
+  RMP Time (MIP)  : 30.3889 s
+  Pool Search Time: 4.8473 s
+  Graph Search Time: 1.7764 s
+  MIP Decision Variables: 534 (Columns used in Final MIP)
+  MIP Filtered Columns  : 597 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 5100
+  Pool Hits (Reused from History)   : 1071
+  Graph Gen (Newly Created)         : 30
+  Pool Hit Rate                     : 97.3%
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:  339 / Total Gen: 1017
+       -> Avg Length of Unique Patterns: 47.5 hours
+  Type: TypeB  | Unique Patterns:  339 / Total Gen: 2034
+       -> Avg Length of Unique Patterns: 37.6 hours
+  Type: TypeC  | Unique Patterns:  339 / Total Gen: 2034
+       -> Avg Length of Unique Patterns: 26.1 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 50 hours worked
+  Emp 1  (TypeA): 47 hours worked
+  Emp 2  (TypeA): 46 hours worked
+  Emp 3  (TypeB): 40 hours worked
+  Emp 4  (TypeB): 40 hours worked
+  Emp 5  (TypeB): 39 hours worked
+  Emp 6  (TypeB): 40 hours worked
+  Emp 7  (TypeB): 40 hours worked
+  Emp 8  (TypeB): 40 hours worked
+  Emp 9  (TypeC): 30 hours worked
+  Emp 10 (TypeC): 30 hours worked
+  Emp 11 (TypeC): 27 hours worked
+  Emp 12 (TypeC): 29 hours worked
+  Emp 13 (TypeC): 30 hours worked
+  Emp 14 (TypeC): 28 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | Pool Hits  | Graph Gen 
+--------------------------------------------------
+1     | 436,040,000.00  | 30         | 0         
+2     | 301,178,600.00  | 30         | 0         
+3     | 123,429,800.00  | 30         | 0         
+4     | 56,582,550.00   | 30         | 0         
+5     | 41,786,560.00   | 30         | 0         
+6     | 31,959,320.00   | 30         | 0         
+7     | 21,671,206.96   | 30         | 0         
+8     | 17,133,910.95   | 30         | 0         
+9     | 12,683,770.77   | 30         | 0         
+10    | 9,452,157.88    | 30         | 0         
+11    | 8,617,918.82    | 30         | 0         
+12    | 7,225,298.39    | 30         | 0         
+13    | 5,315,331.09    | 30         | 0         
+14    | 4,936,208.66    | 30         | 0         
+15    | 4,451,245.75    | 30         | 0         
+16    | 3,616,770.93    | 30         | 0         
+17    | 3,227,675.52    | 30         | 0         
+18    | 2,905,184.58    | 30         | 0         
+19    | 2,626,540.29    | 30         | 0         
+20    | 2,481,721.79    | 30         | 0         
+21    | 2,346,129.04    | 30         | 0         
+22    | 2,224,129.48    | 30         | 0         
+23    | 2,070,501.71    | 30         | 0         
+24    | 2,015,590.46    | 30         | 0         
+25    | 1,980,707.61    | 30         | 0         
+26    | 1,945,181.68    | 30         | 0         
+27    | 1,939,790.10    | 18         | 0         
+28    | 1,937,224.92    | 3          | 15        
+29    | 597,366.11      | 30         | 0         
+30    | 591,102.18      | 30         | 0         
+31    | 589,144.36      | 30         | 0         
+32    | 588,045.15      | 30         | 0         
+33    | 587,688.75      | 30         | 0         
+34    | 587,500.21      | 30         | 0         
+35    | 587,232.60      | 30         | 0         
+36    | 587,136.80      | 30         | 0         
+37    | 587,128.60      | 21         | 0         
+38    | 587,123.88      | 9          | 0         
+39    | 587,122.86      | 0          | 15        

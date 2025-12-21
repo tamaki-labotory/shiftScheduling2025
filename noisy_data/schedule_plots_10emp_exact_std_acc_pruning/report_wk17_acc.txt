@@ -1,0 +1,113 @@
+==========================================================
+ ANALYSIS REPORT: Week 17
+==========================================================
+
+1. Performance Metrics
+----------------------
+  Objective Value : 5,361,000.00
+  Execution Time  : 73.8275 sec
+  Iterations      : 64
+  RMP Time (LP)   : 27.2286 s
+  RMP Time (MIP)  : 30.2647 s
+  Pool Search Time: 13.4160 s
+  Graph Search Time: 2.8123 s
+  MIP Decision Variables: 338 (Columns used in Final MIP)
+  MIP Filtered Columns  : 842 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 8574
+  Pool Hits (Reused from History)   : 1110
+  Graph Gen (Newly Created)         : 50
+  Pool Hit Rate                     : 95.7%
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:  854 / Total Gen: 1708
+       -> Avg Length of Unique Patterns: 44.4 hours
+  Type: TypeB  | Unique Patterns:  857 / Total Gen: 3428
+       -> Avg Length of Unique Patterns: 31.5 hours
+  Type: TypeC  | Unique Patterns:  857 / Total Gen: 3428
+       -> Avg Length of Unique Patterns: 21.6 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 47 hours worked
+  Emp 1  (TypeA): 48 hours worked
+  Emp 2  (TypeB): 36 hours worked
+  Emp 3  (TypeB): 37 hours worked
+  Emp 4  (TypeB): 37 hours worked
+  Emp 5  (TypeB): 39 hours worked
+  Emp 6  (TypeC): 28 hours worked
+  Emp 7  (TypeC): 22 hours worked
+  Emp 8  (TypeC): 26 hours worked
+  Emp 9  (TypeC): 23 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | Pool Hits  | Graph Gen 
+--------------------------------------------------
+1     | 246,024,000.00  | 20         | 0         
+2     | 159,119,100.00  | 20         | 0         
+3     | 75,277,600.00   | 20         | 0         
+4     | 35,343,128.55   | 20         | 0         
+5     | 18,106,153.69   | 20         | 0         
+6     | 11,667,090.47   | 20         | 0         
+7     | 9,470,611.36    | 20         | 0         
+8     | 7,098,082.89    | 20         | 0         
+9     | 5,661,303.67    | 20         | 0         
+10    | 5,054,774.55    | 20         | 0         
+11    | 4,776,534.44    | 20         | 0         
+12    | 3,859,785.86    | 20         | 0         
+13    | 3,142,061.45    | 20         | 0         
+14    | 2,622,376.58    | 20         | 0         
+15    | 2,416,063.95    | 20         | 0         
+16    | 2,005,866.74    | 20         | 0         
+17    | 1,872,466.78    | 20         | 0         
+18    | 1,741,509.27    | 20         | 0         
+19    | 1,507,936.56    | 20         | 0         
+20    | 1,464,519.57    | 20         | 0         
+21    | 1,435,784.16    | 20         | 0         
+22    | 1,393,849.72    | 20         | 0         
+23    | 1,374,940.51    | 16         | 0         
+24    | 1,363,197.29    | 2          | 10        
+25    | 374,772.23      | 20         | 0         
+26    | 373,318.15      | 20         | 0         
+27    | 369,253.82      | 20         | 0         
+28    | 367,999.32      | 20         | 0         
+29    | 366,143.28      | 20         | 0         
+30    | 365,313.22      | 20         | 0         
+31    | 364,630.54      | 20         | 0         
+32    | 364,196.00      | 20         | 0         
+33    | 363,672.19      | 16         | 0         
+34    | 363,528.44      | 20         | 0         
+35    | 363,517.90      | 8          | 0         
+36    | 363,515.98      | 0          | 10        
+37    | 354,133.11      | 20         | 0         
+38    | 352,470.92      | 20         | 0         
+39    | 351,987.99      | 20         | 0         
+40    | 351,086.33      | 20         | 0         
+41    | 350,536.71      | 20         | 0         
+42    | 349,847.45      | 20         | 0         
+43    | 349,707.03      | 20         | 0         
+44    | 349,383.81      | 20         | 0         
+45    | 349,262.27      | 20         | 0         
+46    | 349,225.41      | 8          | 0         
+47    | 349,213.75      | 8          | 0         
+48    | 349,213.07      | 0          | 10        
+49    | 344,842.23      | 20         | 0         
+50    | 344,197.61      | 20         | 0         
+51    | 343,505.96      | 20         | 0         
+52    | 343,231.76      | 20         | 0         
+53    | 343,182.17      | 20         | 0         
+54    | 343,086.81      | 20         | 0         
+55    | 343,070.28      | 20         | 0         
+56    | 343,034.49      | 12         | 0         
+57    | 343,034.18      | 2          | 10        
+58    | 338,269.72      | 20         | 0         
+59    | 337,936.20      | 20         | 0         
+60    | 337,722.09      | 20         | 0         
+61    | 337,687.86      | 20         | 0         
+62    | 337,676.10      | 12         | 0         
+63    | 337,673.38      | 6          | 0         
+64    | 337,673.38      | 0          | 10        
