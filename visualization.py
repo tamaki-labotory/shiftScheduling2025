@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import numpy as np
+import os
 from collections import defaultdict
 
 class ScheduleVisualizer:
     """
     スケジュール個別のヒートマップ描画用クラス
-    （変更なし：任意のスケジュール行列を受け取れるため動的対応済み）
     """
     @staticmethod
     def save_schedule_heatmap(schedule, problem, title, filename):
@@ -75,7 +75,6 @@ class ScheduleVisualizer:
 class BenchmarkReporter:
     """
     テキストレポート出力用クラス
-    （変更なし：hasattr等で属性チェックを行っているため、任意のソルバークラスに対応可能）
     """
     @staticmethod
     def save_analysis_report(filename, week, solver, problem, final_obj, elapsed_time, final_schedule):
@@ -164,8 +163,8 @@ class BenchmarkReporter:
 
 class ComparisonPlotter:
     """
-    ★新規追加★
     動的に選択された複数の手法の比較グラフを描画するクラス
+    ディレクトリ構造変更に対応：内訳グラフは各手法のフォルダに保存
     """
     @staticmethod
     def plot_dynamic_breakdown(df, active_methods, solver_config, output_dir):
@@ -218,13 +217,19 @@ class ComparisonPlotter:
             plt.grid(axis='y', linestyle='--', alpha=0.5)
             plt.tight_layout()
             
-            plt.savefig(f"{output_dir}/breakdown_{name}.png")
+            # === 変更点: 各手法のディレクトリに保存 ===
+            # output_dir/method_name/breakdown.png
+            method_dir = os.path.join(output_dir, name)
+            if not os.path.exists(method_dir):
+                os.makedirs(method_dir)
+            
+            plt.savefig(os.path.join(method_dir, "breakdown.png"))
             plt.close()
 
     @staticmethod
     def plot_overall_comparison(df, active_methods, solver_config, output_dir):
         """
-        全手法のトータル時間を比較するグラフ
+        全手法のトータル時間を比較するグラフ (これはルートディレクトリに保存)
         """
         plt.figure(figsize=(10, 6))
         weeks = df['Week']
