@@ -34,7 +34,7 @@ SOLVER_CONFIG = {
     },
     'acc': {
         'class': ColumnGenerationSolver,
-        'label': 'CG Pool',
+        'label': 'CG Acc',
         'color': 'green',
         'marker': 's',
         'needs_history': False,
@@ -105,6 +105,8 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
+
+
     # === ★変更点1: 既存の最大週番号を取得して開始地点を決める ===
     last_week = get_last_week_number(output_dir)
     start_week_num = last_week + 1
@@ -119,7 +121,18 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
     print(f"Running for {n_weeks} weeks (Week {start_week_num} to {end_week_num - 1})")
     print(f"Selected Methods: {', '.join([SOLVER_CONFIG[m]['label'] for m in active_methods])}")
     
-    prob = ShiftProblemData(n_employees=n_employees)
+
+    config_file = f"{output_dir}/problem_config.json"
+    
+    # === 修正点：既存の設定があればロード、なければ新規作成 ===
+    if os.path.exists(config_file):
+        print(f"Loading existing problem configuration from {config_file}")
+        prob = ShiftProblemData(config_path=config_file)
+    else:
+        print(f"Creating new problem configuration...")
+        prob = ShiftProblemData(n_employees=n_employees)
+        prob.save_config(config_file)
+
     solvers = {}
     histories = defaultdict(dict)
 
@@ -154,8 +167,11 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
     
     # === ★変更点2: ループ範囲を実際の週番号 (start_week_num から) に合わせる ===
     for current_week in range(start_week_num, end_week_num):
-        # generate_new_demandは0始まりのインデックス(period)を想定しているため -1 する
+        # generate_new_demand 内で保存済みの需要があればそれが自動的に適用される
         prob.generate_new_demand(period=current_week - 1)
+        
+        # 新しい需要が生成された可能性があるため、ループの最後または週ごとに保存を更新
+        prob.save_config(config_file)
         
         week_result = {'Week': current_week}
         week_objs = {}

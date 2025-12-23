@@ -160,9 +160,9 @@ def plot_comparison(df, emp, methods, output_dir):
     
     metric_titles = {
         'Objective_Value': 'Objective Value (Cost)',
-        'Total_Time': 'Total Execution Time',
+        'Total_Time': 'Total Computaion Time',
         'RMP_LP': 'RMP (LP) Time',
-        'RMP_MIP': 'RMP (Final MIP) Time',
+        'RMP_MIP': 'RMP (MIP) Time',
         'Pool_Search': 'Pool Search Time',
         'Solving_Shortest_Path_Problem': 'Shortest Path Calculation Time'
     }
