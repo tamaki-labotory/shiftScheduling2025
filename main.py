@@ -13,7 +13,6 @@ from solver_exact import ExactMIPSolver
 from solver_cg import ColumnGenerationSolver
 from solver_cg_pruning import ColumnGenerationSolverWithAging
 from solver_cg_lru import ColumnGenerationSolverLRU
-from solver_cg_smart import ColumnGenerationSolverSmart
 from visualization import ScheduleVisualizer, BenchmarkReporter, ComparisonPlotter
 
 SOLVER_CONFIG = {
@@ -56,14 +55,6 @@ SOLVER_CONFIG = {
         'marker': '^',
         'needs_history': False,
         'kwargs': {'use_pool': True}
-    },
-    'smart': {
-        'class': ColumnGenerationSolverSmart,
-        'label': 'CG Smart',
-        'color': 'purple',
-        'marker': '*',
-        'needs_history': True, 
-        'kwargs': {'use_pool': True}
     }
 }
 
@@ -73,7 +64,6 @@ def get_last_week_number_from_config(config_file):
     """
     if not os.path.exists(config_file):
         return 0
-    
     try:
         with open(config_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
@@ -86,6 +76,28 @@ def get_last_week_number_from_config(config_file):
     except Exception as e:
         print(f"Warning: Could not read config file to determine last week: {e}")
         return 0
+
+def parse_report_stats(filepath):
+    """
+    既存のレポートファイルから目的関数値と実行時間を抽出する
+    """
+    obj_val = 0.0
+    elapsed = 0.0
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+            # Objective Value : 12,345.67
+            m_obj = re.search(r"Objective Value\s*:\s*([\d,]+\.?\d*)", content)
+            if m_obj:
+                obj_val = float(m_obj.group(1).replace(',', ''))
+            
+            # Execution Time  : 12.3456 sec
+            m_time = re.search(r"Execution Time\s*:\s*([\d\.]+)", content)
+            if m_time:
+                elapsed = float(m_time.group(1))
+    except Exception as e:
+        print(f"Warning: Failed to parse stats from {filepath}: {e}")
+    return obj_val, elapsed
 
 def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
     if selected_methods is None:
@@ -113,18 +125,14 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
 
     config_file = os.path.join(output_dir, "problem_config.json")
 
-    # === 変更点: スタート地点と終了地点の計算 ===
-    # 既存の設定データ上の最終週を取得
+    # === スタート地点と終了地点の計算 ===
     config_last_week = get_last_week_number_from_config(config_file)
-    
-    # ゴールとなる週 = (既存の最大週) + (今回追加したい週数)
-    # n_weeks=0 の場合は既存分までを埋める動作になります
     target_week_num = config_last_week + n_weeks
     
     print(f"Initializing Problem: {n_employees} Employees")
     if config_last_week > 0:
         print(f"Found existing configuration up to Week {config_last_week}.")
-        print(f"Goal: Run from Week 1 to Week {target_week_num} (adding {n_weeks} new weeks).")
+        print(f"Goal: Ensure results up to Week {target_week_num} (adding {n_weeks} new weeks).")
     else:
         print(f"No existing data found. Goal: Run from Week 1 to Week {target_week_num}.")
 
@@ -170,11 +178,10 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
     print(header_time + header_gap)
     print("-" * (len(header_time) + len(header_gap)))
     
-    # === 変更点: 常に Week 1 からターゲット週まで回す ===
-    # これにより、新規手法もWeek 1から確実に実行され、既存手法は上書き(再計算)されます
+    # === 常に Week 1 からターゲット週までループ ===
     for current_week in range(1, target_week_num + 1):
         
-        # 需要生成: 履歴にあればそれをロード、なければ新規生成して保存
+        # 需要生成 (履歴にあればロード)
         prob.generate_new_demand(period=current_week - 1)
         prob.save_config(config_file)
         
@@ -186,76 +193,95 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
         for name in active_methods:
             cfg = SOLVER_CONFIG[name]
             solver = solvers[name]
-            
             method_dir = os.path.join(output_dir, name)
             
-            # --- 前処理 ---
+            # --- パス定義 (手法ディレクトリ内にシンプル名で保存) ---
+            pool_file = os.path.join(method_dir, f"pool_wk{current_week}.csv")
+            report_file = os.path.join(method_dir, f"report_wk{current_week}.txt")
+            
+            # --- 実行要否判定 ---
+            # プールとレポート両方があればスキップ可能とみなす
+            skip_execution = False
+            if name != 'exact':
+                if os.path.exists(pool_file) and os.path.exists(report_file):
+                    skip_execution = True
+            else:
+                if os.path.exists(report_file): # exactはpoolがない
+                    skip_execution = True
+
+            # --- 前処理 (共通) ---
             if name != 'exact':
                 if cfg['needs_history']:
                     solver.historical_freq = histories[name]
                     if hasattr(solver, '_apply_batch_graph_adjustments'):
                         solver._apply_batch_graph_adjustments()
                 
+                # 新しい週のためにリセット
                 solver.reset_for_new_period()
 
-                # 1つ前の週のプールがあればロード (連続性確保)
-                if current_week > 1 and cfg['kwargs'].get('use_pool', False):
-                    prev_week_num = current_week - 1
-                    prev_pool_file = os.path.join(method_dir, f"pool_wk{prev_week_num}.csv")
-                    
-                    if os.path.exists(prev_pool_file):
-                        if hasattr(solver, 'load_pool_from_csv'):
-                            solver.load_pool_from_csv(prev_pool_file)
-
-            # --- 実行 ---
+            # --- 実行またはスキップ ---
             obj_val = 0.0
             elapsed = 0.0
-            final_sched = None
             stats = {}
+            final_sched = None
 
-            if name == 'exact':
-                if n_employees > 20:
-                    obj_val, elapsed = 0.0, 0.0
-                    final_sched = np.zeros((prob.K, prob.T))
-                else:
-                    obj_val, elapsed, final_sched = solver.solve(time_limit=3600)
+            if skip_execution:
+                # === SKIP ===
+                obj_val, elapsed = parse_report_stats(report_file)
+                
+                # 次の週のために状態（Pool）を復元
+                if name != 'exact' and cfg['kwargs'].get('use_pool', False):
+                    if hasattr(solver, 'load_pool_from_csv'):
+                        solver.load_pool_from_csv(pool_file)
+                        
+                row_str += f" {'(Skip)':<12} |"
+            
             else:
-                max_iter = 400 if name == 'std' else 200
-                obj_val, elapsed, stats, final_sched = solver.solve(max_iter=max_iter)
+                # === RUN ===
+                # 計算実行
+                if name == 'exact':
+                    if n_employees > 20:
+                        obj_val, elapsed = 0.0, 0.0
+                        final_sched = np.zeros((prob.K, prob.T))
+                    else:
+                        obj_val, elapsed, final_sched = solver.solve(time_limit=3600)
+                else:
+                    max_iter = 400 if name == 'std' else 200
+                    obj_val, elapsed, stats, final_sched = solver.solve(max_iter=max_iter)
+                    
+                    # 保存 (CGのみ)
+                    solver.save_pool_to_csv(pool_file)
+                    
+                    if cfg['needs_history']:
+                        for k in range(prob.K):
+                            for t in range(prob.T):
+                                if final_sched[k, t] == 1:
+                                    histories[name][t] = histories[name].get(t, 0) + 1
+                                    
+                # === 共通保存処理（ここが修正箇所） ===
+                # ExactでもCGでも実行される位置に配置
+                schedule_img = os.path.join(method_dir, f"schedule_wk{current_week}.png")
+                ScheduleVisualizer.save_schedule_heatmap(
+                    final_sched, prob, f"Week {current_week} {cfg['label']}", 
+                    schedule_img
+                )
+                BenchmarkReporter.save_analysis_report(
+                    report_file, current_week, solver, prob, obj_val, elapsed, final_sched
+                )
                 
-                # 結果保存
-                pool_file = os.path.join(method_dir, f"pool_wk{current_week}.csv")
-                solver.save_pool_to_csv(pool_file)
-                
-                if cfg['needs_history']:
-                    for k in range(prob.K):
-                        for t in range(prob.T):
-                            if final_sched[k, t] == 1:
-                                histories[name][t] = histories[name].get(t, 0) + 1
+                row_str += f" {elapsed:<12.2f} |"
 
+            # 結果格納
             week_objs[name] = obj_val
             week_result[f'Time_{name}'] = elapsed
             
-            if name != 'exact':
+            if name != 'exact' and not skip_execution:
                 week_result[f'{name}_RMP_LP'] = stats.get('time_rmp_lp', 0)
                 week_result[f'{name}_RMP_MIP'] = stats.get('time_rmp_mip', 0)
                 week_result[f'{name}_Pool'] = stats.get('time_pool', 0)
                 week_result[f'{name}_Graph'] = stats.get('time_graph', 0)
 
-            # Visualization & Report
-            schedule_img = os.path.join(method_dir, f"schedule_wk{current_week}.png")
-            report_txt = os.path.join(method_dir, f"report_wk{current_week}.txt")
-
-            ScheduleVisualizer.save_schedule_heatmap(
-                final_sched, prob, f"Week {current_week} {cfg['label']}", 
-                schedule_img
-            )
-            BenchmarkReporter.save_analysis_report(
-                report_txt, current_week, solver, prob, obj_val, elapsed, final_sched
-            )
-
-            row_str += f" {elapsed:<12.2f} |"
-
+        # Gap計算
         if has_exact:
             base_obj = week_objs['exact']
             for name in active_methods:
@@ -285,6 +311,7 @@ if __name__ == "__main__":
         selected_methods=args.methods
     )
     
+    # 比較グラフ生成
     ComparisonPlotter.plot_dynamic_breakdown(df, active_methods, SOLVER_CONFIG, out_dir)
     ComparisonPlotter.plot_overall_comparison(df, active_methods, SOLVER_CONFIG, out_dir)
     
