@@ -9,23 +9,6 @@ import matplotlib.pyplot as plt
 # ユーティリティ関数
 # ==========================================
 
-def find_target_directory(emp):
-    """
-    カレントディレクトリ内で 'schedule_plots_{emp}emp' で始まるフォルダを探す。
-    """
-    pattern = f"noisy_data/schedule_plots_{emp}emp_*"
-    dirs = glob.glob(pattern)
-    
-    if not dirs:
-        return None
-    
-    # 複数見つかった場合はソートして先頭を使用
-    if len(dirs) > 1:
-        dirs.sort()
-        print(f"Warning: Multiple directories found. Using: {dirs[0]}")
-    
-    return dirs[0]
-
 def parse_metrics(filepath):
     """
     レポートファイルから全ての指標（時間・コスト）を抽出する。
@@ -67,21 +50,29 @@ def parse_metrics(filepath):
 
     return metrics
 
-def load_all_data(target_dir, methods):
+def load_all_data(base_dir, methods):
     """
-    指定されたディレクトリから、全手法・全週のデータを読み込みDataFrame化する。
+    指定されたディレクトリ構造からデータを読み込む。
+    構造: base_dir/{method}/report_wk{week}.txt
     """
     data_list = []
 
     for method in methods:
-        # ファイル名パターン: report_wk{週}_{手法}.txt
-        pattern = os.path.join(target_dir, f"report_wk*_{method}.txt")
+        # ディレクトリパス: results_{emp}emp/{method}
+        method_dir = os.path.join(base_dir, method)
+        
+        if not os.path.exists(method_dir):
+            print(f"Warning: Directory not found for method '{method}': {method_dir}")
+            continue
+
+        # ファイル探索: report_wk*.txt
+        pattern = os.path.join(method_dir, "report_wk*.txt")
         files = glob.glob(pattern)
         
         for filepath in files:
             filename = os.path.basename(filepath)
-            # 週数を抽出
-            match = re.search(r"report_wk(\d+)_", filename)
+            # 週数を抽出 (例: report_wk1.txt -> 1)
+            match = re.search(r"report_wk(\d+)\.txt", filename)
             if match:
                 wk = int(match.group(1))
                 metrics = parse_metrics(filepath)
@@ -144,6 +135,7 @@ def plot_time_breakdown(df, emp, method, output_dir):
 
     plt.tight_layout()
     
+    # 出力先: results_{emp}emp/breakdown_n{emp}_{method}.png
     output_path = os.path.join(output_dir, f"breakdown_n{emp}_{method}.png")
     plt.savefig(output_path)
     plt.close()
@@ -208,47 +200,43 @@ def plot_comparison(df, emp, methods, output_dir):
 # ==========================================
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate ALL graphs (Breakdown & Comparison) in one go.")
-    parser.add_argument("emp", type=str, help="Number of employees (e.g., 15)")
-    parser.add_argument("methods", nargs='+', help="List of methods (e.g., exact std acc pruning)")
+    parser = argparse.ArgumentParser(description="Generate graphs from results_{emp}emp directory.")
+    parser.add_argument("emp", type=str, help="Number of employees (e.g., 20)")
+    parser.add_argument("methods", nargs='+', help="List of methods to include (e.g., exact std acc pruning smart)")
     
     args = parser.parse_args()
 
-    # ディレクトリ特定
-    target_dir = find_target_directory(args.emp)
-    if not target_dir:
-        print(f"Error: Directory starting with 'schedule_plots_{args.emp}emp_' not found.")
+    # ディレクトリパスの構築
+    # 入力も出力も results_{emp}emp
+    base_dir = f"results_{args.emp}emp"
+    
+    if not os.path.exists(base_dir):
+        print(f"Error: Directory '{base_dir}' does not exist.")
         return
 
-    # 出力ディレクトリ作成
-    output_dir = f"summary_graphs_n{args.emp}"
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-        print(f"Created output directory: {output_dir}")
-
-    print(f"Target Directory: {target_dir}")
+    print(f"Target Directory: {base_dir}")
     print(f"Processing Methods: {', '.join(args.methods)}")
     print("-" * 40)
 
     # 1. データのロード
     print("Loading data...")
-    df = load_all_data(target_dir, args.methods)
+    df = load_all_data(base_dir, args.methods)
     
     if df.empty:
-        print("Error: No data found for any of the specified methods.")
+        print("Error: No data found. Check directory structure or method names.")
         return
 
-    # 2. 内訳グラフの作成 (Breakdown Plots)
+    # 2. 内訳グラフの作成
     print("\nGenerating Breakdown Plots (Stacked Bars)...")
     for method in args.methods:
-        plot_time_breakdown(df, args.emp, method, output_dir)
+        plot_time_breakdown(df, args.emp, method, base_dir)
 
-    # 3. 比較グラフの作成 (Comparison Plots)
+    # 3. 比較グラフの作成
     print("\nGenerating Comparison Plots (Line Charts)...")
-    plot_comparison(df, args.emp, args.methods, output_dir)
+    plot_comparison(df, args.emp, args.methods, base_dir)
 
     print("-" * 40)
-    print(f"All graphs have been saved to: {output_dir}")
+    print(f"All graphs have been saved to: {base_dir}/")
 
 if __name__ == "__main__":
     main()

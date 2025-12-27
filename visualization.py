@@ -4,6 +4,40 @@ import numpy as np
 import os
 from collections import defaultdict
 
+class MIPConvergencePlotter:
+    """
+    MIP探索過程（目的関数値の推移）をプロットするクラス
+    """
+    @staticmethod
+    def plot_convergence(trajectory, title, filename):
+        if not trajectory:
+            print(f"Warning: No trajectory data to plot for {filename}")
+            return
+        
+        times = [x[0] for x in trajectory]
+        objs = [x[1] for x in trajectory]
+        
+        plt.figure(figsize=(8, 5))
+        
+        # === 修正箇所 ===
+        # 線形補間(plot)ではなく、階段状(step)で描画する
+        # where='post': 点(t, obj)から右へ水平線を伸ばし、次のtで垂直に変化させる
+        plt.step(times, objs, where='post', color='b', linestyle='-', label='Incumbent Obj')
+        # ===============
+        
+        # 開始点と終了点を強調
+        plt.scatter([times[0]], [objs[0]], color='green', s=100, label='First Sol', zorder=5)
+        plt.scatter([times[-1]], [objs[-1]], color='red', s=100, marker='*', label='Best Sol', zorder=5)
+        
+        plt.xlabel("Time (s)")
+        plt.ylabel("Objective Value")
+        plt.title(title)
+        plt.grid(True, which='both', linestyle='--')
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(filename)
+        plt.close()
+
 class ScheduleVisualizer:
     """
     スケジュール個別のヒートマップ描画用クラス
@@ -86,6 +120,16 @@ class BenchmarkReporter:
             f.write(f"1. Performance Metrics\n")
             f.write(f"----------------------\n")
             f.write(f"  Objective Value : {final_obj:,.2f}\n")
+            if hasattr(solver, 'stats') and 'rmp_obj_lp' in solver.stats:
+                rmp_lp = solver.stats['rmp_obj_lp']
+                f.write(f"  RMP Relaxed Value (LP): {rmp_lp:,.2f}\n")
+                
+                # Gapの計算 (MIP - LP) / LP
+                if abs(rmp_lp) > 1e-5:
+                    gap = (final_obj - rmp_lp) / abs(rmp_lp) * 100
+                    f.write(f"  Integrality Gap       : {gap:.4f} %\n")
+                else:
+                    f.write(f"  Integrality Gap       : 0.0000 % (LP ~ 0)\n")
             f.write(f"  Execution Time  : {elapsed_time:.4f} sec\n")
             if hasattr(solver, 'stats'):
                 f.write(f"  Iterations      : {solver.stats.get('iterations', 0)}\n")
@@ -97,7 +141,7 @@ class BenchmarkReporter:
                 if 'mip_total_columns' in solver.stats:
                     f.write(f"  MIP Decision Variables: {solver.stats['mip_total_columns']} (Columns used in Final MIP)\n")
                 if 'mip_filtered_columns' in solver.stats:
-                     f.write(f"  MIP Filtered Columns  : {solver.stats['mip_filtered_columns']} (Removed before MIP)\n")
+                    f.write(f"  MIP Filtered Columns  : {solver.stats['mip_filtered_columns']} (Removed before MIP)\n")
                     
             f.write(f"\n")
 

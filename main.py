@@ -13,7 +13,7 @@ from solver_exact import ExactMIPSolver
 from solver_cg import ColumnGenerationSolver
 from solver_cg_pruning import ColumnGenerationSolverWithAging
 from solver_cg_lru import ColumnGenerationSolverLRU
-from visualization import ScheduleVisualizer, BenchmarkReporter, ComparisonPlotter
+from visualization import ScheduleVisualizer, BenchmarkReporter, ComparisonPlotter, MIPConvergencePlotter  
 
 SOLVER_CONFIG = {
     'exact': {
@@ -268,6 +268,15 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
                 BenchmarkReporter.save_analysis_report(
                     report_file, current_week, solver, prob, obj_val, elapsed, final_sched
                 )
+
+                # stats内にmip_trajectoryがあり、かつデータが存在する場合のみ描画
+                if 'mip_trajectory' in stats and stats['mip_trajectory']:
+                    mip_plot_file = os.path.join(method_dir, f"mip_convergence_wk{current_week}.png")
+                    MIPConvergencePlotter.plot_convergence(
+                        stats['mip_trajectory'], 
+                        f"MIP Convergence: Week {current_week} ({cfg['label']})", 
+                        mip_plot_file
+                    )
                 
                 row_str += f" {elapsed:<12.2f} |"
 

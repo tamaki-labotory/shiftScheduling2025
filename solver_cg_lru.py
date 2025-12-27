@@ -29,7 +29,7 @@ class ColumnGenerationSolverLRU(ColumnGenerationSolver):
             col['usage_count'] = 0
         return col_id
 
-    def solve_rmp(self, integer=False, mip_time_limit=30, mip_gap=0.05):
+    def solve_rmp(self, integer=False, mip_time_limit=30, mip_gap=0.05, log_path=None):
         """
         親クラスのsolve_rmpをオーバーライドして、使用回数(usage_count)のカウントアップ処理を追加。
         """
@@ -62,7 +62,11 @@ class ColumnGenerationSolverLRU(ColumnGenerationSolver):
             
         # ソルバー実行
         if integer:
-            solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=mip_time_limit, gapRel=mip_gap)
+            # log_pathがある場合は渡す
+            if log_path:
+                solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=mip_time_limit, gapRel=mip_gap, logPath=log_path)
+            else:
+                solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=mip_time_limit, gapRel=mip_gap)
         else:
             solver = pulp.PULP_CBC_CMD(msg=0)
         

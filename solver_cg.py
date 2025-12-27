@@ -4,6 +4,7 @@ import time
 import numpy as np
 import networkx as nx
 import os  # 追加
+import re
 from problem import GraphBuilder
 
 class ColumnGenerationSolver:
@@ -109,7 +110,7 @@ class ColumnGenerationSolver:
 
     # ... (以下の solve_rmp, pricing, solve, save_pool_to_csv はそのまま) ...
     
-    def solve_rmp(self, integer=False, mip_time_limit=30, mip_gap=0.05):
+    def solve_rmp(self, integer=False, mip_time_limit=30, mip_gap=0.05, log_path=None):
         t_start = time.perf_counter()
         model = pulp.LpProblem("RMP", pulp.LpMinimize)
         active_cols = [self.pool[i] for i in self.rmp_indices]
@@ -134,7 +135,11 @@ class ColumnGenerationSolver:
             cons_c.append(model.constraints[list(model.constraints.keys())[-1]])
             
         if integer:
-            solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=mip_time_limit, gapRel=mip_gap)
+            # log_pathが指定されている場合はログを出力する
+            if log_path:
+                solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=mip_time_limit, gapRel=mip_gap, logPath=log_path)
+            else:
+                solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=mip_time_limit, gapRel=mip_gap)
         else:
             solver = pulp.PULP_CBC_CMD(msg=0)
         
@@ -157,6 +162,32 @@ class ColumnGenerationSolver:
             pi = [c.pi for c in cons_d]
             sigma = [c.pi for c in cons_c]
             return pulp.value(model.objective), pi, sigma
+        
+    def parse_cbc_log(self, log_path):
+        """CBCのログから(経過時間, 目的関数値)のリストを抽出する"""
+        trajectory = []
+        if not os.path.exists(log_path):
+            return trajectory
+        
+        with open(log_path, 'r') as f:
+            content = f.read()
+        
+        # パターン: "Integer solution of 12345 found after ... (0.12 seconds)"
+        # ※ CBCのバージョンにより多少異なる場合がありますが、標準的な形式に対応
+        pattern = re.compile(r"Integer solution of\s+([-\d\.]+)\s+found.*?\(([\d\.]+)\s+seconds\)")
+        
+        matches = pattern.findall(content)
+        for obj_str, time_str in matches:
+            try:
+                t = float(time_str)
+                obj = float(obj_str)
+                trajectory.append((t, obj))
+            except ValueError:
+                continue
+        
+        # 時間順にソート
+        trajectory.sort(key=lambda x: x[0])
+        return trajectory
 
     def pricing(self, pi, sigma):
         pool_added_count = 0
@@ -217,7 +248,7 @@ class ColumnGenerationSolver:
         self.stats['time_graph'] += (time.perf_counter() - t_graph_start)
         return pool_added_count, graph_added_count
 
-    def solve(self, max_iter=50, time_limit=300, tol=1e-4, patience=3, mip_rc_threshold=500.0):
+    def solve(self, max_iter=50, time_limit=300, tol=1e-4, patience=3, mip_rc_threshold=500.0, mip_gap=0.01):
         start_total = time.time()
         self.reset_stats()
         self.initialize_rmp()
@@ -264,8 +295,22 @@ class ColumnGenerationSolver:
                     removed_count += 1
             self.rmp_indices = filtered_indices
             self.stats['mip_filtered_columns'] = removed_count
+
+        # prev_obj には最後のRMP(LP)の目的関数値が入っています
+        self.stats['rmp_obj_lp'] = prev_obj
         
-        res_mip = self.solve_rmp(integer=True)
+        # 最終的なMIPを解く部分でログを取得する
+        timestamp = int(time.time())
+        log_file = f"cbc_mip_log_{timestamp}.txt"
+        
+        res_mip = self.solve_rmp(integer=True, mip_time_limit=600, log_path=log_file, mip_gap=mip_gap) # 時間制限等は適宜調整
+        
+        # ログを解析してstatsに保存
+        self.stats['mip_trajectory'] = self.parse_cbc_log(log_file)
+        
+        # 一時ファイルを削除（残したい場合はコメントアウト）
+        if os.path.exists(log_file):
+            os.remove(log_file)
         if res_mip: final_obj, final_schedule = res_mip
         else:
             final_obj = 0.0
