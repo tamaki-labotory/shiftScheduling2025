@@ -309,7 +309,7 @@ class ColumnGenerationSolver:
         timestamp = int(time.time())
         log_file = f"cbc_mip_log_{timestamp}.txt"
         
-        res_mip = self.solve_rmp(integer=True, mip_time_limit=600, log_path=log_file, mip_gap=mip_gap) # 時間制限等は適宜調整
+        res_mip = self.solve_rmp(integer=True, mip_time_limit=3600, log_path=log_file, mip_gap=mip_gap) # 時間制限等は適宜調整
         
         # ログを解析してstatsに保存
         traj, lb = self.parse_cbc_log(log_file) # 戻り値2つに対応
