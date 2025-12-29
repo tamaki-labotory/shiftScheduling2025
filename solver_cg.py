@@ -164,30 +164,36 @@ class ColumnGenerationSolver:
             return pulp.value(model.objective), pi, sigma
         
     def parse_cbc_log(self, log_path):
-        """CBCのログから(経過時間, 目的関数値)のリストを抽出する"""
-        trajectory = []
-        if not os.path.exists(log_path):
-            return trajectory
-        
-        with open(log_path, 'r') as f:
-            content = f.read()
-        
-        # パターン: "Integer solution of 12345 found after ... (0.12 seconds)"
-        # ※ CBCのバージョンにより多少異なる場合がありますが、標準的な形式に対応
-        pattern = re.compile(r"Integer solution of\s+([-\d\.]+)\s+found.*?\(([\d\.]+)\s+seconds\)")
-        
-        matches = pattern.findall(content)
-        for obj_str, time_str in matches:
-            try:
-                t = float(time_str)
-                obj = float(obj_str)
-                trajectory.append((t, obj))
-            except ValueError:
-                continue
-        
-        # 時間順にソート
-        trajectory.sort(key=lambda x: x[0])
-        return trajectory
+            """CBCのログから(経過時間, 目的関数値)のリストと、最終的な下界値を抽出する"""
+            trajectory = []
+            final_lower_bound = None  # 追加
+
+            if not os.path.exists(log_path):
+                return trajectory, final_lower_bound # 戻り値を変更
+            
+            with open(log_path, 'r') as f:
+                content = f.read()
+            
+            # 既存: 整数解の履歴取得
+            pattern_sol = re.compile(r"Integer solution of\s+([-\d\.]+)\s+found.*?\(([\d\.]+)\s+seconds\)")
+            matches = pattern_sol.findall(content)
+            for obj_str, time_str in matches:
+                try:
+                    t = float(time_str)
+                    obj = float(obj_str)
+                    trajectory.append((t, obj))
+                except ValueError:
+                    continue
+            trajectory.sort(key=lambda x: x[0])
+
+            # ★追加: 最終的な下界値(Lower bound)の取得
+            # パターン例: "Lower bound: 12340.0" または "Best possible: 12340.0" (バージョンによる)
+            pattern_lb = re.compile(r"(?:Lower bound|Best possible):\s*([-\d\.]+)")
+            match_lb = pattern_lb.search(content)
+            if match_lb:
+                final_lower_bound = float(match_lb.group(1))
+
+            return trajectory, final_lower_bound
 
     def pricing(self, pi, sigma):
         pool_added_count = 0
@@ -303,10 +309,12 @@ class ColumnGenerationSolver:
         timestamp = int(time.time())
         log_file = f"cbc_mip_log_{timestamp}.txt"
         
-        res_mip = self.solve_rmp(integer=True, mip_time_limit=3600, log_path=log_file, mip_gap=mip_gap) # 時間制限等は適宜調整
+        res_mip = self.solve_rmp(integer=True, mip_time_limit=600, log_path=log_file, mip_gap=mip_gap) # 時間制限等は適宜調整
         
         # ログを解析してstatsに保存
-        self.stats['mip_trajectory'] = self.parse_cbc_log(log_file)
+        traj, lb = self.parse_cbc_log(log_file) # 戻り値2つに対応
+        self.stats['mip_trajectory'] = traj
+        self.stats['mip_lower_bound'] = lb      # statsに追加
         
         # 一時ファイルを削除（残したい場合はコメントアウト）
         if os.path.exists(log_file):

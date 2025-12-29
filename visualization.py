@@ -122,14 +122,24 @@ class BenchmarkReporter:
             f.write(f"  Objective Value : {final_obj:,.2f}\n")
             if hasattr(solver, 'stats') and 'rmp_obj_lp' in solver.stats:
                 rmp = solver.stats['rmp_obj_lp']
-                f.write(f"  RMP Relaxed Value (LP): {rmp:,.2f}\n")
+                f.write(f"  RMP Relaxed Value (Root): {rmp:,.2f}\n")
                 
                 # Gapの計算 (MIP - LP) / LP
                 if abs(rmp) > 1e-5:
                     gap = (final_obj - rmp) / abs(rmp) * 100
                     f.write(f"  Integrality Gap       : {gap:.4f} %\n")
-                else:
-                    f.write(f"  Integrality Gap       : 0.0000 % (LP ~ 0)\n")
+
+            if hasattr(solver, 'stats') and 'mip_lower_bound' in solver.stats:
+                lb = solver.stats['mip_lower_bound']
+                # lbがNoneでない場合のみ出力
+                if lb is not None:
+                    f.write(f"  MIP Best Bound (Final)  : {lb:,.2f}\n")
+                    
+                    # 最終的なDual Gapの計算 (MIP - BestBound) / BestBound
+                    if abs(lb) > 1e-5:
+                        final_gap = (final_obj - lb) / abs(lb) * 100
+                        f.write(f"  Final MIP Gap           : {final_gap:.4f} %\n")
+
             f.write(f"  Execution Time  : {elapsed_time:.4f} sec\n")
             if hasattr(solver, 'stats'):
                 f.write(f"  Iterations      : {solver.stats.get('iterations', 0)}\n")
