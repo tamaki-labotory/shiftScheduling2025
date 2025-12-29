@@ -121,20 +121,20 @@ class BenchmarkReporter:
             f.write(f"----------------------\n")
             f.write(f"  Objective Value : {final_obj:,.2f}\n")
             if hasattr(solver, 'stats') and 'rmp_obj_lp' in solver.stats:
-                rmp_lp = solver.stats['rmp_obj_lp']
-                f.write(f"  RMP Relaxed Value (LP): {rmp_lp:,.2f}\n")
+                rmp = solver.stats['rmp_obj_lp']
+                f.write(f"  RMP Relaxed Value (LP): {rmp:,.2f}\n")
                 
                 # Gapの計算 (MIP - LP) / LP
-                if abs(rmp_lp) > 1e-5:
-                    gap = (final_obj - rmp_lp) / abs(rmp_lp) * 100
+                if abs(rmp) > 1e-5:
+                    gap = (final_obj - rmp) / abs(rmp) * 100
                     f.write(f"  Integrality Gap       : {gap:.4f} %\n")
                 else:
                     f.write(f"  Integrality Gap       : 0.0000 % (LP ~ 0)\n")
             f.write(f"  Execution Time  : {elapsed_time:.4f} sec\n")
             if hasattr(solver, 'stats'):
                 f.write(f"  Iterations      : {solver.stats.get('iterations', 0)}\n")
-                f.write(f"  RMP Time (LP)   : {solver.stats.get('time_rmp_lp', 0):.4f} s\n")
-                f.write(f"  RMP Time (MIP)  : {solver.stats.get('time_rmp_mip', 0):.4f} s\n")
+                f.write(f"  RMP Time  : {solver.stats.get('time_rmp', 0):.4f} s\n")
+                f.write(f"  MIP Time  : {solver.stats.get('time_mip', 0):.4f} s\n")
                 f.write(f"  Pool Search Time: {solver.stats.get('time_pool', 0):.4f} s\n")
                 f.write(f"  Graph Search Time: {solver.stats.get('time_graph', 0):.4f} s\n")
                 
@@ -226,24 +226,24 @@ class ComparisonPlotter:
             color = cfg.get('color', 'blue')
             
             # データフレームに該当列があるか確認
-            if f'{name}_RMP_LP' not in df.columns:
+            if f'{name}_RMP' not in df.columns:
                 continue
 
             plt.figure(figsize=(8, 5))
             weeks = df['Week']
             
             # データ取得
-            rmp_lp = df[f'{name}_RMP_LP']
-            rmp_mip = df[f'{name}_RMP_MIP']
+            rmp = df[f'{name}_RMP']
+            mip = df[f'{name}_MIP']
             pool_t = df[f'{name}_Pool']
             graph_t = df[f'{name}_Graph']
             total_t = df[f'Time_{name}']
             
             # 積み上げ棒グラフ
-            p1 = plt.bar(weeks, rmp_lp, label='RMP (LP)', color='#ff9999', alpha=0.8)
-            p2 = plt.bar(weeks, rmp_mip, bottom=rmp_lp, label='RMP (Final MIP)', color='#66b3ff', alpha=0.8)
+            p1 = plt.bar(weeks, rmp, label='RMP', color='#ff9999', alpha=0.8)
+            p2 = plt.bar(weeks, mip, bottom=rmp, label='MIP', color='#66b3ff', alpha=0.8)
             
-            bot_pool = rmp_lp + rmp_mip
+            bot_pool = rmp + mip
             p3 = plt.bar(weeks, pool_t, bottom=bot_pool, label='Pool Search', color='#99ff99', alpha=0.8)
             
             bot_graph = bot_pool + pool_t

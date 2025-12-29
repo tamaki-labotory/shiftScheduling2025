@@ -244,7 +244,7 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
                         obj_val, elapsed = 0.0, 0.0
                         final_sched = np.zeros((prob.K, prob.T))
                     else:
-                        obj_val, elapsed, final_sched = solver.solve(time_limit=3600)
+                        obj_val, elapsed, final_sched = solver.solve(time_limit=30)
                 else:
                     max_iter = 400 if name == 'std' else 200
                     obj_val, elapsed, stats, final_sched = solver.solve(max_iter=max_iter)
@@ -285,8 +285,8 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
             week_result[f'Time_{name}'] = elapsed
             
             if name != 'exact' and not skip_execution:
-                week_result[f'{name}_RMP_LP'] = stats.get('time_rmp_lp', 0)
-                week_result[f'{name}_RMP_MIP'] = stats.get('time_rmp_mip', 0)
+                week_result[f'{name}_RMP'] = stats.get('time_rmp', 0)
+                week_result[f'{name}_MIP'] = stats.get('time_mip', 0)
                 week_result[f'{name}_Pool'] = stats.get('time_pool', 0)
                 week_result[f'{name}_Graph'] = stats.get('time_graph', 0)
 

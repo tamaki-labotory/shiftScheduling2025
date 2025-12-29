@@ -4,54 +4,56 @@
 
 1. Performance Metrics
 ----------------------
-  Objective Value : 9,705,500.00
-  Execution Time  : 902.2186 sec
-  Iterations      : 157
-  RMP Time (LP)   : 161.5508 s
-  RMP Time (MIP)  : 600.6990 s
-  Pool Search Time: 0.0010 s
-  Graph Search Time: 139.6226 s
-  MIP Decision Variables: 1196 (Columns used in Final MIP)
-  MIP Filtered Columns  : 1984 (Removed before MIP)
+  Objective Value : 7,689,000.00
+  RMP Relaxed Value (LP): 665,978.95
+  Integrality Gap       : 1054.5410 %
+  Execution Time  : 3901.6132 sec
+  Iterations      : 153
+  RMP Time  : 156.8300 s
+  MIP Time  : 3600.7639 s
+  Pool Search Time: 0.0011 s
+  Graph Search Time: 143.6148 s
+  MIP Decision Variables: 1224 (Columns used in Final MIP)
+  MIP Filtered Columns  : 1876 (Removed before MIP)
 
 2. Column Generation & Pool Statistics
 --------------------------------------
-  Total Columns Generated (History) : 3180
+  Total Columns Generated (History) : 3100
   Pool Hits (Reused from History)   : 0
-  Graph Gen (Newly Created)         : 3140
+  Graph Gen (Newly Created)         : 3060
   Pool Hit Rate                     : 0.0%
 
 3. Shift Pattern Diversity (Unique Patterns)
 ------------------------------------------
-  Type: TypeA  | Unique Patterns:  158 / Total Gen:  632
+  Type: TypeA  | Unique Patterns:  154 / Total Gen:  616
        -> Avg Length of Unique Patterns: 44.9 hours
-  Type: TypeB  | Unique Patterns:  158 / Total Gen: 1264
+  Type: TypeB  | Unique Patterns:  154 / Total Gen: 1232
        -> Avg Length of Unique Patterns: 32.9 hours
-  Type: TypeC  | Unique Patterns:  163 / Total Gen: 1264
-       -> Avg Length of Unique Patterns: 22.8 hours
+  Type: TypeC  | Unique Patterns:  159 / Total Gen: 1232
+       -> Avg Length of Unique Patterns: 22.7 hours
 
 4. Final Schedule Assignment Breakdown
 --------------------------------------
-  Emp 0  (TypeA): 46 hours worked
+  Emp 0  (TypeA): 47 hours worked
   Emp 1  (TypeA): 47 hours worked
-  Emp 2  (TypeA): 49 hours worked
+  Emp 2  (TypeA): 47 hours worked
   Emp 3  (TypeA): 47 hours worked
-  Emp 4  (TypeB): 34 hours worked
-  Emp 5  (TypeB): 31 hours worked
-  Emp 6  (TypeB): 38 hours worked
-  Emp 7  (TypeB): 37 hours worked
+  Emp 4  (TypeB): 39 hours worked
+  Emp 5  (TypeB): 34 hours worked
+  Emp 6  (TypeB): 31 hours worked
+  Emp 7  (TypeB): 35 hours worked
   Emp 8  (TypeB): 35 hours worked
-  Emp 9  (TypeB): 37 hours worked
-  Emp 10 (TypeB): 39 hours worked
+  Emp 9  (TypeB): 35 hours worked
+  Emp 10 (TypeB): 37 hours worked
   Emp 11 (TypeB): 35 hours worked
   Emp 12 (TypeC): 25 hours worked
-  Emp 13 (TypeC): 21 hours worked
-  Emp 14 (TypeC): 28 hours worked
-  Emp 15 (TypeC): 25 hours worked
+  Emp 13 (TypeC): 27 hours worked
+  Emp 14 (TypeC): 21 hours worked
+  Emp 15 (TypeC): 17 hours worked
   Emp 16 (TypeC): 26 hours worked
-  Emp 17 (TypeC): 19 hours worked
-  Emp 18 (TypeC): 27 hours worked
-  Emp 19 (TypeC): 25 hours worked
+  Emp 17 (TypeC): 22 hours worked
+  Emp 18 (TypeC): 23 hours worked
+  Emp 19 (TypeC): 26 hours worked
 
 5. Iteration History (Convergence Log)
 --------------------------------------
@@ -210,7 +212,3 @@ Iter  | RMP Obj Value   | Pool Hits  | Graph Gen
 151   | 666,542.28      | 0          | 20        
 152   | 666,361.70      | 0          | 20        
 153   | 665,978.95      | 0          | 20        
-154   | 665,903.98      | 0          | 20        
-155   | 665,711.85      | 0          | 20        
-156   | 665,625.24      | 0          | 20        
-157   | 665,534.03      | 0          | 20        

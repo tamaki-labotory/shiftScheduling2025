@@ -4,13 +4,15 @@
 
 1. Performance Metrics
 ----------------------
-  Objective Value : 8,662,200.00
-  Execution Time  : 887.9420 sec
+  Objective Value : 5,687,500.00
+  RMP Relaxed Value (LP): 640,586.16
+  Integrality Gap       : 787.8587 %
+  Execution Time  : 3889.9456 sec
   Iterations      : 153
-  RMP Time (LP)   : 150.0942 s
-  RMP Time (MIP)  : 600.4875 s
-  Pool Search Time: 0.0010 s
-  Graph Search Time: 136.8321 s
+  RMP Time  : 151.5015 s
+  MIP Time  : 3600.6784 s
+  Pool Search Time: 0.0008 s
+  Graph Search Time: 137.3562 s
   MIP Decision Variables: 1188 (Columns used in Final MIP)
   MIP Filtered Columns  : 1912 (Removed before MIP)
 
@@ -32,25 +34,25 @@
 
 4. Final Schedule Assignment Breakdown
 --------------------------------------
-  Emp 0  (TypeA): 49 hours worked
+  Emp 0  (TypeA): 46 hours worked
   Emp 1  (TypeA): 47 hours worked
-  Emp 2  (TypeA): 43 hours worked
-  Emp 3  (TypeA): 47 hours worked
-  Emp 4  (TypeB): 35 hours worked
-  Emp 5  (TypeB): 32 hours worked
-  Emp 6  (TypeB): 38 hours worked
-  Emp 7  (TypeB): 33 hours worked
+  Emp 2  (TypeA): 49 hours worked
+  Emp 3  (TypeA): 45 hours worked
+  Emp 4  (TypeB): 38 hours worked
+  Emp 5  (TypeB): 38 hours worked
+  Emp 6  (TypeB): 32 hours worked
+  Emp 7  (TypeB): 29 hours worked
   Emp 8  (TypeB): 34 hours worked
-  Emp 9  (TypeB): 26 hours worked
-  Emp 10 (TypeB): 29 hours worked
-  Emp 11 (TypeB): 37 hours worked
+  Emp 9  (TypeB): 37 hours worked
+  Emp 10 (TypeB): 33 hours worked
+  Emp 11 (TypeB): 39 hours worked
   Emp 12 (TypeC): 20 hours worked
-  Emp 13 (TypeC): 23 hours worked
-  Emp 14 (TypeC): 23 hours worked
-  Emp 15 (TypeC): 24 hours worked
-  Emp 16 (TypeC): 20 hours worked
+  Emp 13 (TypeC): 27 hours worked
+  Emp 14 (TypeC): 26 hours worked
+  Emp 15 (TypeC): 20 hours worked
+  Emp 16 (TypeC): 23 hours worked
   Emp 17 (TypeC): 24 hours worked
-  Emp 18 (TypeC): 24 hours worked
+  Emp 18 (TypeC): 23 hours worked
   Emp 19 (TypeC): 26 hours worked
 
 5. Iteration History (Convergence Log)

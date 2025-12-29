@@ -18,8 +18,8 @@ class ColumnGenerationSolver:
         self.history = []
         
         self.stats = {
-            'time_rmp_lp': 0.0,
-            'time_rmp_mip': 0.0,
+            'time_rmp': 0.0,
+            'time_mip': 0.0,
             'time_pool': 0.0,
             'time_graph': 0.0,
             'count_pool_hit': 0,
@@ -145,8 +145,8 @@ class ColumnGenerationSolver:
         
         model.solve(solver)
         elapsed = time.perf_counter() - t_start
-        if integer: self.stats['time_rmp_mip'] += elapsed
-        else: self.stats['time_rmp_lp'] += elapsed
+        if integer: self.stats['time_mip'] += elapsed
+        else: self.stats['time_rmp'] += elapsed
 
         if model.status != pulp.LpStatusOptimal: return None
 
@@ -303,7 +303,7 @@ class ColumnGenerationSolver:
         timestamp = int(time.time())
         log_file = f"cbc_mip_log_{timestamp}.txt"
         
-        res_mip = self.solve_rmp(integer=True, mip_time_limit=600, log_path=log_file, mip_gap=mip_gap) # 時間制限等は適宜調整
+        res_mip = self.solve_rmp(integer=True, mip_time_limit=3600, log_path=log_file, mip_gap=mip_gap) # 時間制限等は適宜調整
         
         # ログを解析してstatsに保存
         self.stats['mip_trajectory'] = self.parse_cbc_log(log_file)

@@ -72,8 +72,8 @@ class ColumnGenerationSolverLRU(ColumnGenerationSolver):
         
         model.solve(solver)
         elapsed = time.perf_counter() - t_start
-        if integer: self.stats['time_rmp_mip'] += elapsed
-        else: self.stats['time_rmp_lp'] += elapsed
+        if integer: self.stats['time_mip'] += elapsed
+        else: self.stats['time_rmp'] += elapsed
 
         if model.status != pulp.LpStatusOptimal: return None
 
