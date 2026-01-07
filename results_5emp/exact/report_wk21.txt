@@ -1,0 +1,26 @@
+==========================================================
+ ANALYSIS REPORT: Week 21
+==========================================================
+
+1. Performance Metrics
+----------------------
+  Objective Value : 4,209,100.00
+  Execution Time  : 10.4772 sec
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 50 hours worked
+  Emp 1  (TypeB): 38 hours worked
+  Emp 2  (TypeB): 39 hours worked
+  Emp 3  (TypeC): 27 hours worked
+  Emp 4  (TypeC): 29 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+No iteration history available.

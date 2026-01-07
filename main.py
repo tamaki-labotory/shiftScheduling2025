@@ -13,6 +13,8 @@ from solver_exact import ExactMIPSolver
 from solver_cg import ColumnGenerationSolver
 from solver_cg_pruning import ColumnGenerationSolverWithAging
 from solver_cg_lru import ColumnGenerationSolverLRU
+from solver_cg_bnb import ColumnGenerationBnBSolver
+from solver_cg_priority import ColumnGenerationSolverPriority
 from visualization import ScheduleVisualizer, BenchmarkReporter, ComparisonPlotter, MIPConvergencePlotter  
 
 SOLVER_CONFIG = {
@@ -42,7 +44,7 @@ SOLVER_CONFIG = {
     },
     'pruning': {
         'class': ColumnGenerationSolverWithAging,
-        'label': 'CG Aging',
+        'label': 'CG Pruning',
         'color': 'blue',
         'marker': '^',
         'needs_history': False,
@@ -53,6 +55,22 @@ SOLVER_CONFIG = {
         'label': 'CG LRU',
         'color': 'blue',
         'marker': '^',
+        'needs_history': False,
+        'kwargs': {'use_pool': True}
+    },
+    'bnb': {
+        'class': ColumnGenerationBnBSolver,
+        'label': 'CG BnB',
+        'color': 'purple',
+        'marker': '*',
+        'needs_history': False,
+        'kwargs': {'use_pool': True}
+    },
+    'priority': {
+        'class': ColumnGenerationSolverPriority,
+        'label': 'CG Priority',
+        'color': 'orange',
+        'marker': 'D',
         'needs_history': False,
         'kwargs': {'use_pool': True}
     }
@@ -201,13 +219,10 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
             
             # --- 実行要否判定 ---
             # プールとレポート両方があればスキップ可能とみなす
+            # Exactの場合もpool_fileを確認するように変更
             skip_execution = False
-            if name != 'exact':
-                if os.path.exists(pool_file) and os.path.exists(report_file):
-                    skip_execution = True
-            else:
-                if os.path.exists(report_file): # exactはpoolがない
-                    skip_execution = True
+            if os.path.exists(pool_file) and os.path.exists(report_file):
+                skip_execution = True
 
             # --- 前処理 (共通) ---
             if name != 'exact':
@@ -244,13 +259,10 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
                         obj_val, elapsed = 0.0, 0.0
                         final_sched = np.zeros((prob.K, prob.T))
                     else:
-                        obj_val, elapsed, final_sched = solver.solve(time_limit=30)
+                        obj_val, elapsed, final_sched = solver.solve(time_limit=3600)
                 else:
-                    max_iter = 400 if name == 'std' else 200
+                    max_iter = 400
                     obj_val, elapsed, stats, final_sched = solver.solve(max_iter=max_iter)
-                    
-                    # 保存 (CGのみ)
-                    solver.save_pool_to_csv(pool_file)
                     
                     if cfg['needs_history']:
                         for k in range(prob.K):
@@ -258,8 +270,10 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
                                 if final_sched[k, t] == 1:
                                     histories[name][t] = histories[name].get(t, 0) + 1
                                     
-                # === 共通保存処理（ここが修正箇所） ===
-                # ExactでもCGでも実行される位置に配置
+                # === 保存処理（ここを修正: Exactも保存する） ===
+                if hasattr(solver, 'save_pool_to_csv'):
+                     solver.save_pool_to_csv(pool_file)
+
                 schedule_img = os.path.join(method_dir, f"schedule_wk{current_week}.png")
                 ScheduleVisualizer.save_schedule_heatmap(
                     final_sched, prob, f"Week {current_week} {cfg['label']}", 

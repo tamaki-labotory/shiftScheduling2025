@@ -4,41 +4,41 @@
 
 1. Performance Metrics
 ----------------------
-  Objective Value : 6,192,600.00
-  RMP Relaxed Value (Root): 1,534,075.17
-  Integrality Gap       : 303.6699 %
-  Execution Time  : 75.3724 sec
-  Iterations      : 146
-  RMP Time  : 37.7897 s
-  MIP Time  : 2.9743 s
-  Pool Search Time: 0.0008 s
-  Graph Search Time: 34.4934 s
-  MIP Decision Variables: 135 (Columns used in Final MIP)
-  MIP Filtered Columns  : 605 (Removed before MIP)
+  Objective Value : 2,197,700.00
+  RMP Relaxed Value (Root): 1,523,500.00
+  Integrality Gap       : 44.2534 %
+  Execution Time  : 163.9625 sec
+  Iterations      : 241
+  RMP Time  : 100.1794 s
+  MIP Time  : 9.5731 s
+  Pool Search Time: 0.0014 s
+  Graph Search Time: 53.9354 s
+  MIP Decision Variables: 1174 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
 
 2. Column Generation & Pool Statistics
 --------------------------------------
-  Total Columns Generated (History) : 740
+  Total Columns Generated (History) : 1174
   Pool Hits (Reused from History)   : 0
-  Graph Gen (Newly Created)         : 730
+  Graph Gen (Newly Created)         : 1164
   Pool Hit Rate                     : 0.0%
 
 3. Shift Pattern Diversity (Unique Patterns)
 ------------------------------------------
-  Type: TypeA  | Unique Patterns:  147 / Total Gen:  147
-       -> Avg Length of Unique Patterns: 48.2 hours
-  Type: TypeB  | Unique Patterns:  147 / Total Gen:  294
-       -> Avg Length of Unique Patterns: 37.0 hours
-  Type: TypeC  | Unique Patterns:  147 / Total Gen:  294
-       -> Avg Length of Unique Patterns: 25.2 hours
+  Type: TypeA  | Unique Patterns:  213 / Total Gen:  213
+       -> Avg Length of Unique Patterns: 48.4 hours
+  Type: TypeB  | Unique Patterns:  241 / Total Gen:  482
+       -> Avg Length of Unique Patterns: 37.1 hours
+  Type: TypeC  | Unique Patterns:  237 / Total Gen:  474
+       -> Avg Length of Unique Patterns: 24.6 hours
 
 4. Final Schedule Assignment Breakdown
 --------------------------------------
-  Emp 0  (TypeA): 50 hours worked
-  Emp 1  (TypeB): 37 hours worked
-  Emp 2  (TypeB): 38 hours worked
+  Emp 0  (TypeA): 49 hours worked
+  Emp 1  (TypeB): 39 hours worked
+  Emp 2  (TypeB): 36 hours worked
   Emp 3  (TypeC): 24 hours worked
-  Emp 4  (TypeC): 28 hours worked
+  Emp 4  (TypeC): 29 hours worked
 
 5. Iteration History (Convergence Log)
 --------------------------------------
@@ -190,3 +190,98 @@ Iter  | RMP Obj Value   | Pool Hits  | Graph Gen
 144   | 1,534,075.17    | 0          | 5         
 145   | 1,534,075.17    | 0          | 5         
 146   | 1,534,075.17    | 0          | 5         
+147   | 1,534,075.17    | 0          | 5         
+148   | 1,531,985.63    | 0          | 5         
+149   | 1,531,602.92    | 0          | 5         
+150   | 1,531,602.92    | 0          | 5         
+151   | 1,531,384.20    | 0          | 5         
+152   | 1,529,787.91    | 0          | 5         
+153   | 1,529,042.85    | 0          | 5         
+154   | 1,529,042.85    | 0          | 5         
+155   | 1,529,042.85    | 0          | 5         
+156   | 1,529,042.85    | 0          | 5         
+157   | 1,528,790.27    | 0          | 5         
+158   | 1,528,790.27    | 0          | 5         
+159   | 1,528,790.27    | 0          | 5         
+160   | 1,527,752.93    | 0          | 5         
+161   | 1,527,752.93    | 0          | 5         
+162   | 1,527,752.93    | 0          | 5         
+163   | 1,527,738.82    | 0          | 5         
+164   | 1,527,732.24    | 0          | 5         
+165   | 1,525,773.20    | 0          | 5         
+166   | 1,525,166.66    | 0          | 5         
+167   | 1,525,166.66    | 0          | 5         
+168   | 1,525,166.66    | 0          | 5         
+169   | 1,525,166.66    | 0          | 5         
+170   | 1,525,166.66    | 0          | 5         
+171   | 1,525,166.66    | 0          | 5         
+172   | 1,525,166.66    | 0          | 5         
+173   | 1,524,850.00    | 0          | 5         
+174   | 1,524,683.33    | 0          | 5         
+175   | 1,524,683.33    | 0          | 5         
+176   | 1,524,683.33    | 0          | 5         
+177   | 1,524,683.33    | 0          | 5         
+178   | 1,524,683.33    | 0          | 5         
+179   | 1,524,683.33    | 0          | 5         
+180   | 1,524,683.33    | 0          | 5         
+181   | 1,524,683.33    | 0          | 5         
+182   | 1,524,683.33    | 0          | 4         
+183   | 1,524,683.33    | 0          | 4         
+184   | 1,524,683.33    | 0          | 4         
+185   | 1,524,683.33    | 0          | 5         
+186   | 1,524,683.33    | 0          | 5         
+187   | 1,524,683.33    | 0          | 5         
+188   | 1,524,683.33    | 0          | 4         
+189   | 1,524,683.33    | 0          | 4         
+190   | 1,524,683.33    | 0          | 4         
+191   | 1,524,683.33    | 0          | 4         
+192   | 1,524,683.33    | 0          | 4         
+193   | 1,524,683.33    | 0          | 4         
+194   | 1,524,683.33    | 0          | 4         
+195   | 1,524,683.33    | 0          | 4         
+196   | 1,524,683.33    | 0          | 4         
+197   | 1,524,683.33    | 0          | 5         
+198   | 1,524,683.33    | 0          | 4         
+199   | 1,524,683.33    | 0          | 5         
+200   | 1,524,683.33    | 0          | 5         
+201   | 1,524,680.20    | 0          | 5         
+202   | 1,524,183.33    | 0          | 5         
+203   | 1,524,183.33    | 0          | 4         
+204   | 1,524,183.33    | 0          | 5         
+205   | 1,524,055.55    | 0          | 5         
+206   | 1,524,055.55    | 0          | 5         
+207   | 1,524,055.55    | 0          | 5         
+208   | 1,524,055.55    | 0          | 5         
+209   | 1,524,055.55    | 0          | 5         
+210   | 1,524,055.55    | 0          | 5         
+211   | 1,524,055.55    | 0          | 5         
+212   | 1,524,055.55    | 0          | 5         
+213   | 1,524,055.55    | 0          | 5         
+214   | 1,524,055.55    | 0          | 5         
+215   | 1,523,977.77    | 0          | 5         
+216   | 1,523,977.77    | 0          | 5         
+217   | 1,523,944.44    | 0          | 4         
+218   | 1,523,944.44    | 0          | 5         
+219   | 1,523,944.44    | 0          | 5         
+220   | 1,523,566.66    | 0          | 5         
+221   | 1,523,566.66    | 0          | 4         
+222   | 1,523,566.66    | 0          | 5         
+223   | 1,523,566.66    | 0          | 5         
+224   | 1,523,566.66    | 0          | 5         
+225   | 1,523,566.66    | 0          | 4         
+226   | 1,523,566.66    | 0          | 4         
+227   | 1,523,566.66    | 0          | 2         
+228   | 1,523,566.66    | 0          | 4         
+229   | 1,523,566.66    | 0          | 3         
+230   | 1,523,566.66    | 0          | 4         
+231   | 1,523,566.66    | 0          | 2         
+232   | 1,523,566.66    | 0          | 5         
+233   | 1,523,566.66    | 0          | 4         
+234   | 1,523,566.66    | 0          | 4         
+235   | 1,523,566.66    | 0          | 4         
+236   | 1,523,566.66    | 0          | 4         
+237   | 1,523,566.66    | 0          | 2         
+238   | 1,523,566.66    | 0          | 4         
+239   | 1,523,500.00    | 0          | 5         
+240   | 1,523,500.00    | 0          | 5         
+241   | 1,523,500.00    | 0          | 0         

@@ -1,0 +1,26 @@
+==========================================================
+ ANALYSIS REPORT: Week 15
+==========================================================
+
+1. Performance Metrics
+----------------------
+  Objective Value : 154,100.00
+  Execution Time  : 43.7829 sec
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 44 hours worked
+  Emp 1  (TypeB): 32 hours worked
+  Emp 2  (TypeB): 32 hours worked
+  Emp 3  (TypeC): 18 hours worked
+  Emp 4  (TypeC): 20 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+No iteration history available.
