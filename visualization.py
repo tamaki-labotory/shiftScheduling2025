@@ -19,11 +19,8 @@ class MIPConvergencePlotter:
         
         plt.figure(figsize=(8, 5))
         
-        # === 修正箇所 ===
         # 線形補間(plot)ではなく、階段状(step)で描画する
-        # where='post': 点(t, obj)から右へ水平線を伸ばし、次のtで垂直に変化させる
         plt.step(times, objs, where='post', color='b', linestyle='-', label='Incumbent Obj')
-        # ===============
         
         # 開始点と終了点を強調
         plt.scatter([times[0]], [objs[0]], color='green', s=100, label='First Sol', zorder=5)
@@ -111,15 +108,43 @@ class BenchmarkReporter:
     テキストレポート出力用クラス
     """
     @staticmethod
-    def save_analysis_report(filename, week, solver, problem, final_obj, elapsed_time, final_schedule):
+    def save_analysis_report(filename, week, solver, problem, final_obj, elapsed_time, final_schedule, solver_params=None):
+        """
+        solver_params: 実行時のパラメータ辞書 (max_iter, time_limit等)
+        """
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(f"==========================================================\n")
             f.write(f" ANALYSIS REPORT: Week {week}\n")
             f.write(f"==========================================================\n\n")
 
+            # --- 追加: ソルバー設定の出力 ---
+            if solver_params:
+                f.write(f"0. Solver Configuration\n")
+                f.write(f"-----------------------\n")
+                # 見やすいように主要なキーを順序指定して出力
+                priority_keys = ['max_iter', 'time_limit', 'tol', 'patience', 'mip_rc_threshold', 'mip_gap']
+                for k in priority_keys:
+                    if k in solver_params:
+                        val = solver_params[k]
+                        if isinstance(val, (int, float)):
+                            # 汎用フォーマットで出力（大きな数は自動で指数表記になる）
+                            f.write(f"  {k:<20} : {val:g}\n")
+                        else:
+                            f.write(f"  {k:<20} : {val}\n")
+                
+                # その他のパラメータがあれば出力
+                for k, v in solver_params.items():
+                    if k not in priority_keys:
+                        f.write(f"  {k:<20} : {v}\n")
+                f.write(f"\n")
+            # ------------------------------
+
             f.write(f"1. Performance Metrics\n")
             f.write(f"----------------------\n")
-            f.write(f"  Objective Value : {final_obj:,.2f}\n")
+            if abs(final_obj) > 1e15: # 閾値は適宜
+                f.write(f"  Objective Value : {final_obj:.4e}\n")
+            else:
+                f.write(f"  Objective Value : {final_obj:,.2f}\n")
             if hasattr(solver, 'stats') and 'rmp_obj_lp' in solver.stats:
                 rmp = solver.stats['rmp_obj_lp']
                 f.write(f"  RMP Relaxed Value (Root): {rmp:,.2f}\n")
@@ -271,8 +296,7 @@ class ComparisonPlotter:
             plt.grid(axis='y', linestyle='--', alpha=0.5)
             plt.tight_layout()
             
-            # === 変更点: 各手法のディレクトリに保存 ===
-            # output_dir/method_name/breakdown.png
+            # === 各手法のディレクトリに保存 ===
             method_dir = os.path.join(output_dir, name)
             if not os.path.exists(method_dir):
                 os.makedirs(method_dir)

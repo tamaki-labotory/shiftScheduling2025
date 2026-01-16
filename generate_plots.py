@@ -5,6 +5,7 @@ import glob
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
 
 # problem.py が同じディレクトリにあることを前提とします
 try:
@@ -19,7 +20,8 @@ except ImportError:
 
 def parse_metrics(filepath):
     """
-    レポートファイルから全ての指標（時間・コスト・ギャップ・プールヒット率）を抽出する。
+    レポートファイルから全ての指標を抽出する。
+    Iteration Historyを解析して停滞回数も算出する。
     """
     if not os.path.exists(filepath):
         return None
@@ -35,10 +37,12 @@ def parse_metrics(filepath):
         'Solving_Shortest_Path_Problem': 0.0,
         'Total_Time': 0.0,
         'Gap_Absolute': None,
-        'Pool_Hit_Rate': None
+        'Pool_Hit_Rate': None,
+        'Iterations': 0.0,
+        'Stagnant_Iterations': 0.0  # 追加: 停滞回数
     }
 
-    # 基本的な指標の抽出
+    # --- 1. 基本的な指標の抽出 ---
     patterns = {
             'Objective_Value': r"Objective Value\s*:\s*([\d\.,]+)",
             'RMP': r"RMP Time\s*:\s*([\d\.]+)",
@@ -46,7 +50,8 @@ def parse_metrics(filepath):
             'Pool_Search': r"Pool Search Time\s*:\s*([\d\.]+)",
             'Solving_Shortest_Path_Problem': r"Graph Search Time\s*:\s*([\d\.]+)",
             'Total_Time': r"Execution Time\s*:\s*([\d\.]+)",
-            'Pool_Hit_Rate': r"Pool Hit Rate\s*:\s*([\d\.]+)%"
+            'Pool_Hit_Rate': r"Pool Hit Rate\s*:\s*([\d\.]+)%",
+            'Iterations': r"Iterations\s*:\s*([\d]+)"
         }
 
     for key, pattern in patterns.items():
@@ -62,17 +67,52 @@ def parse_metrics(filepath):
 
     # 絶対ギャップ (Objective - LowerBound) の計算
     lower_bound = None
-    # match_mip_lb = re.search(r"MIP Best Bound \(Final\)\s*:\s*([\d\.,]+)", content)
-    # if match_mip_lb:
-    #     lower_bound = float(match_mip_lb.group(1).replace(',', ''))
-    
-    if lower_bound is None:
-        match_rmp_lb = re.search(r"RMP Relaxed Value \(.*?\)\s*:\s*([\d\.,]+)", content)
-        if match_rmp_lb:
-            lower_bound = float(match_rmp_lb.group(1).replace(',', ''))
+    match_rmp_lb = re.search(r"RMP Relaxed Value \(.*?\)\s*:\s*([\d\.,]+)", content)
+    if match_rmp_lb:
+        lower_bound = float(match_rmp_lb.group(1).replace(',', ''))
             
     if lower_bound is not None and metrics['Objective_Value'] > 0:
         metrics['Gap_Absolute'] = metrics['Objective_Value'] - lower_bound
+
+    # --- 2. 停滞回数 (Stagnation) の計算 ---
+    # Iteration History セクションを解析
+    obj_values = []
+    lines = content.splitlines()
+    in_history_section = False
+    
+    for line in lines:
+        if "Iteration History" in line:
+            in_history_section = True
+            continue
+        if not in_history_section:
+            continue
+        
+        # セクション終了判定（空行や次のセクション開始など）
+        # ただしレポート形式によっては空行が入ることもあるので、"Iter"行や"---"行をスキップしつつ
+        # パイプ "|" を含む行をデータ行とみなすのが安全
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if "Iter" in line or "-----" in line:
+            continue
+        
+        parts = line.split('|')
+        if len(parts) >= 2:
+            try:
+                # 2番目のカラムが RMP Obj Value
+                val_str = parts[1].strip().replace(',', '')
+                val = float(val_str)
+                obj_values.append(val)
+            except ValueError:
+                continue
+
+    # 連続する目的関数値の差が閾値以下なら停滞とみなす
+    stagnant_count = 0
+    for i in range(len(obj_values) - 1):
+        if abs(obj_values[i] - obj_values[i+1]) < 1e-9:
+            stagnant_count += 1
+            
+    metrics['Stagnant_Iterations'] = float(stagnant_count)
 
     return metrics
 
@@ -120,9 +160,7 @@ def load_problem_config(config_path):
     return ShiftProblemData(config_path=config_path)
 
 def calculate_cost_breakdown(prob, pool_csv_path, week):
-    """
-    CSVから採用されたスケジュールを読み込み、コストの内訳を計算する
-    """
+    """ CSVから採用されたスケジュールを読み込み、コストの内訳を計算する """
     prob.generate_new_demand(period=week - 1)
     
     if not os.path.exists(pool_csv_path):
@@ -134,7 +172,6 @@ def calculate_cost_breakdown(prob, pool_csv_path, week):
         print(f"  [Error] Failed to read {pool_csv_path}: {e}")
         return None
     
-    # is_selected 列の確認
     if 'is_selected' not in df.columns:
         return None
         
@@ -154,17 +191,14 @@ def calculate_cost_breakdown(prob, pool_csv_path, week):
         
         emp = prob.employees[emp_id]
         
-        # 基本給
         base_wage = np.sum(schedule * emp['hourly_wage'])
         total_base_wage += base_wage
         
-        # 不一致コスト
         rho_cost = np.sum(schedule * emp['rho'])
         total_mismatch_cost += rho_cost
         
         supplied += schedule
 
-    # 欠員ペナルティ
     shortage = np.maximum(0, prob.demand - supplied)
     total_penalty = np.sum(shortage) * prob.big_m
     
@@ -215,15 +249,15 @@ def plot_time_breakdown(df, emp, method, output_dir):
     print(f"  Saved Time Breakdown: {output_path}")
 
 def plot_comparison(df, emp, methods, output_dir):
-    """指標比較（集合棒グラフ）: 離散的な値を明確にするため棒グラフを使用"""
+    """指標比較（集合棒グラフ）"""
     if df.empty: return
 
     metrics_keys = [
         'Objective_Value', 'Total_Time', 'RMP', 'MIP', 
         'Pool_Search', 'Solving_Shortest_Path_Problem',
-        'Gap_Absolute', 'Pool_Hit_Rate'
+        'Gap_Absolute', 'Pool_Hit_Rate', 'Iterations'  # Iterationsを含める
     ]
-    cg_only_metrics = ['MIP', 'RMP', 'Pool_Search', 'Solving_Shortest_Path_Problem', 'Pool_Hit_Rate']
+    cg_only_metrics = ['MIP', 'RMP', 'Pool_Search', 'Solving_Shortest_Path_Problem', 'Pool_Hit_Rate', 'Iterations']
     
     metric_titles = {
         'Objective_Value': 'Objective Value',
@@ -233,26 +267,17 @@ def plot_comparison(df, emp, methods, output_dir):
         'Pool_Search': 'Pool Search Time',
         'Solving_Shortest_Path_Problem': 'Shortest Path Calculation Time',
         'Gap_Absolute': 'Optimality Gap (Absolute Cost Difference)',
-        'Pool_Hit_Rate': 'Pool Hit Rate (%)'
+        'Pool_Hit_Rate': 'Pool Hit Rate (%)',
+        'Iterations': 'Number of Iterations (Hatched = Stagnation)' # タイトル変更
     }
 
-    # 棒グラフ用の色設定（少し淡い色にして重なりを防ぐ）
     colors = [
-        '#4E79A7', # Blue (落ち着いた青)
-        '#F28E2B', # Orange (明るいオレンジ)
-        '#E15759', # Red (ソフトな赤)
-        '#76B7B2', # Teal (青緑)
-        '#59A14F', # Green (自然な緑)
-        '#EDC948', # Yellow (視認性の良い濃い黄色)
-        '#B07AA1', # Purple (紫)
-        '#FF9DA7', # Pink (ピンク)
-        '#9C755F', # Brown (茶)
-        '#BAB0AC'  # Gray (グレー)
+        '#4E79A7', '#F28E2B', '#E15759', '#76B7B2', '#59A14F', 
+        '#EDC948', '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC'
     ]
     all_weeks = sorted(df['Week'].unique())
 
     # 棒グラフの幅設定
-    # 手法の数に応じて幅を調整（最大0.8のスペースを分け合う）
     total_width = 0.8
     num_methods = len(methods)
     bar_width = total_width / num_methods
@@ -260,31 +285,83 @@ def plot_comparison(df, emp, methods, output_dir):
     for metric in metrics_keys:
         if metric not in df.columns: continue
 
-        fig, ax1 = plt.subplots(figsize=(12, 6)) # 横幅を少し広げる
+        fig, ax1 = plt.subplots(figsize=(12, 6))
         has_data = False
         
-        for i, method in enumerate(methods):
-            if method == 'exact' and metric in cg_only_metrics: continue
+        # --- Iterationsの場合のみ積み上げグラフ処理 ---
+        if metric == 'Iterations':
+            legend_patches = []
+            
+            for i, method in enumerate(methods):
+                if method == 'exact': continue
 
-            subset = df[df['Method'] == method].sort_values('Week')
-            subset = subset.dropna(subset=[metric])
+                subset = df[df['Method'] == method].sort_values('Week')
+                subset = subset.dropna(subset=[metric])
 
-            if not subset.empty:
-                # X軸の位置計算：中心から左右に展開
-                # (i - (num_methods - 1) / 2) * bar_width
-                x_offset = (i - (num_methods - 1) / 2) * bar_width
-                x_values = subset['Week'] + x_offset
+                if not subset.empty:
+                    x_offset = (i - (num_methods - 1) / 2) * bar_width
+                    x_values = subset['Week'] + x_offset
+                    
+                    # データの準備
+                    total_iter = subset['Iterations']
+                    stagnant_iter = subset.get('Stagnant_Iterations', pd.Series([0]*len(total_iter)))
+                    effective_iter = total_iter - stagnant_iter
+                    
+                    base_color = colors[i % len(colors)]
+                    
+                    # 1. 有効な反復 (下段)
+                    ax1.bar(x_values, effective_iter,
+                            width=bar_width,
+                            color=base_color,
+                            label=method,
+                            alpha=0.9,
+                            edgecolor='white',
+                            linewidth=0.5)
+                    
+                    # 2. 停滞した反復 (上段、ハッチング付き)
+                    ax1.bar(x_values, stagnant_iter,
+                            bottom=effective_iter,
+                            width=bar_width,
+                            color=base_color,
+                            alpha=0.4, # 色を薄くする
+                            hatch='///', # 斜線ハッチング
+                            edgecolor='black', # 枠線を黒くして見やすく
+                            linewidth=0.0) # 枠線なし（ハッチングのみ）だがedgecolorはハッチングの色に影響
 
-                # 棒グラフの描画
-                ax1.bar(x_values, subset[metric],
-                        width=bar_width,
-                        color=colors[i % len(colors)],
-                        label=method,
-                        alpha=0.9,
-                        edgecolor='white', # 棒の境界を白くして区切りを明確に
-                        linewidth=0.5)
-                has_data = True
-        
+                    has_data = True
+                    # 凡例用のパッチを作成
+                    legend_patches.append(Patch(facecolor=base_color, label=method, alpha=0.9))
+
+            if has_data:
+                # 停滞の説明用パッチを追加
+                legend_patches.append(Patch(facecolor='white', edgecolor='black', hatch='///', label='Stagnation', alpha=0.5))
+                ax1.legend(handles=legend_patches, loc='upper left', bbox_to_anchor=(1, 1), fontsize=12)
+
+        # --- その他の指標（通常の集合棒グラフ） ---
+        else:
+            for i, method in enumerate(methods):
+                if method == 'exact' and metric in cg_only_metrics: continue
+
+                subset = df[df['Method'] == method].sort_values('Week')
+                subset = subset.dropna(subset=[metric])
+
+                if not subset.empty:
+                    x_offset = (i - (num_methods - 1) / 2) * bar_width
+                    x_values = subset['Week'] + x_offset
+
+                    ax1.bar(x_values, subset[metric],
+                            width=bar_width,
+                            color=colors[i % len(colors)],
+                            label=method,
+                            alpha=0.9,
+                            edgecolor='white',
+                            linewidth=0.5)
+                    has_data = True
+            
+            if has_data:
+                ax1.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=12)
+
+        # --- 共通のグラフ設定 ---
         if has_data:
             ax1.set_title(f"{metric_titles.get(metric, metric)} (N={emp})", fontsize=16)
             ax1.set_xlabel("Week", fontsize=14)
@@ -293,18 +370,14 @@ def plot_comparison(df, emp, methods, output_dir):
                 ax1.set_ylabel("Rate (%)", fontsize=14)
             elif metric in ['Objective_Value', 'Gap_Absolute']:
                 ax1.set_ylabel("Cost", fontsize=14)
+            elif metric == 'Iterations':
+                ax1.set_ylabel("Count", fontsize=14)
             else:
                 ax1.set_ylabel("Time (s)", fontsize=14)
             
-            # X軸の目盛りを整数（週）に固定
             ax1.set_xticks(all_weeks)
-            ax1.set_xticklabels(all_weeks) # 明示的にラベルを設定
-            
-            # グリッドはY軸のみ（横線）に入れるのが棒グラフの定石
+            ax1.set_xticklabels(all_weeks)
             ax1.grid(axis='y', linestyle='--', alpha=0.5)
-            
-            # 凡例
-            ax1.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=12)
             
             plt.tight_layout()
             output_path = os.path.join(output_dir, f"compare_{metric}_n{emp}.png")
@@ -313,23 +386,19 @@ def plot_comparison(df, emp, methods, output_dir):
             print(f"  Saved Comparison (Bar): {output_path}")
 
 def plot_cost_breakdown_individual(data_dict, emp, output_dir):
-    """
-    コスト内訳（積み上げ棒グラフ）を手法ごとに別ファイルで出力
-    """
+    """コスト内訳（積み上げ棒グラフ）を手法ごとに別ファイルで出力"""
     weeks = sorted(list(set(k[0] for k in data_dict.keys())))
     methods = sorted(list(set(k[1] for k in data_dict.keys())))
     
     if not weeks:
-        print("  [Cost Breakdown] No valid data available to plot.")
         return
 
     components = ['Base Wage', 'Mismatch Cost', 'Understaffing Penalty']
-    colors = ['#2ca02c', '#ff7f0e', '#d62728'] # 緑, オレンジ, 赤
+    colors = ['#2ca02c', '#ff7f0e', '#d62728'] 
     
     for method in methods:
         fig, ax = plt.subplots(figsize=(10, 6))
         
-        # この手法に関するデータを抽出
         valid_weeks = []
         subset_values = {c: [] for c in components}
         
@@ -360,13 +429,10 @@ def plot_cost_breakdown_individual(data_dict, emp, output_dir):
         ax.set_xticklabels(valid_weeks, fontsize=12)
         ax.grid(axis='y', linestyle='--', alpha=0.4)
         
-        # 凡例
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(handles[::-1], labels[::-1], loc='upper left', bbox_to_anchor=(1, 1), title="Cost Components")
         
         plt.tight_layout()
-        
-        # ファイル名を個別に設定
         output_path = os.path.join(output_dir, f"cost_breakdown_n{emp}_{method}.png")
         plt.savefig(output_path)
         plt.close()
@@ -420,7 +486,6 @@ def main():
 
     cost_data_store = {}
     
-    # データ範囲の決定
     if not df.empty:
         s_wk = args.start_week if args.start_week else df['Week'].min()
         e_wk = args.end_week if args.end_week else df['Week'].max()
@@ -438,7 +503,6 @@ def main():
                 if res:
                     cost_data_store[(wk, method)] = res
     
-    # ★変更: 個別出力用の関数を呼び出し
     plot_cost_breakdown_individual(cost_data_store, args.emp, base_dir)
 
     print("-" * 40)

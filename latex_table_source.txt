@@ -1,0 +1,13 @@
+% 生成されたLaTeXコード
+\begin{table}[htbp]
+  \centering
+  \caption{Computational Results}
+  \label{tab:results}
+  \begin{tabular}{lrrr} \hline
+    Method & Objective & Time (s) & Gap (\%) \\ \hline
+    std & 0.00 & 225.33 & 194.96 \\
+    acc & 0.00 & 248.88 & 55.21 \\
+    pruning & 0.00 & 237.27 & 54.54 \\
+    \hline
+  \end{tabular}
+\end{table}

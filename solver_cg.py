@@ -116,14 +116,18 @@ class ColumnGenerationSolver:
             model += expr == 1
             cons_c.append(model.constraints[list(model.constraints.keys())[-1]])
             
+        # ★修正: PULP_CBC_CMD ではなく COIN_CMD を使用する
+        # threads=1 は引数ではなく options に 'threads 1' として追加するのが確実です
+        base_options = ['randomSeed 42', 'randomCbcSeed 42', 'threads 1']
+
         if integer:
             if log_path:
-                solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=mip_time_limit, gapRel=mip_gap, logPath=log_path)
+                solver = pulp.COIN_CMD(path='cbc', msg=0, timeLimit=mip_time_limit, gapRel=mip_gap, logPath=log_path, options=base_options)
             else:
-                solver = pulp.PULP_CBC_CMD(msg=0, timeLimit=mip_time_limit, gapRel=mip_gap)
+                solver = pulp.COIN_CMD(path='cbc', msg=0, timeLimit=mip_time_limit, gapRel=mip_gap, options=base_options)
         else:
-            solver = pulp.PULP_CBC_CMD(msg=0)
-        
+            solver = pulp.COIN_CMD(path='cbc', msg=0, options=base_options)
+
         model.solve(solver)
         elapsed = time.perf_counter() - t_start
         if integer: self.stats['time_mip'] += elapsed
@@ -241,7 +245,7 @@ class ColumnGenerationSolver:
         self.stats['time_graph'] += (time.perf_counter() - t_graph_start)
         return pool_added_count, graph_added_count
 
-    def solve(self, max_iter=1000, time_limit=36000, tol=1e-8, patience=100, mip_rc_threshold=1e10, mip_gap=0.0001):
+    def solve(self, max_iter=1000, time_limit=36000, tol=1e-8, patience=10, mip_rc_threshold=1e10, mip_gap=0.0001):
         start_total = time.time()
         self.reset_stats()
         self.initialize_rmp()
@@ -281,7 +285,6 @@ class ColumnGenerationSolver:
             for idx in self.rmp_indices:
                 col = self.pool[idx]
                 k = col['group_id']
-                rc = col['cost'] - np.dot(last_pi, col['schedule']) - sigma[k] # sigmaはlast_sigmaを使うべきですが、ここではループ内変数と混ざらないよう注意
                 # 正確には last_sigma を使う
                 rc = col['cost'] - np.dot(last_pi, col['schedule']) - last_sigma[k]
                 

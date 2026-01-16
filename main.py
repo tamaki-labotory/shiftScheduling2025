@@ -11,10 +11,11 @@ from collections import defaultdict
 from problem import ShiftProblemData
 from solver_exact import ExactMIPSolver
 from solver_cg import ColumnGenerationSolver
-from solver_cg_pruning import ColumnGenerationSolverWithAging
+from solver_cg_pruning import ColumnGenerationSolverWithPruning
 from solver_cg_lru import ColumnGenerationSolverLRU
 from solver_cg_bnb import ColumnGenerationBnBSolver
 from solver_cg_priority import ColumnGenerationSolverPriority
+from solver_cg_neighbor import ColumnGenerationSolverNeighbor
 from visualization import ScheduleVisualizer, BenchmarkReporter, ComparisonPlotter, MIPConvergencePlotter  
 
 SOLVER_CONFIG = {
@@ -43,7 +44,7 @@ SOLVER_CONFIG = {
         'kwargs': {'use_pool': True}
     },
     'pruning': {
-        'class': ColumnGenerationSolverWithAging,
+        'class': ColumnGenerationSolverWithPruning,
         'label': 'CG Pruning',
         'color': 'blue',
         'marker': '^',
@@ -73,6 +74,14 @@ SOLVER_CONFIG = {
         'marker': 'D',
         'needs_history': False,
         'kwargs': {'use_pool': True}
+    },
+    'neighbor': {
+        'class': ColumnGenerationSolverNeighbor,
+        'label': 'CG Neighbor (IP1B)', # IP1B from PDF 
+        'color': 'magenta',
+        'marker': 'v',
+        'needs_history': False,
+        'kwargs': {'use_pool': False}
     }
 }
 
@@ -117,9 +126,16 @@ def parse_report_stats(filepath):
         print(f"Warning: Failed to parse stats from {filepath}: {e}")
     return obj_val, elapsed
 
-def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
+def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None, solver_params=None):
     if selected_methods is None:
         selected_methods = list(SOLVER_CONFIG.keys())
+    
+    if solver_params is None:
+        solver_params = {}
+
+    # パラメータの展開（デフォルト値はargparse側で設定するが、念のため安全策）
+    time_limit = solver_params.get('time_limit', 3600)
+    mip_gap = solver_params.get('mip_gap', 0.01)
 
     active_methods = []
     for m in selected_methods:
@@ -155,6 +171,7 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
         print(f"No existing data found. Goal: Run from Week 1 to Week {target_week_num}.")
 
     print(f"Selected Methods: {', '.join([SOLVER_CONFIG[m]['label'] for m in active_methods])}")
+    print(f"Solver Parameters: {solver_params}")
     print(f"Output Directory: {output_dir}")
     
     # 問題設定のロードまたは作成
@@ -184,7 +201,7 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
     
     header_time = f"{'Wk':<3} |"
     for m in active_methods:
-        header_time += f" {SOLVER_CONFIG[m]['label'] + ' (s)':<12} |"
+        header_time += f" {SOLVER_CONFIG[m]['label'] + ' (s)':<18} |"
     
     header_gap = ""
     has_exact = 'exact' in active_methods
@@ -206,6 +223,7 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
         week_result = {'Week': current_week}
         week_objs = {}
         
+        # 修正: 変数を初期化し、週番号(Wk)をセットする
         row_str = f"{current_week:<3} |"
         
         for name in active_methods:
@@ -218,8 +236,6 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
             report_file = os.path.join(method_dir, f"report_wk{current_week}.txt")
             
             # --- 実行要否判定 ---
-            # プールとレポート両方があればスキップ可能とみなす
-            # Exactの場合もpool_fileを確認するように変更
             skip_execution = False
             if os.path.exists(pool_file) and os.path.exists(report_file):
                 skip_execution = True
@@ -255,14 +271,27 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
                 # === RUN ===
                 # 計算実行
                 if name == 'exact':
+                    # Exact Solverの場合
                     if n_employees > 20:
+                        print(" [Info] Skipping Exact solver for large instance > 20")
                         obj_val, elapsed = 0.0, 0.0
                         final_sched = np.zeros((prob.K, prob.T))
                     else:
-                        obj_val, elapsed, final_sched = solver.solve(time_limit=3600)
+                        # Exact Solverは time_limit と gap くらいしか受け取らない想定
+                        obj_val, elapsed, final_sched = solver.solve(
+                            time_limit=time_limit,
+                            gapRel=mip_gap 
+                        )
                 else:
-                    max_iter = 400
-                    obj_val, elapsed, stats, final_sched = solver.solve(max_iter=max_iter)
+                    # CG系ソルバーの場合 (全てのパラメータを渡す)
+                    obj_val, elapsed, stats, final_sched = solver.solve(
+                        max_iter=solver_params.get('max_iter', 1000),
+                        time_limit=solver_params.get('time_limit', 3600),
+                        tol=solver_params.get('tol', 1e-8),
+                        patience=solver_params.get('patience', 10),
+                        mip_rc_threshold=solver_params.get('mip_rc_threshold', 1e10),
+                        mip_gap=solver_params.get('mip_gap', 0.0001)
+                    )
                     
                     if cfg['needs_history']:
                         for k in range(prob.K):
@@ -270,7 +299,7 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
                                 if final_sched[k, t] == 1:
                                     histories[name][t] = histories[name].get(t, 0) + 1
                                     
-                # === 保存処理（ここを修正: Exactも保存する） ===
+                # === 保存処理 ===
                 if hasattr(solver, 'save_pool_to_csv'):
                      solver.save_pool_to_csv(pool_file)
 
@@ -280,10 +309,9 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
                     schedule_img
                 )
                 BenchmarkReporter.save_analysis_report(
-                    report_file, current_week, solver, prob, obj_val, elapsed, final_sched
+                    report_file, current_week, solver, prob, obj_val, elapsed, final_sched, solver_params=solver_params
                 )
 
-                # stats内にmip_trajectoryがあり、かつデータが存在する場合のみ描画
                 if 'mip_trajectory' in stats and stats['mip_trajectory']:
                     mip_plot_file = os.path.join(method_dir, f"mip_convergence_wk{current_week}.png")
                     MIPConvergencePlotter.plot_convergence(
@@ -306,10 +334,14 @@ def run_benchmark_comparison(n_weeks=5, n_employees=10, selected_methods=None):
 
         # Gap計算
         if has_exact:
-            base_obj = week_objs['exact']
+            base_obj = week_objs.get('exact', 0.0)
             for name in active_methods:
                 if name == 'exact': continue
-                gap = (week_objs[name] - base_obj)/base_obj * 100 if base_obj > 1e-5 else 0.0
+                val = week_objs.get(name, 0.0)
+                if base_obj > 1e-5:
+                    gap = (val - base_obj)/base_obj * 100
+                else:
+                    gap = 0.0
                 row_str += f" {gap:<6.2f} |"
 
         print(row_str)
@@ -321,6 +353,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run Shift Scheduling Benchmark')
     parser.add_argument('--weeks', type=int, default=5, help='Number of NEW weeks to add')
     parser.add_argument('--employees', type=int, default=10, help='Number of employees')
+    
+    # Solver Parameters
+    parser.add_argument('--max_iter', type=int, default=1000, help='Max iterations for CG (default: 1000)')
+    parser.add_argument('--time_limit', type=float, default=3600.0, help='Time limit in seconds (default: 3600)')
+    parser.add_argument('--tol', type=float, default=1e-8, help='Convergence tolerance for CG (default: 1e-8)')
+    parser.add_argument('--patience', type=int, default=100, help='Patience for early stopping (default: 10)')
+    parser.add_argument('--mip_rc_threshold', type=float, default=1e10, help='Reduced cost threshold for final MIP (default: 1e10)')
+    parser.add_argument('--mip_gap', type=float, default=0.0001, help='MIP gap for final integer solution (default: 0.01)')
+
     all_keys = list(SOLVER_CONFIG.keys())
     parser.add_argument('--methods', nargs='+', default=all_keys, 
                         choices=all_keys,
@@ -328,10 +369,21 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
+    # 引数を辞書にまとめる
+    solver_params = {
+        'max_iter': args.max_iter,
+        'time_limit': args.time_limit,
+        'tol': args.tol,
+        'patience': args.patience,
+        'mip_rc_threshold': args.mip_rc_threshold,
+        'mip_gap': args.mip_gap
+    }
+
     df, out_dir, active_methods = run_benchmark_comparison(
         n_weeks=args.weeks, 
         n_employees=args.employees,
-        selected_methods=args.methods
+        selected_methods=args.methods,
+        solver_params=solver_params
     )
     
     # 比較グラフ生成

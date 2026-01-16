@@ -1,6 +1,6 @@
 from solver_cg import ColumnGenerationSolver
 
-class ColumnGenerationSolverWithAging(ColumnGenerationSolver):
+class ColumnGenerationSolverWithPruning(ColumnGenerationSolver):
     def __init__(self, problem, use_pool=True, pool_cleanup_threshold=2000):
         # 親クラスの初期化を呼び出す
         super().__init__(problem, use_pool)
