@@ -7,49 +7,49 @@
   max_iter             : 1000
   time_limit           : 3600
   tol                  : 1e-08
-  patience             : 5
-  mip_rc_threshold     : 1e+100
+  patience             : 3
+  mip_rc_threshold     : 1e+10
   mip_gap              : 0.0001
 
 1. Performance Metrics
 ----------------------
-  Objective Value : 4,190,000.00
+  Objective Value : 5,202,800.00
   RMP Relaxed Value (Root): 1,706,020.00
-  Integrality Gap       : 145.6009 %
-  MIP Best Bound (Final)  : 4,190,000.00
+  Integrality Gap       : 204.9671 %
+  MIP Best Bound (Final)  : 5,202,800.00
   Final MIP Gap           : 0.0000 %
-  Execution Time  : 65.7476 sec
-  Iterations      : 111
-  RMP Time  : 22.0887 s
-  MIP Time  : 15.2333 s
-  Pool Search Time: 0.0462 s
-  Graph Search Time: 28.3186 s
-  MIP Decision Variables: 556 (Columns used in Final MIP)
-  MIP Filtered Columns  : 0 (Removed before MIP)
+  Execution Time  : 30.3337 sec
+  Iterations      : 109
+  RMP Time  : 12.2997 s
+  MIP Time  : 1.0054 s
+  Pool Search Time: 0.0230 s
+  Graph Search Time: 16.9703 s
+  MIP Decision Variables: 109 (Columns used in Final MIP)
+  MIP Filtered Columns  : 440 (Removed before MIP)
 
 2. Column Generation & Pool Statistics
 --------------------------------------
-  Total Columns Generated (History) : 556
+  Total Columns Generated (History) : 549
   Pool Hits (Reused from History)   : 0
-  Graph Gen (Newly Created)         : 546
+  Graph Gen (Newly Created)         : 539
   Pool Hit Rate                     : 0.0%
 
 3. Shift Pattern Diversity (Unique Patterns)
 ------------------------------------------
-  Type: TypeA  | Unique Patterns:  105 / Total Gen:  105
+  Type: TypeA  | Unique Patterns:  104 / Total Gen:  104
        -> Avg Length of Unique Patterns: 47.3 hours
-  Type: TypeB  | Unique Patterns:  112 / Total Gen:  224
+  Type: TypeB  | Unique Patterns:  110 / Total Gen:  220
        -> Avg Length of Unique Patterns: 36.3 hours
-  Type: TypeC  | Unique Patterns:  111 / Total Gen:  222
+  Type: TypeC  | Unique Patterns:  110 / Total Gen:  220
        -> Avg Length of Unique Patterns: 26.1 hours
 
 4. Final Schedule Assignment Breakdown
 --------------------------------------
   Emp 0  (TypeA): 48 hours worked
-  Emp 1  (TypeB): 36 hours worked
-  Emp 2  (TypeB): 37 hours worked
-  Emp 3  (TypeC): 26 hours worked
-  Emp 4  (TypeC): 28 hours worked
+  Emp 1  (TypeB): 39 hours worked
+  Emp 2  (TypeB): 38 hours worked
+  Emp 3  (TypeC): 29 hours worked
+  Emp 4  (TypeC): 26 hours worked
 
 5. Iteration History (Convergence Log)
 --------------------------------------
@@ -164,5 +164,3 @@ Iter  | RMP Obj Value   | Pool Hits  | Graph Gen
 107   | 1,706,020.00    | 0          | 4         
 108   | 1,706,020.00    | 0          | 4         
 109   | 1,706,020.00    | 0          | 4         
-110   | 1,706,020.00    | 0          | 5         
-111   | 1,706,020.00    | 0          | 2         

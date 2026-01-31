@@ -1,0 +1,456 @@
+=== 実験準備: マスタ設定ファイルの作成 ===
+Generating master config with 5 employees for 15 weeks...
+Initializing Problem: 5 Employees
+No existing data found. Goal: Run from Week 1 to Week 15.
+Selected Methods: CG Std
+Solver Parameters: {'max_iter': 1000, 'time_limit': 600.0, 'tol': 1e-08, 'patience': 100, 'mip_rc_threshold': inf, 'mip_gap': 0.0}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Std (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/std/pool_wk1.csv (Total 678 columns, Used in MIP: 678, Selected: 5)
+1   | 72.09        |
+  -> Pool saved to: results_5emp/std/pool_wk2.csv (Total 2116 columns, Used in MIP: 2116, Selected: 5)
+2   | 467.13       |
+  -> Pool saved to: results_5emp/std/pool_wk3.csv (Total 1356 columns, Used in MIP: 1356, Selected: 5)
+3   | 190.24       |
+  -> Pool saved to: results_5emp/std/pool_wk4.csv (Total 1263 columns, Used in MIP: 1263, Selected: 5)
+4   | 165.62       |
+  -> Pool saved to: results_5emp/std/pool_wk5.csv (Total 1415 columns, Used in MIP: 1415, Selected: 5)
+5   | 192.04       |
+  -> Pool saved to: results_5emp/std/pool_wk6.csv (Total 1112 columns, Used in MIP: 1112, Selected: 5)
+6   | 145.80       |
+  -> Pool saved to: results_5emp/std/pool_wk7.csv (Total 1187 columns, Used in MIP: 1187, Selected: 5)
+7   | 154.47       |
+  -> Pool saved to: results_5emp/std/pool_wk8.csv (Total 1242 columns, Used in MIP: 1242, Selected: 5)
+8   | 185.82       |
+  -> Pool saved to: results_5emp/std/pool_wk9.csv (Total 1009 columns, Used in MIP: 1009, Selected: 5)
+9   | 116.90       |
+  -> Pool saved to: results_5emp/std/pool_wk10.csv (Total 1456 columns, Used in MIP: 1456, Selected: 5)
+10  | 205.06       |
+  -> Pool saved to: results_5emp/std/pool_wk11.csv (Total 1027 columns, Used in MIP: 1027, Selected: 5)
+11  | 144.07       |
+  -> Pool saved to: results_5emp/std/pool_wk12.csv (Total 1023 columns, Used in MIP: 1023, Selected: 5)
+12  | 121.62       |
+  -> Pool saved to: results_5emp/std/pool_wk13.csv (Total 990 columns, Used in MIP: 990, Selected: 5)
+13  | 101.49       |
+  -> Pool saved to: results_5emp/std/pool_wk14.csv (Total 1088 columns, Used in MIP: 1088, Selected: 5)
+14  | 158.10       |
+  -> Pool saved to: results_5emp/std/pool_wk15.csv (Total 1364 columns, Used in MIP: 1364, Selected: 5)
+15  | 175.14       |
+
+All plots and reports saved to: results_5emp/
+Master config saved to master_problem_config.json
+
+=== Starting Experiment 1: CG Termination Criteria ===
+Running Exp1 with Patience = 5 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Std
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 5, 'mip_rc_threshold': inf, 'mip_gap': 0.01}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Std (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/std/pool_wk1.csv (Total 556 columns, Used in MIP: 556, Selected: 5)
+1   | 49.28        |
+  -> Pool saved to: results_5emp/std/pool_wk2.csv (Total 875 columns, Used in MIP: 875, Selected: 5)
+2   | 93.67        |
+  -> Pool saved to: results_5emp/std/pool_wk3.csv (Total 658 columns, Used in MIP: 658, Selected: 5)
+3   | 65.48        |
+  -> Pool saved to: results_5emp/std/pool_wk4.csv (Total 757 columns, Used in MIP: 757, Selected: 5)
+4   | 73.41        |
+  -> Pool saved to: results_5emp/std/pool_wk5.csv (Total 615 columns, Used in MIP: 615, Selected: 5)
+5   | 52.42        |
+  -> Pool saved to: results_5emp/std/pool_wk6.csv (Total 655 columns, Used in MIP: 655, Selected: 5)
+6   | 61.81        |
+  -> Pool saved to: results_5emp/std/pool_wk7.csv (Total 734 columns, Used in MIP: 734, Selected: 5)
+7   | 66.57        |
+  -> Pool saved to: results_5emp/std/pool_wk8.csv (Total 648 columns, Used in MIP: 648, Selected: 5)
+8   | 56.39        |
+  -> Pool saved to: results_5emp/std/pool_wk9.csv (Total 704 columns, Used in MIP: 704, Selected: 5)
+9   | 66.99        |
+  -> Pool saved to: results_5emp/std/pool_wk10.csv (Total 850 columns, Used in MIP: 850, Selected: 5)
+10  | 87.08        |
+  -> Pool saved to: results_5emp/std/pool_wk11.csv (Total 546 columns, Used in MIP: 546, Selected: 5)
+11  | 53.33        |
+  -> Pool saved to: results_5emp/std/pool_wk12.csv (Total 443 columns, Used in MIP: 443, Selected: 5)
+12  | 35.89        |
+  -> Pool saved to: results_5emp/std/pool_wk13.csv (Total 340 columns, Used in MIP: 340, Selected: 5)
+13  | 23.22        |
+  -> Pool saved to: results_5emp/std/pool_wk14.csv (Total 650 columns, Used in MIP: 650, Selected: 5)
+14  | 60.06        |
+  -> Pool saved to: results_5emp/std/pool_wk15.csv (Total 719 columns, Used in MIP: 719, Selected: 5)
+15  | 59.16        |
+
+All plots and reports saved to: results_5emp/
+Finished Exp1 (Patience=5). Saved to results_exp1_pat_5
+Running Exp1 with Patience = 10 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Std
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 10, 'mip_rc_threshold': inf, 'mip_gap': 0.01}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Std (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/std/pool_wk1.csv (Total 678 columns, Used in MIP: 678, Selected: 5)
+1   | 71.10        |
+  -> Pool saved to: results_5emp/std/pool_wk2.csv (Total 971 columns, Used in MIP: 971, Selected: 5)
+2   | 109.53       |
+  -> Pool saved to: results_5emp/std/pool_wk3.csv (Total 836 columns, Used in MIP: 836, Selected: 5)
+3   | 87.14        |
+  -> Pool saved to: results_5emp/std/pool_wk4.csv (Total 779 columns, Used in MIP: 779, Selected: 5)
+4   | 82.52        |
+  -> Pool saved to: results_5emp/std/pool_wk5.csv (Total 640 columns, Used in MIP: 640, Selected: 5)
+5   | 54.14        |
+  -> Pool saved to: results_5emp/std/pool_wk6.csv (Total 680 columns, Used in MIP: 680, Selected: 5)
+6   | 62.11        |
+  -> Pool saved to: results_5emp/std/pool_wk7.csv (Total 759 columns, Used in MIP: 759, Selected: 5)
+7   | 68.93        |
+  -> Pool saved to: results_5emp/std/pool_wk8.csv (Total 663 columns, Used in MIP: 663, Selected: 5)
+8   | 59.49        |
+  -> Pool saved to: results_5emp/std/pool_wk9.csv (Total 834 columns, Used in MIP: 834, Selected: 5)
+9   | 82.26        |
+  -> Pool saved to: results_5emp/std/pool_wk10.csv (Total 965 columns, Used in MIP: 965, Selected: 5)
+10  | 100.43       |
+  -> Pool saved to: results_5emp/std/pool_wk11.csv (Total 826 columns, Used in MIP: 826, Selected: 5)
+11  | 96.82        |
+  -> Pool saved to: results_5emp/std/pool_wk12.csv (Total 716 columns, Used in MIP: 716, Selected: 5)
+12  | 66.99        |
+  -> Pool saved to: results_5emp/std/pool_wk13.csv (Total 952 columns, Used in MIP: 952, Selected: 5)
+13  | 93.38        |
+  -> Pool saved to: results_5emp/std/pool_wk14.csv (Total 836 columns, Used in MIP: 836, Selected: 5)
+14  | 87.13        |
+  -> Pool saved to: results_5emp/std/pool_wk15.csv (Total 831 columns, Used in MIP: 831, Selected: 5)
+15  | 73.29        |
+
+All plots and reports saved to: results_5emp/
+Finished Exp1 (Patience=10). Saved to results_exp1_pat_10
+Running Exp1 with Patience = 15 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Std
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 15, 'mip_rc_threshold': inf, 'mip_gap': 0.01}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Std (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/std/pool_wk1.csv (Total 678 columns, Used in MIP: 678, Selected: 5)
+1   | 71.09        |
+  -> Pool saved to: results_5emp/std/pool_wk2.csv (Total 1114 columns, Used in MIP: 1114, Selected: 5)
+2   | 135.98       |
+  -> Pool saved to: results_5emp/std/pool_wk3.csv (Total 858 columns, Used in MIP: 858, Selected: 5)
+3   | 94.53        |
+  -> Pool saved to: results_5emp/std/pool_wk4.csv (Total 1263 columns, Used in MIP: 1263, Selected: 5)
+4   | 164.01       |
+  -> Pool saved to: results_5emp/std/pool_wk5.csv (Total 750 columns, Used in MIP: 750, Selected: 5)
+5   | 68.50        |
+  -> Pool saved to: results_5emp/std/pool_wk6.csv (Total 705 columns, Used in MIP: 705, Selected: 5)
+6   | 64.67        |
+  -> Pool saved to: results_5emp/std/pool_wk7.csv (Total 912 columns, Used in MIP: 912, Selected: 5)
+7   | 97.75        |
+  -> Pool saved to: results_5emp/std/pool_wk8.csv (Total 860 columns, Used in MIP: 860, Selected: 5)
+8   | 90.69        |
+  -> Pool saved to: results_5emp/std/pool_wk9.csv (Total 857 columns, Used in MIP: 857, Selected: 5)
+9   | 82.36        |
+  -> Pool saved to: results_5emp/std/pool_wk10.csv (Total 1295 columns, Used in MIP: 1295, Selected: 5)
+10  | 152.67       |
+  -> Pool saved to: results_5emp/std/pool_wk11.csv (Total 845 columns, Used in MIP: 845, Selected: 5)
+11  | 102.72       |
+  -> Pool saved to: results_5emp/std/pool_wk12.csv (Total 796 columns, Used in MIP: 796, Selected: 5)
+12  | 78.03        |
+  -> Pool saved to: results_5emp/std/pool_wk13.csv (Total 973 columns, Used in MIP: 973, Selected: 5)
+13  | 97.24        |
+  -> Pool saved to: results_5emp/std/pool_wk14.csv (Total 859 columns, Used in MIP: 859, Selected: 5)
+14  | 92.94        |
+  -> Pool saved to: results_5emp/std/pool_wk15.csv (Total 852 columns, Used in MIP: 852, Selected: 5)
+15  | 76.92        |
+
+All plots and reports saved to: results_5emp/
+Finished Exp1 (Patience=15). Saved to results_exp1_pat_15
+Running Exp1 with Patience = 100 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Std
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 100, 'mip_rc_threshold': inf, 'mip_gap': 0.01}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Std (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/std/pool_wk1.csv (Total 678 columns, Used in MIP: 678, Selected: 5)
+1   | 70.79        |
+  -> Pool saved to: results_5emp/std/pool_wk2.csv (Total 2116 columns, Used in MIP: 2116, Selected: 5)
+2   | 464.07       |
+  -> Pool saved to: results_5emp/std/pool_wk3.csv (Total 1356 columns, Used in MIP: 1356, Selected: 5)
+3   | 189.53       |
+  -> Pool saved to: results_5emp/std/pool_wk4.csv (Total 1263 columns, Used in MIP: 1263, Selected: 5)
+4   | 163.96       |
+  -> Pool saved to: results_5emp/std/pool_wk5.csv (Total 1415 columns, Used in MIP: 1415, Selected: 5)
+5   | 191.74       |
+  -> Pool saved to: results_5emp/std/pool_wk6.csv (Total 1112 columns, Used in MIP: 1112, Selected: 5)
+6   | 145.51       |
+  -> Pool saved to: results_5emp/std/pool_wk7.csv (Total 1187 columns, Used in MIP: 1187, Selected: 5)
+7   | 153.82       |
+  -> Pool saved to: results_5emp/std/pool_wk8.csv (Total 1242 columns, Used in MIP: 1242, Selected: 5)
+8   | 185.21       |
+  -> Pool saved to: results_5emp/std/pool_wk9.csv (Total 1009 columns, Used in MIP: 1009, Selected: 5)
+9   | 116.39       |
+  -> Pool saved to: results_5emp/std/pool_wk10.csv (Total 1456 columns, Used in MIP: 1456, Selected: 5)
+10  | 206.25       |
+  -> Pool saved to: results_5emp/std/pool_wk11.csv (Total 1027 columns, Used in MIP: 1027, Selected: 5)
+11  | 143.56       |
+  -> Pool saved to: results_5emp/std/pool_wk12.csv (Total 1023 columns, Used in MIP: 1023, Selected: 5)
+12  | 121.49       |
+  -> Pool saved to: results_5emp/std/pool_wk13.csv (Total 990 columns, Used in MIP: 990, Selected: 5)
+13  | 101.06       |
+  -> Pool saved to: results_5emp/std/pool_wk14.csv (Total 1088 columns, Used in MIP: 1088, Selected: 5)
+14  | 157.97       |
+  -> Pool saved to: results_5emp/std/pool_wk15.csv (Total 1364 columns, Used in MIP: 1364, Selected: 5)
+15  | 174.47       |
+
+All plots and reports saved to: results_5emp/
+Finished Exp1 (Patience=100). Saved to results_exp1_pat_100
+
+=== Starting Experiment 2: MIP Column Selection ===
+Running Exp2 with RC Threshold = 1 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Std
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 100, 'mip_rc_threshold': 1.0, 'mip_gap': 0.0}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Std (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/std/pool_wk1.csv (Total 678 columns, Used in MIP: 160, Selected: 5)
+1   | 61.86        |
+  -> Pool saved to: results_5emp/std/pool_wk2.csv (Total 2116 columns, Used in MIP: 378, Selected: 5)
+2   | 415.98       |
+  -> Pool saved to: results_5emp/std/pool_wk3.csv (Total 1356 columns, Used in MIP: 281, Selected: 5)
+3   | 178.62       |
+  -> Pool saved to: results_5emp/std/pool_wk4.csv (Total 1263 columns, Used in MIP: 244, Selected: 5)
+4   | 150.92       |
+  -> Pool saved to: results_5emp/std/pool_wk5.csv (Total 1415 columns, Used in MIP: 135, Selected: 5)
+5   | 187.32       |
+  -> Pool saved to: results_5emp/std/pool_wk6.csv (Total 1112 columns, Used in MIP: 251, Selected: 5)
+6   | 130.44       |
+  -> Pool saved to: results_5emp/std/pool_wk7.csv (Total 1187 columns, Used in MIP: 238, Selected: 5)
+7   | 149.18       |
+  -> Pool saved to: results_5emp/std/pool_wk8.csv (Total 1242 columns, Used in MIP: 301, Selected: 5)
+8   | 176.48       |
+  -> Pool saved to: results_5emp/std/pool_wk9.csv (Total 1009 columns, Used in MIP: 215, Selected: 5)
+9   | 110.50       |
+  -> Pool saved to: results_5emp/std/pool_wk10.csv (Total 1456 columns, Used in MIP: 292, Selected: 5)
+10  | 197.70       |
+  -> Pool saved to: results_5emp/std/pool_wk11.csv (Total 1027 columns, Used in MIP: 295, Selected: 5)
+11  | 131.12       |
+  -> Pool saved to: results_5emp/std/pool_wk12.csv (Total 1023 columns, Used in MIP: 198, Selected: 5)
+12  | 116.95       |
+  -> Pool saved to: results_5emp/std/pool_wk13.csv (Total 990 columns, Used in MIP: 182, Selected: 5)
+13  | 99.26        |
+  -> Pool saved to: results_5emp/std/pool_wk14.csv (Total 1088 columns, Used in MIP: 259, Selected: 5)
+14  | 151.82       |
+  -> Pool saved to: results_5emp/std/pool_wk15.csv (Total 1364 columns, Used in MIP: 226, Selected: 5)
+15  | 172.64       |
+
+All plots and reports saved to: results_5emp/
+Finished Exp2 (RC=1). Saved to results_exp2_rc_1
+Running Exp2 with RC Threshold = 1000 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Std
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 100, 'mip_rc_threshold': 1000.0, 'mip_gap': 0.0}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Std (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/std/pool_wk1.csv (Total 678 columns, Used in MIP: 186, Selected: 5)
+1   | 61.92        |
+  -> Pool saved to: results_5emp/std/pool_wk2.csv (Total 2116 columns, Used in MIP: 530, Selected: 5)
+2   | 422.04       |
+  -> Pool saved to: results_5emp/std/pool_wk3.csv (Total 1356 columns, Used in MIP: 393, Selected: 5)
+3   | 179.69       |
+  -> Pool saved to: results_5emp/std/pool_wk4.csv (Total 1263 columns, Used in MIP: 500, Selected: 5)
+4   | 154.26       |
+  -> Pool saved to: results_5emp/std/pool_wk5.csv (Total 1415 columns, Used in MIP: 277, Selected: 5)
+5   | 188.84       |
+  -> Pool saved to: results_5emp/std/pool_wk6.csv (Total 1112 columns, Used in MIP: 322, Selected: 5)
+6   | 135.69       |
+  -> Pool saved to: results_5emp/std/pool_wk7.csv (Total 1187 columns, Used in MIP: 363, Selected: 5)
+7   | 151.81       |
+  -> Pool saved to: results_5emp/std/pool_wk8.csv (Total 1242 columns, Used in MIP: 359, Selected: 5)
+8   | 178.80       |
+  -> Pool saved to: results_5emp/std/pool_wk9.csv (Total 1009 columns, Used in MIP: 398, Selected: 5)
+9   | 110.60       |
+  -> Pool saved to: results_5emp/std/pool_wk10.csv (Total 1456 columns, Used in MIP: 338, Selected: 5)
+10  | 199.50       |
+  -> Pool saved to: results_5emp/std/pool_wk11.csv (Total 1027 columns, Used in MIP: 333, Selected: 5)
+11  | 131.49       |
+  -> Pool saved to: results_5emp/std/pool_wk12.csv (Total 1023 columns, Used in MIP: 378, Selected: 5)
+12  | 119.36       |
+  -> Pool saved to: results_5emp/std/pool_wk13.csv (Total 990 columns, Used in MIP: 336, Selected: 5)
+13  | 100.04       |
+  -> Pool saved to: results_5emp/std/pool_wk14.csv (Total 1088 columns, Used in MIP: 345, Selected: 5)
+14  | 153.37       |
+  -> Pool saved to: results_5emp/std/pool_wk15.csv (Total 1364 columns, Used in MIP: 473, Selected: 5)
+15  | 175.04       |
+
+All plots and reports saved to: results_5emp/
+Finished Exp2 (RC=1000). Saved to results_exp2_rc_1000
+Running Exp2 with RC Threshold = 100000 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Std
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 100, 'mip_rc_threshold': 100000.0, 'mip_gap': 0.0}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Std (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/std/pool_wk1.csv (Total 678 columns, Used in MIP: 249, Selected: 5)
+1   | 62.02        |
+  -> Pool saved to: results_5emp/std/pool_wk2.csv (Total 2116 columns, Used in MIP: 915, Selected: 5)
+2   | 430.35       |
+  -> Pool saved to: results_5emp/std/pool_wk3.csv (Total 1356 columns, Used in MIP: 927, Selected: 5)
+3   | 188.01       |
+  -> Pool saved to: results_5emp/std/pool_wk4.csv (Total 1263 columns, Used in MIP: 1263, Selected: 5)
+4   | 163.50       |
+  -> Pool saved to: results_5emp/std/pool_wk5.csv (Total 1415 columns, Used in MIP: 964, Selected: 5)
+5   | 188.51       |
+  -> Pool saved to: results_5emp/std/pool_wk6.csv (Total 1112 columns, Used in MIP: 880, Selected: 5)
+6   | 142.50       |
+  -> Pool saved to: results_5emp/std/pool_wk7.csv (Total 1187 columns, Used in MIP: 1187, Selected: 5)
+7   | 155.66       |
+  -> Pool saved to: results_5emp/std/pool_wk8.csv (Total 1242 columns, Used in MIP: 813, Selected: 5)
+8   | 179.95       |
+  -> Pool saved to: results_5emp/std/pool_wk9.csv (Total 1009 columns, Used in MIP: 823, Selected: 5)
+9   | 114.64       |
+  -> Pool saved to: results_5emp/std/pool_wk10.csv (Total 1456 columns, Used in MIP: 811, Selected: 5)
+10  | 199.28       |
+  -> Pool saved to: results_5emp/std/pool_wk11.csv (Total 1027 columns, Used in MIP: 632, Selected: 5)
+11  | 142.93       |
+  -> Pool saved to: results_5emp/std/pool_wk12.csv (Total 1023 columns, Used in MIP: 575, Selected: 5)
+12  | 119.72       |
+  -> Pool saved to: results_5emp/std/pool_wk13.csv (Total 990 columns, Used in MIP: 769, Selected: 5)
+13  | 100.12       |
+  -> Pool saved to: results_5emp/std/pool_wk14.csv (Total 1088 columns, Used in MIP: 1088, Selected: 5)
+14  | 158.07       |
+  -> Pool saved to: results_5emp/std/pool_wk15.csv (Total 1364 columns, Used in MIP: 1364, Selected: 5)
+15  | 174.50       |
+
+All plots and reports saved to: results_5emp/
+Finished Exp2 (RC=100000). Saved to results_exp2_rc_100000
+Running Exp2 with RC Threshold = 10000000 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Std
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 100, 'mip_rc_threshold': 10000000.0, 'mip_gap': 0.0}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Std (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/std/pool_wk1.csv (Total 678 columns, Used in MIP: 674, Selected: 5)
+1   | 72.08        |
+  -> Pool saved to: results_5emp/std/pool_wk2.csv (Total 2116 columns, Used in MIP: 2115, Selected: 5)
+2   | 469.03       |
+  -> Pool saved to: results_5emp/std/pool_wk3.csv (Total 1356 columns, Used in MIP: 1354, Selected: 5)
+3   | 190.39       |
+  -> Pool saved to: results_5emp/std/pool_wk4.csv (Total 1263 columns, Used in MIP: 1263, Selected: 5)
+4   | 163.58       |
+  -> Pool saved to: results_5emp/std/pool_wk5.csv (Total 1415 columns, Used in MIP: 1415, Selected: 5)
+5   | 191.85       |
+  -> Pool saved to: results_5emp/std/pool_wk6.csv (Total 1112 columns, Used in MIP: 1112, Selected: 5)
+6   | 145.82       |
+  -> Pool saved to: results_5emp/std/pool_wk7.csv (Total 1187 columns, Used in MIP: 1187, Selected: 5)
+7   | 154.37       |
+  -> Pool saved to: results_5emp/std/pool_wk8.csv (Total 1242 columns, Used in MIP: 1242, Selected: 5)
+8   | 185.88       |
+  -> Pool saved to: results_5emp/std/pool_wk9.csv (Total 1009 columns, Used in MIP: 1009, Selected: 5)
+9   | 116.68       |
+  -> Pool saved to: results_5emp/std/pool_wk10.csv (Total 1456 columns, Used in MIP: 1456, Selected: 5)
+10  | 205.21       |
+  -> Pool saved to: results_5emp/std/pool_wk11.csv (Total 1027 columns, Used in MIP: 1027, Selected: 5)
+11  | 143.90       |
+  -> Pool saved to: results_5emp/std/pool_wk12.csv (Total 1023 columns, Used in MIP: 1022, Selected: 5)
+12  | 121.47       |
+  -> Pool saved to: results_5emp/std/pool_wk13.csv (Total 990 columns, Used in MIP: 990, Selected: 5)
+13  | 101.87       |
+  -> Pool saved to: results_5emp/std/pool_wk14.csv (Total 1088 columns, Used in MIP: 1088, Selected: 5)
+14  | 158.38       |
+  -> Pool saved to: results_5emp/std/pool_wk15.csv (Total 1364 columns, Used in MIP: 1364, Selected: 5)
+15  | 175.36       |
+
+All plots and reports saved to: results_5emp/
+Finished Exp2 (RC=10000000). Saved to results_exp2_rc_10000000
+Running Exp2 with RC Threshold = inf ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Std
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 100, 'mip_rc_threshold': inf, 'mip_gap': 0.0}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Std (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/std/pool_wk1.csv (Total 678 columns, Used in MIP: 678, Selected: 5)
+1   | 70.81        |
+  -> Pool saved to: results_5emp/std/pool_wk2.csv (Total 2116 columns, Used in MIP: 2116, Selected: 5)
+2   | 462.22       |
+  -> Pool saved to: results_5emp/std/pool_wk3.csv (Total 1356 columns, Used in MIP: 1356, Selected: 5)
+3   | 189.03       |
+  -> Pool saved to: results_5emp/std/pool_wk4.csv (Total 1263 columns, Used in MIP: 1263, Selected: 5)
+4   | 163.50       |
+  -> Pool saved to: results_5emp/std/pool_wk5.csv (Total 1415 columns, Used in MIP: 1415, Selected: 5)
+5   | 191.33       |
+  -> Pool saved to: results_5emp/std/pool_wk6.csv (Total 1112 columns, Used in MIP: 1112, Selected: 5)
+6   | 145.49       |
+  -> Pool saved to: results_5emp/std/pool_wk7.csv (Total 1187 columns, Used in MIP: 1187, Selected: 5)
+7   | 153.80       |
+  -> Pool saved to: results_5emp/std/pool_wk8.csv (Total 1242 columns, Used in MIP: 1242, Selected: 5)
+8   | 186.12       |
+  -> Pool saved to: results_5emp/std/pool_wk9.csv (Total 1009 columns, Used in MIP: 1009, Selected: 5)
+9   | 116.33       |
+  -> Pool saved to: results_5emp/std/pool_wk10.csv (Total 1456 columns, Used in MIP: 1456, Selected: 5)
+10  | 204.73       |
+  -> Pool saved to: results_5emp/std/pool_wk11.csv (Total 1027 columns, Used in MIP: 1027, Selected: 5)
+11  | 143.78       |
+  -> Pool saved to: results_5emp/std/pool_wk12.csv (Total 1023 columns, Used in MIP: 1023, Selected: 5)
+12  | 121.14       |
+  -> Pool saved to: results_5emp/std/pool_wk13.csv (Total 990 columns, Used in MIP: 990, Selected: 5)
+13  | 101.14       |
+  -> Pool saved to: results_5emp/std/pool_wk14.csv (Total 1088 columns, Used in MIP: 1088, Selected: 5)
+14  | 158.48       |
+  -> Pool saved to: results_5emp/std/pool_wk15.csv (Total 1364 columns, Used in MIP: 1364, Selected: 5)
+15  | 174.16       |
+
+All plots and reports saved to: results_5emp/
+Finished Exp2 (RC=inf). Saved to results_exp2_rc_inf
+
+=== All Experiments Completed ===

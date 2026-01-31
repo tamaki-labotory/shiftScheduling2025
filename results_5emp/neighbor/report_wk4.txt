@@ -1,0 +1,61 @@
+==========================================================
+ ANALYSIS REPORT: Week 4
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 161,400.00
+  RMP Relaxed Value (Root): 161,400.00
+  Integrality Gap       : 0.0000 %
+  MIP Best Bound (Final)  : 161,400.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 14.3802 sec
+  MIP Start Time  : 11.7923 s
+  Iterations      : 4
+  RMP Time  : 0.0935 s
+  MIP Time  : 0.0313 s
+  Pool Search Time: 2.4605 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 34 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 34
+  Columns Added to RMP              : 19
+  Columns Added to Queue (Backlog)  : 146917
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:    6 / Total Gen:    6
+       -> Avg Length of Unique Patterns: 21.0 hours
+  Type: TypeB  | Unique Patterns:   11 / Total Gen:   12
+       -> Avg Length of Unique Patterns: 28.1 hours
+  Type: TypeC  | Unique Patterns:    9 / Total Gen:   11
+       -> Avg Length of Unique Patterns: 16.4 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 47 hours worked
+  Emp 1  (TypeB): 30 hours worked
+  Emp 2  (TypeB): 31 hours worked
+  Emp 3  (TypeC): 22 hours worked
+  Emp 4  (TypeC): 23 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 161,400.00      | 5          | 1143      
+2     | 161,400.00      | 5          | 584       
+3     | 161,400.00      | 4          | 83044     
+4     | 161,400.00      | 5          | 62146     

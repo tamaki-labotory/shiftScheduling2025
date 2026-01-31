@@ -1,0 +1,64 @@
+==========================================================
+ ANALYSIS REPORT: Week 3
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 9,157,200.00
+  RMP Relaxed Value (Root): 9,157,200.00
+  Integrality Gap       : 0.0000 %
+  MIP Best Bound (Final)  : 9,157,200.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 44.3301 sec
+  MIP Start Time  : 28.9120 s
+  Iterations      : 7
+  RMP Time  : 0.2688 s
+  MIP Time  : 0.0566 s
+  Pool Search Time: 15.0894 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 42 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 42
+  Columns Added to RMP              : 27
+  Columns Added to Queue (Backlog)  : 1118704
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:    9 / Total Gen:    9
+       -> Avg Length of Unique Patterns: 45.3 hours
+  Type: TypeB  | Unique Patterns:   16 / Total Gen:   17
+       -> Avg Length of Unique Patterns: 24.5 hours
+  Type: TypeC  | Unique Patterns:   10 / Total Gen:   11
+       -> Avg Length of Unique Patterns: 18.1 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 50 hours worked
+  Emp 1  (TypeB): 34 hours worked
+  Emp 2  (TypeB): 31 hours worked
+  Emp 3  (TypeC): 20 hours worked
+  Emp 4  (TypeC): 18 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 9,157,800.00    | 3          | 312196    
+2     | 9,157,800.00    | 4          | 168836    
+3     | 9,157,800.00    | 4          | 118901    
+4     | 9,157,200.00    | 4          | 145843    
+5     | 9,157,200.00    | 4          | 135836    
+6     | 9,157,200.00    | 4          | 128860    
+7     | 9,157,200.00    | 4          | 108232    

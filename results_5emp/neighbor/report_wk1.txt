@@ -1,0 +1,61 @@
+==========================================================
+ ANALYSIS REPORT: Week 1
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 11,155,500.00
+  RMP Relaxed Value (Root): 11,155,500.00
+  Integrality Gap       : 0.0000 %
+  MIP Best Bound (Final)  : 11,155,500.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 35.9717 sec
+  MIP Start Time  : 29.0383 s
+  Iterations      : 4
+  RMP Time  : 0.1054 s
+  MIP Time  : 0.0391 s
+  Pool Search Time: 6.7866 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 31 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 31
+  Columns Added to RMP              : 16
+  Columns Added to Queue (Backlog)  : 490664
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:    2 / Total Gen:    2
+       -> Avg Length of Unique Patterns: 27.0 hours
+  Type: TypeB  | Unique Patterns:   11 / Total Gen:   12
+       -> Avg Length of Unique Patterns: 29.0 hours
+  Type: TypeC  | Unique Patterns:   11 / Total Gen:   12
+       -> Avg Length of Unique Patterns: 19.4 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 46 hours worked
+  Emp 1  (TypeB): 34 hours worked
+  Emp 2  (TypeB): 29 hours worked
+  Emp 3  (TypeC): 22 hours worked
+  Emp 4  (TypeC): 20 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 11,155,500.00   | 4          | 132741    
+2     | 11,155,500.00   | 4          | 131870    
+3     | 11,155,500.00   | 4          | 121676    
+4     | 11,155,500.00   | 4          | 104377    

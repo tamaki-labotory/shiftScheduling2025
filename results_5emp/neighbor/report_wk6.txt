@@ -1,0 +1,61 @@
+==========================================================
+ ANALYSIS REPORT: Week 6
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 9,152,300.00
+  RMP Relaxed Value (Root): 9,152,300.00
+  Integrality Gap       : 0.0000 %
+  MIP Best Bound (Final)  : 9,152,300.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 33.0147 sec
+  MIP Start Time  : 29.0196 s
+  Iterations      : 4
+  RMP Time  : 0.1060 s
+  MIP Time  : 0.0396 s
+  Pool Search Time: 3.8470 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 33 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 33
+  Columns Added to RMP              : 18
+  Columns Added to Queue (Backlog)  : 276902
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:    6 / Total Gen:    6
+       -> Avg Length of Unique Patterns: 38.0 hours
+  Type: TypeB  | Unique Patterns:    9 / Total Gen:   10
+       -> Avg Length of Unique Patterns: 28.9 hours
+  Type: TypeC  | Unique Patterns:   11 / Total Gen:   12
+       -> Avg Length of Unique Patterns: 17.5 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 44 hours worked
+  Emp 1  (TypeB): 32 hours worked
+  Emp 2  (TypeB): 32 hours worked
+  Emp 3  (TypeC): 17 hours worked
+  Emp 4  (TypeC): 21 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 9,152,300.00    | 5          | 1098      
+2     | 9,152,300.00    | 5          | 669       
+3     | 9,152,300.00    | 4          | 135758    
+4     | 9,152,300.00    | 4          | 139377    

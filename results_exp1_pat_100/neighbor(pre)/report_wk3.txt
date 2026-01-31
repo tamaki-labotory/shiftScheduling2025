@@ -1,0 +1,69 @@
+==========================================================
+ ANALYSIS REPORT: Week 3
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 100
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 9,171,300.00
+  RMP Relaxed Value (Root): 9,171,300.00
+  Integrality Gap       : 0.0000 %
+  MIP Best Bound (Final)  : 9,171,300.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 3670.9133 sec
+  Iterations      : 13
+  RMP Time  : 2.7271 s
+  MIP Time  : 0.1515 s
+  Pool Search Time: 3667.3041 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 72 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 72
+  Columns Added to RMP              : 57
+  Columns Added to Queue (Backlog)  : 27981729
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:    7 / Total Gen:    7
+       -> Avg Length of Unique Patterns: 20.0 hours
+  Type: TypeB  | Unique Patterns:   29 / Total Gen:   30
+       -> Avg Length of Unique Patterns: 27.8 hours
+  Type: TypeC  | Unique Patterns:   29 / Total Gen:   30
+       -> Avg Length of Unique Patterns: 17.9 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 50 hours worked
+  Emp 1  (TypeB): 35 hours worked
+  Emp 2  (TypeB): 34 hours worked
+  Emp 3  (TypeC): 19 hours worked
+  Emp 4  (TypeC): 21 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 9,171,300.00    | 5          | 1566      
+2     | 9,171,300.00    | 5          | 752       
+3     | 9,171,300.00    | 5          | 800395    
+4     | 9,171,300.00    | 5          | 684       
+5     | 9,171,300.00    | 5          | 4904      
+6     | 9,171,300.00    | 4          | 8070435   
+7     | 9,171,300.00    | 4          | 3089635   
+8     | 9,171,300.00    | 4          | 2911228   
+9     | 9,171,300.00    | 4          | 2431899   
+10    | 9,171,300.00    | 4          | 2879192   
+11    | 9,171,300.00    | 4          | 2766689   
+12    | 9,171,300.00    | 4          | 1759011   
+13    | 9,171,300.00    | 4          | 3265339   

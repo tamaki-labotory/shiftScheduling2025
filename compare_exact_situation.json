@@ -1,0 +1,29 @@
+[
+    {
+      "label": "std(15)",
+      "params": {
+        "max_threshold": "inf",
+        "patience": 15,
+        "method": "std"
+      },
+      "color": "#4E79A7"
+    },
+    {
+      "label": "acc(15)",
+      "params": {
+        "max_threshold": "inf",
+        "patience": 15,
+        "method": "acc"
+      },
+      "color": "#F28E2B"
+    },
+    {
+        "label": "pruning(15)",
+        "params": {
+          "max_threshold": "inf",
+          "patience": 15,
+          "method": "pruning"
+        },
+        "color": "#F28E2B"
+      }
+  ]

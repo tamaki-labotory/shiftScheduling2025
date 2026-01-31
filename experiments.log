@@ -1,0 +1,82 @@
+=== 準備: マスタ設定ファイルの作成 ===
+Generating master config with 5 employees for 15 weeks...
+usage: main.py [-h] [--weeks WEEKS] [--employees EMPLOYEES]
+               [--methods {exact,std,acc,pruning,bnb,priority,neighbor} [{exact,std,acc,pruning,bnb,priority,neighbor} ...]]
+               [--patience PATIENCE] [--rc_threshold RC_THRESHOLD]
+               {simple,exp1,exp2}
+main.py: error: argument mode: invalid choice: 'inf' (choose from 'simple', 'exp1', 'exp2')
+mv: results_5emp/problem_config.json: No such file or directory
+Master config saved to master_problem_config.json
+
+=== WARM-UP: Priming OS Cache for Solver ===
+Running a dummy simulation to load 'cbc' binary into RAM...
+Warm-up complete. Starting actual experiments...
+
+=== Starting Experiment 1: CG Termination Criteria ===
+Running Exp1 with Patience = 5 ...
+usage: main.py [-h] [--weeks WEEKS] [--employees EMPLOYEES]
+               [--methods {exact,std,acc,pruning,bnb,priority,neighbor} [{exact,std,acc,pruning,bnb,priority,neighbor} ...]]
+               [--patience PATIENCE] [--rc_threshold RC_THRESHOLD]
+               {simple,exp1,exp2}
+main.py: error: argument mode: invalid choice: 'inf' (choose from 'simple', 'exp1', 'exp2')
+Finished Exp1 (Patience=5). Saved to results_exp1_pat_5
+Running Exp1 with Patience = 10 ...
+usage: main.py [-h] [--weeks WEEKS] [--employees EMPLOYEES]
+               [--methods {exact,std,acc,pruning,bnb,priority,neighbor} [{exact,std,acc,pruning,bnb,priority,neighbor} ...]]
+               [--patience PATIENCE] [--rc_threshold RC_THRESHOLD]
+               {simple,exp1,exp2}
+main.py: error: argument mode: invalid choice: 'inf' (choose from 'simple', 'exp1', 'exp2')
+Finished Exp1 (Patience=10). Saved to results_exp1_pat_10
+Running Exp1 with Patience = 15 ...
+usage: main.py [-h] [--weeks WEEKS] [--employees EMPLOYEES]
+               [--methods {exact,std,acc,pruning,bnb,priority,neighbor} [{exact,std,acc,pruning,bnb,priority,neighbor} ...]]
+               [--patience PATIENCE] [--rc_threshold RC_THRESHOLD]
+               {simple,exp1,exp2}
+main.py: error: argument mode: invalid choice: 'inf' (choose from 'simple', 'exp1', 'exp2')
+Finished Exp1 (Patience=15). Saved to results_exp1_pat_15
+Running Exp1 with Patience = 100 ...
+usage: main.py [-h] [--weeks WEEKS] [--employees EMPLOYEES]
+               [--methods {exact,std,acc,pruning,bnb,priority,neighbor} [{exact,std,acc,pruning,bnb,priority,neighbor} ...]]
+               [--patience PATIENCE] [--rc_threshold RC_THRESHOLD]
+               {simple,exp1,exp2}
+main.py: error: argument mode: invalid choice: 'inf' (choose from 'simple', 'exp1', 'exp2')
+Finished Exp1 (Patience=100). Saved to results_exp1_pat_100
+
+=== Starting Experiment 2: MIP Column Selection ===
+Running Exp2 with RC Threshold = 1 ...
+usage: main.py [-h] [--weeks WEEKS] [--employees EMPLOYEES]
+               [--methods {exact,std,acc,pruning,bnb,priority,neighbor} [{exact,std,acc,pruning,bnb,priority,neighbor} ...]]
+               [--patience PATIENCE] [--rc_threshold RC_THRESHOLD]
+               {simple,exp1,exp2}
+main.py: error: argument mode: invalid choice: '1' (choose from 'simple', 'exp1', 'exp2')
+Finished Exp2 (RC=1). Saved to results_exp2_rc_1
+Running Exp2 with RC Threshold = 1000 ...
+usage: main.py [-h] [--weeks WEEKS] [--employees EMPLOYEES]
+               [--methods {exact,std,acc,pruning,bnb,priority,neighbor} [{exact,std,acc,pruning,bnb,priority,neighbor} ...]]
+               [--patience PATIENCE] [--rc_threshold RC_THRESHOLD]
+               {simple,exp1,exp2}
+main.py: error: argument mode: invalid choice: '1000' (choose from 'simple', 'exp1', 'exp2')
+Finished Exp2 (RC=1000). Saved to results_exp2_rc_1000
+Running Exp2 with RC Threshold = 100000 ...
+usage: main.py [-h] [--weeks WEEKS] [--employees EMPLOYEES]
+               [--methods {exact,std,acc,pruning,bnb,priority,neighbor} [{exact,std,acc,pruning,bnb,priority,neighbor} ...]]
+               [--patience PATIENCE] [--rc_threshold RC_THRESHOLD]
+               {simple,exp1,exp2}
+main.py: error: argument mode: invalid choice: '100000' (choose from 'simple', 'exp1', 'exp2')
+Finished Exp2 (RC=100000). Saved to results_exp2_rc_100000
+Running Exp2 with RC Threshold = 10000000 ...
+usage: main.py [-h] [--weeks WEEKS] [--employees EMPLOYEES]
+               [--methods {exact,std,acc,pruning,bnb,priority,neighbor} [{exact,std,acc,pruning,bnb,priority,neighbor} ...]]
+               [--patience PATIENCE] [--rc_threshold RC_THRESHOLD]
+               {simple,exp1,exp2}
+main.py: error: argument mode: invalid choice: '10000000' (choose from 'simple', 'exp1', 'exp2')
+Finished Exp2 (RC=10000000). Saved to results_exp2_rc_10000000
+Running Exp2 with RC Threshold = inf ...
+usage: main.py [-h] [--weeks WEEKS] [--employees EMPLOYEES]
+               [--methods {exact,std,acc,pruning,bnb,priority,neighbor} [{exact,std,acc,pruning,bnb,priority,neighbor} ...]]
+               [--patience PATIENCE] [--rc_threshold RC_THRESHOLD]
+               {simple,exp1,exp2}
+main.py: error: argument mode: invalid choice: 'inf' (choose from 'simple', 'exp1', 'exp2')
+Finished Exp2 (RC=inf). Saved to results_exp2_rc_inf
+
+=== All Experiments Completed ===

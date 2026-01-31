@@ -1,0 +1,68 @@
+==========================================================
+ ANALYSIS REPORT: Week 2
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 100
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 12,177,100.00
+  RMP Relaxed Value (Root): 12,177,100.00
+  Integrality Gap       : 0.0000 %
+  MIP Best Bound (Final)  : 12,177,100.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 3685.5532 sec
+  Iterations      : 12
+  RMP Time  : 2.3538 s
+  MIP Time  : 0.1613 s
+  Pool Search Time: 3679.6669 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 64 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 64
+  Columns Added to RMP              : 49
+  Columns Added to Queue (Backlog)  : 25362377
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:   13 / Total Gen:   13
+       -> Avg Length of Unique Patterns: 45.8 hours
+  Type: TypeB  | Unique Patterns:   17 / Total Gen:   18
+       -> Avg Length of Unique Patterns: 34.5 hours
+  Type: TypeC  | Unique Patterns:   27 / Total Gen:   28
+       -> Avg Length of Unique Patterns: 17.4 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 49 hours worked
+  Emp 1  (TypeB): 39 hours worked
+  Emp 2  (TypeB): 36 hours worked
+  Emp 3  (TypeC): 17 hours worked
+  Emp 4  (TypeC): 19 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 12,177,100.00   | 5          | 3385      
+2     | 12,177,100.00   | 5          | 17707     
+3     | 12,177,100.00   | 4          | 3702098   
+4     | 12,177,100.00   | 4          | 2357164   
+5     | 12,177,100.00   | 4          | 1928640   
+6     | 12,177,100.00   | 4          | 2058909   
+7     | 12,177,100.00   | 4          | 2005983   
+8     | 12,177,100.00   | 4          | 2326397   
+9     | 12,177,100.00   | 4          | 2313217   
+10    | 12,177,100.00   | 4          | 1644675   
+11    | 12,177,100.00   | 4          | 1918554   
+12    | 12,177,100.00   | 3          | 5085648   

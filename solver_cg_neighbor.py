@@ -1,174 +1,249 @@
 import time
+import heapq
+import pulp
 import numpy as np
+from collections import defaultdict
 from solver_cg import ColumnGenerationSolver
 
 class ColumnGenerationSolverNeighbor(ColumnGenerationSolver):
     """
-    PDF資料の「IP1B: 近傍探索による列生成」を実装したクラス。
-    列生成補助問題において、厳密解法(グラフ探索)を行う前に、
-    既存列の近傍探索(Neighborhood Search)を行い、負の被約費用を持つ列を高速に見つける。
+    【高速化版: MIP初期解 + 制限付き近傍探索】
     """
     def __init__(self, problem, **kwargs):
         super().__init__(problem, **kwargs)
-        self.label = "CG Neighbor"
-    
-    def pricing(self, pi, sigma):
-        """
-        Pricing step override.
-        1. まず近傍探索ヒューリスティックを実行 (IP1Bの手法) [cite: 191]
-        2. 列が見つかればそれを追加して終了 (高速化)
-        3. 見つからなければ、厳密解法(親クラスのグラフ探索)へフォールバック (収束性保証のため)
-        """
-        t_start = time.perf_counter()
-        
-        # --- 1. 近傍探索 (Heuristic Pricing) ---
-        neighbor_added_count = self._pricing_heuristic_neighborhood(pi, sigma)
-        
-        self.stats['time_pool'] += (time.perf_counter() - t_start) # ヒューリスティック時間はPool/その他に計上
-        
-        # 近傍探索で有効な列が見つかった場合、グラフ探索をスキップして高速化
-        if neighbor_added_count > 0:
-            self.stats['count_pool_hit'] += neighbor_added_count # 統計上はPool Hit扱いに加算(便宜上)
-            return neighbor_added_count, 0
+        self.label = "CG Neighbor (Fast Heuristic)"
+        self.backlog_queues = defaultdict(list) 
+        self.seen_patterns = set()
 
-        # --- 2. 厳密探索 (Exact Graph Pricing) ---
-        # ヒューリスティックで見つからない場合のみ、厳密解法を実行して最適性を保証する
-        # (資料のIP1Bは近似解法ですが、ベンチマークで公平に比較するため、収束停止を防ぐフォールバックを入れます)
-        return super().pricing(pi, sigma)
+    def reset_stats(self):
+        super().reset_stats()
+        self.stats['count_backlog_push'] = 0
+        self.stats['count_feasible_discard'] = 0
+        self.stats['count_search_steps'] = 0
+        # ★追加: MIP初期解の時間を記録するキー
+        self.stats['time_mip_start'] = 0.0
 
-    def _pricing_heuristic_neighborhood(self, pi, sigma):
-        """
-        既存のPool内の列に対して近傍操作を行い、負の被約費用を持つ列を探索する。
-        近傍定義: 開始時刻・終了時刻の ±1 時間の変更
-        """
+    def reset_for_new_period(self):
+        super().reset_for_new_period()
+        self.backlog_queues = defaultdict(list)
+        self.seen_patterns = set()
+
+    def initialize_rmp(self):
+        """MIPで初期解を構築"""
+        super().initialize_rmp()
+        
+        print(f"  [MIP Start] Constructing initial feasible solution via MIP...")
+        t_mip_start = time.time()
+
+        # --- MIPモデル構築 ---
+        model = pulp.LpProblem("Original_Problem_Initialization", pulp.LpMinimize)
+        
+        K = self.prob.K
+        T = self.prob.T
+        employees = self.prob.employees
+        demand = self.prob.demand
+        
+        x = [[pulp.LpVariable(f"x_{k}_{t}", cat=pulp.LpBinary) for t in range(T)] for k in range(K)]
+        s = [[pulp.LpVariable(f"s_{k}_{t}", cat=pulp.LpBinary) for t in range(T)] for k in range(K)]
+        delta = [pulp.LpVariable(f"delta_{t}", lowBound=0) for t in range(T)]
+
+        obj_terms = []
+        for k in range(K):
+            emp = employees[k]
+            cost_vec = emp['hourly_wage'] + emp['rho']
+            for t in range(T):
+                obj_terms.append(cost_vec[t] * x[k][t])
+        
+        for t in range(T):
+            obj_terms.append(self.prob.big_m * delta[t])
+            
+        model += pulp.lpSum(obj_terms)
+
+        # 制約
+        for t in range(T):
+            model += pulp.lpSum([x[k][t] for k in range(K)]) + delta[t] >= demand[t]
+
+        for k in range(K):
+            emp = employees[k]
+            L_min = emp.get('L_min', 1)
+            L_max = emp.get('L_max', T)
+            R_int = emp.get('R_int', 0)
+            K_max = emp.get('K_max', 7)
+
+            for t in range(T):
+                if t == 0:
+                    model += s[k][t] >= x[k][t]
+                else:
+                    model += s[k][t] >= x[k][t] - x[k][t-1]
+
+            for t in range(T):
+                if t + L_min <= T:
+                    model += pulp.lpSum([x[k][t+j] for j in range(L_min)]) >= L_min * s[k][t]
+
+            for t in range(T - L_max):
+                model += pulp.lpSum([x[k][t+j] for j in range(L_max + 1)]) <= L_max
+
+            if R_int > 0:
+                for t in range(T):
+                    start_lookback = max(0, t - R_int)
+                    if t > 0:
+                        lookback_len = t - start_lookback
+                        model += pulp.lpSum([x[k][j] for j in range(start_lookback, t)]) <= lookback_len * (1 - s[k][t])
+
+            model += pulp.lpSum([s[k][t] for t in range(T)]) <= K_max
+
+        # --- 求解 ---
+        mip_time_limit = 30
+        solver = pulp.COIN_CMD(path='cbc', msg=0, timeLimit=mip_time_limit, gapRel=0.05, threads=4)
+        model.solve(solver)
+        
+        # --- RMPへの登録 ---
+        status = pulp.LpStatus[model.status]
         added_count = 0
-        candidates = []
+        if status in ['Optimal', 'Integer']:
+            for k in range(K):
+                sched = [0] * T
+                for t in range(T):
+                    val = x[k][t].varValue
+                    if val is not None and val > 0.5:
+                        sched[t] = 1
+                
+                idx = self.add_column(k, sched)
+                if idx not in self.rmp_indices:
+                    self.rmp_indices.append(idx)
+                    added_count += 1
+            
+            # ★追加: 時間の記録
+            elapsed = time.time() - t_mip_start
+            self.stats['time_mip_start'] = elapsed
+            print(f"  [MIP Start] Added {added_count} cols. Time: {elapsed:.2f}s")
+        else:
+            # ★追加: 失敗時も記録
+            elapsed = time.time() - t_mip_start
+            self.stats['time_mip_start'] = elapsed
+            print(f"  [MIP Start] Failed (Status: {status}). Time: {elapsed:.2f}s")
+
+    def pricing(self, pi, sigma):
+        # 変更なし
+        t_start = time.perf_counter()
+        start_queue_count = self.stats['count_backlog_push']
         
-        # 探索対象: 現在のPoolにある列 (Step 0: k=ni ... Step 2: k<-k-1) [cite: 192, 194]
-        # 最近追加された列の方が有望な可能性があるため、後ろから走査するのが一般的
-        current_pool_indices = list(range(len(self.pool)))
-        np.random.shuffle(current_pool_indices) # ランダム性を持たせて局所解回避
+        self._generate_neighbors_from_rmp(pi, sigma)
         
-        search_limit = min(len(current_pool_indices), 200) # 計算時間短縮のため探索数を制限
+        total_added_to_rmp = 0
+        SEARCH_BUDGET = 2000 
         
-        for idx in current_pool_indices[:search_limit]:
+        for k in range(self.prob.K):
+            steps = 0
+            while self.backlog_queues[k]:
+                if steps >= SEARCH_BUDGET: break
+                rc, eid, sched_tuple, cost = heapq.heappop(self.backlog_queues[k])
+                steps += 1
+                emp = self.prob.employees[eid]
+                is_feas = self.is_feasible(emp, sched_tuple)
+                if is_feas and rc < -1e-5:
+                    if (eid, sched_tuple) not in self.pattern_to_id:
+                        new_id = len(self.pool)
+                        self.pool.append({'id': new_id, 'group_id': eid, 'schedule': list(sched_tuple), 'cost': cost})
+                        self.pattern_to_id[(eid, sched_tuple)] = new_id
+                    col_id = self.pattern_to_id[(eid, sched_tuple)]
+                    if col_id not in self.rmp_indices:
+                        self.rmp_indices.append(col_id)
+                        total_added_to_rmp += 1
+                        break 
+                new_candidates = []
+                base_schedule = np.array(sched_tuple)
+                wage_vec = emp['hourly_wage'] + emp['rho']
+                self._generate_neighbors_for_schedule(base_schedule, eid, pi, sigma, wage_vec, new_candidates)
+                for cand in new_candidates: self._push_to_queue(cand)
+            self.stats['count_search_steps'] += steps
+
+        self.stats['time_pool'] += (time.perf_counter() - t_start)
+        queue_added_this_iter = self.stats['count_backlog_push'] - start_queue_count
+
+        if total_added_to_rmp > 0:
+            self.stats['count_pool_hit'] += total_added_to_rmp
+            return total_added_to_rmp, queue_added_this_iter
+        if queue_added_this_iter > 0:
+            return 0, queue_added_this_iter
+        return 0, 0
+
+    # 以下のヘルパーメソッドは変更なし
+    def _generate_neighbors_from_rmp(self, pi, sigma):
+        for idx in self.rmp_indices:
             col = self.pool[idx]
             emp_id = col['group_id']
-            base_schedule = col['schedule']
-            
-            # 近傍パターンの生成
-            neighbors = self._generate_neighbors(base_schedule, emp_id)
-            
-            for sched_n in neighbors:
-                # 既知のパターンかチェック (重複登録防止)
-                sched_tuple = tuple(sched_n)
-                if (emp_id, sched_tuple) in self.pattern_to_id:
-                    continue
-                
-                # コスト計算
-                emp = self.prob.employees[emp_id]
-                cost_n = np.sum(np.array(sched_n) * (emp['hourly_wage'] + emp['rho']))
-                
-                # 被約費用計算: rc = cost - sum(aij * pi) - sigma
-                # [cite: 121, 186]
-                rc = cost_n - np.dot(pi, sched_n) - sigma[emp_id]
-                
-                if rc < -1e-5:
-                    candidates.append((rc, emp_id, sched_n, cost_n))
+            base_schedule = np.array(col['schedule'])
+            emp = self.prob.employees[emp_id]
+            wage_vec = emp['hourly_wage'] + emp['rho']
+            candidates = []
+            self._generate_neighbors_for_schedule(base_schedule, emp_id, pi, sigma, wage_vec, candidates)
+            for cand in candidates: self._push_to_queue(cand)
 
-        # 有望な上位の列を追加
-        candidates.sort(key=lambda x: x[0])
-        limit_add = self.prob.K  # 一度に追加する列の上限
-        
-        for rc, eid, sched, cost in candidates[:limit_add]:
-            # 重複再チェック(ループ内で追加済みの場合)
-            sched_tuple = tuple(sched)
-            if (eid, sched_tuple) in self.pattern_to_id:
-                continue
-                
-            new_id = len(self.pool)
-            self.pool.append({'id': new_id, 'group_id': eid, 'schedule': sched, 'cost': cost})
-            self.pattern_to_id[(eid, sched_tuple)] = new_id
-            
-            if new_id not in self.rmp_indices:
-                self.rmp_indices.append(new_id)
-                added_count += 1
-                
-        return added_count
-
-    def _generate_neighbors(self, schedule, emp_id):
-        """
-        スケジュールの近傍を生成する。
-        定義: 連続勤務区間の「開始」または「終了」を前後1つずらす。
-        """
-        neighbors = []
+    def _generate_neighbors_for_schedule(self, base_schedule, emp_id, pi, sigma, wage_vec, candidates):
         T = self.prob.T
         emp = self.prob.employees[emp_id]
-        L_min = emp['L_min']
-        L_max = emp['L_max']
-        
-        # 現在の勤務区間を検出 (簡易的に単一シフトと仮定、あるいは最初のシフトを操作)
-        # scheduleは [0, 0, 1, 1, 1, 0, ...]
-        starts = []
-        ends = []
-        is_working = False
-        for t in range(T):
-            if schedule[t] == 1 and not is_working:
-                starts.append(t)
-                is_working = True
-            elif schedule[t] == 0 and is_working:
-                ends.append(t - 1) # endはinclusive
-                is_working = False
-        if is_working:
-            ends.append(T - 1)
-            
-        if not starts:
-            return []
-
-        # 各シフト区間に対して操作
+        padded = np.concatenate(([0], base_schedule, [0]))
+        diffs = np.diff(padded)
+        starts = np.where(diffs == 1)[0]
+        ends = np.where(diffs == -1)[0]
+        if len(starts) == 0:
+            l_min = emp.get('L_min', 1)
+            for s in range(0, T - l_min + 1, 4): 
+                new_sched = np.zeros(T, dtype=int)
+                new_sched[s : s + l_min] = 1
+                self._add_candidate_lazy(new_sched, emp_id, pi, sigma, wage_vec, candidates)
         for s, e in zip(starts, ends):
-            current_len = e - s + 1
-            
-            # 操作1: 開始時間を早める (s-1)
-            if s > 0:
-                new_sched = list(schedule)
-                new_sched[s-1] = 1
-                if L_min <= current_len + 1 <= L_max: # 制約チェック
-                    neighbors.append(new_sched)
-            
-            # 操作2: 開始時間を遅らせる (s+1)
-            if current_len > 1:
-                new_sched = list(schedule)
-                new_sched[s] = 0
-                if L_min <= current_len - 1 <= L_max:
-                    neighbors.append(new_sched)
+            length = e - s
+            for delta in [-1, 1]:
+                new_s = s + delta
+                if 0 <= new_s < e:
+                    new_sched = base_schedule.copy()
+                    if delta == -1: new_sched[new_s] = 1
+                    else:           new_sched[s] = 0
+                    self._add_candidate_lazy(new_sched, emp_id, pi, sigma, wage_vec, candidates)
+                new_e = e + delta
+                if s < new_e <= T:
+                    new_sched = base_schedule.copy()
+                    if delta == 1: new_sched[e] = 1
+                    else:          new_sched[e-1] = 0
+                    self._add_candidate_lazy(new_sched, emp_id, pi, sigma, wage_vec, candidates)
+            for delta in [-2, -1, 1, 2]:
+                new_s = s + delta
+                new_e = e + delta
+                if 0 <= new_s and new_e <= T:
+                    new_sched = base_schedule.copy()
+                    new_sched[s:e] = 0
+                    new_sched[new_s:new_e] = 1
+                    self._add_candidate_lazy(new_sched, emp_id, pi, sigma, wage_vec, candidates)
+            stride = 6
+            for new_s in range(0, T - length + 1, stride):
+                if abs(new_s - s) < stride: continue
+                new_e = new_s + length
+                new_sched = base_schedule.copy()
+                new_sched[s:e] = 0
+                new_sched[new_s:new_e] = 1
+                self._add_candidate_lazy(new_sched, emp_id, pi, sigma, wage_vec, candidates)
 
-            # 操作3: 終了時間を延ばす (e+1)
-            if e < T - 1:
-                new_sched = list(schedule)
-                new_sched[e+1] = 1
-                if L_min <= current_len + 1 <= L_max:
-                    neighbors.append(new_sched)
+    def _add_candidate_lazy(self, new_sched_arr, emp_id, pi, sigma, wage_vec, candidates):
+        sched_tuple = tuple(new_sched_arr.tolist())
+        if (emp_id, sched_tuple) in self.seen_patterns: return
+        cost_n = np.dot(new_sched_arr, wage_vec)
+        rc = cost_n - np.dot(pi, new_sched_arr) - sigma[emp_id]
+        candidates.append((rc, emp_id, sched_tuple, cost_n))
 
-            # 操作4: 終了時間を早める (e-1)
-            if current_len > 1:
-                new_sched = list(schedule)
-                new_sched[e] = 0
-                if L_min <= current_len - 1 <= L_max:
-                    neighbors.append(new_sched)
-                    
-            # 操作5: シフト全体を左にずらす
-            if s > 0:
-                new_sched = list(schedule)
-                new_sched[s-1] = 1
-                new_sched[e] = 0
-                neighbors.append(new_sched)
+    def _push_to_queue(self, candidate):
+        rc, eid, sched_tuple, cost = candidate
+        if (eid, sched_tuple) in self.seen_patterns: return
+        heapq.heappush(self.backlog_queues[eid], (rc, eid, sched_tuple, cost))
+        self.seen_patterns.add((eid, sched_tuple))
+        self.stats['count_backlog_push'] += 1
 
-            # 操作6: シフト全体を右にずらす
-            if e < T - 1:
-                new_sched = list(schedule)
-                new_sched[s] = 0
-                new_sched[e+1] = 1
-                neighbors.append(new_sched)
-
-        return neighbors
+    def is_feasible(self, emp, schedule):
+        sched_arr = np.array(schedule)
+        padded = np.concatenate(([0], sched_arr, [0]))
+        diffs = np.diff(padded)
+        lengths = np.where(diffs == -1)[0] - np.where(diffs == 1)[0]
+        if 'L_min' in emp and np.any(lengths < emp['L_min']): return False
+        if 'L_max' in emp and np.any(lengths > emp['L_max']): return False
+        return True

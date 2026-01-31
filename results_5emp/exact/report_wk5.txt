@@ -2,10 +2,24 @@
  ANALYSIS REPORT: Week 5
 ==========================================================
 
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
 1. Performance Metrics
 ----------------------
   Objective Value : 1,191,200.00
-  Execution Time  : 8.0664 sec
+  Execution Time  : 21.3650 sec
+  Iterations      : 0
+  RMP Time  : 0.0000 s
+  MIP Time  : 0.0000 s
+  Pool Search Time: 0.0000 s
+  Graph Search Time: 0.0000 s
 
 2. Column Generation & Pool Statistics
 --------------------------------------
@@ -18,8 +32,8 @@
   Emp 0  (TypeA): 49 hours worked
   Emp 1  (TypeB): 37 hours worked
   Emp 2  (TypeB): 38 hours worked
-  Emp 3  (TypeC): 25 hours worked
-  Emp 4  (TypeC): 23 hours worked
+  Emp 3  (TypeC): 24 hours worked
+  Emp 4  (TypeC): 24 hours worked
 
 5. Iteration History (Convergence Log)
 --------------------------------------

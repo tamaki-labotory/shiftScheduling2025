@@ -1,0 +1,29 @@
+[
+    {
+      "label": "std(100)",
+      "params": {
+        "max_threshold": "inf",
+        "patience": 100,
+        "method": "std"
+      },
+      "color": "#4E79A7"
+    },
+    {
+      "label": "acc(100)",
+      "params": {
+        "max_threshold": "inf",
+        "patience": 100,
+        "method": "acc"
+      },
+      "color": "#F28E2B"
+    },
+    {
+        "label": "pruning(100)",
+        "params": {
+          "max_threshold": "inf",
+          "patience": 100,
+          "method": "pruning"
+        },
+        "color": "#F28E2B"
+      }
+  ]

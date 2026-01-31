@@ -1,0 +1,405 @@
+============================================================
+ FILE: report_wk1.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 4,190,000.00
+  RMP Relaxed Value (Root): 1,705,513.85
+  Integrality Gap       : 145.6738 %
+  MIP Best Bound (Final)  : 4,190,000.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 43.3016 sec
+  Iterations      : 144
+  RMP Time  : 17.7229 s
+  MIP Time  : 6.6007 s
+  Pool Search Time: 0.0491 s
+  Graph Search Time: 18.8827 s
+  MIP Decision Variables: 678 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 678
+  Pool Hits (Reused from History)   : 0
+  Graph Gen (Newly Created)         : 668
+  Pool Hit Rate                     : 0.0%
+
+
+============================================================
+ FILE: report_wk2.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 4,197,200.00
+  RMP Relaxed Value (Root): 2,366,933.34
+  Integrality Gap       : 77.3265 %
+  MIP Best Bound (Final)  : 4,197,200.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 281.4261 sec
+  Iterations      : 482
+  RMP Time  : 189.2565 s
+  MIP Time  : 27.4256 s
+  Pool Search Time: 5.6586 s
+  Graph Search Time: 58.8222 s
+  MIP Decision Variables: 2108 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 2590
+  Pool Hits (Reused from History)   : 186
+  Graph Gen (Newly Created)         : 1912
+  Pool Hit Rate                     : 8.9%
+
+
+============================================================
+ FILE: report_wk3.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 3,184,600.00
+  RMP Relaxed Value (Root): 2,180,750.00
+  Integrality Gap       : 46.0323 %
+  MIP Best Bound (Final)  : 3,184,600.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 145.4739 sec
+  Iterations      : 332
+  RMP Time  : 90.2871 s
+  MIP Time  : 5.2537 s
+  Pool Search Time: 12.3498 s
+  Graph Search Time: 37.4255 s
+  MIP Decision Variables: 1531 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 3824
+  Pool Hits (Reused from History)   : 287
+  Graph Gen (Newly Created)         : 1234
+  Pool Hit Rate                     : 18.9%
+
+
+============================================================
+ FILE: report_wk4.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 176,800.00
+  RMP Relaxed Value (Root): 161,100.00
+  Integrality Gap       : 9.7455 %
+  MIP Best Bound (Final)  : 176,800.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 165.4475 sec
+  Iterations      : 365
+  RMP Time  : 100.9023 s
+  MIP Time  : 4.5053 s
+  Pool Search Time: 20.6249 s
+  Graph Search Time: 39.2244 s
+  MIP Decision Variables: 1731 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 5147
+  Pool Hits (Reused from History)   : 398
+  Graph Gen (Newly Created)         : 1323
+  Pool Hit Rate                     : 23.1%
+
+
+============================================================
+ FILE: report_wk5.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 2,185,400.00
+  RMP Relaxed Value (Root): 1,191,200.00
+  Integrality Gap       : 83.4621 %
+  MIP Best Bound (Final)  : 2,185,400.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 267.4281 sec
+  Iterations      : 459
+  RMP Time  : 168.2954 s
+  MIP Time  : 5.0721 s
+  Pool Search Time: 39.1458 s
+  Graph Search Time: 54.6302 s
+  MIP Decision Variables: 2178 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 7007
+  Pool Hits (Reused from History)   : 308
+  Graph Gen (Newly Created)         : 1860
+  Pool Hit Rate                     : 14.2%
+
+
+============================================================
+ FILE: report_wk6.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 3,183,100.00
+  RMP Relaxed Value (Root): 1,523,500.00
+  Integrality Gap       : 108.9334 %
+  MIP Best Bound (Final)  : 3,183,100.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 156.7070 sec
+  Iterations      : 311
+  RMP Time  : 81.6862 s
+  MIP Time  : 11.4764 s
+  Pool Search Time: 31.7848 s
+  Graph Search Time: 31.5979 s
+  MIP Decision Variables: 1527 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 8142
+  Pool Hits (Reused from History)   : 382
+  Graph Gen (Newly Created)         : 1135
+  Pool Hit Rate                     : 25.2%
+
+
+============================================================
+ FILE: report_wk7.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 1,177,400.00
+  RMP Relaxed Value (Root): 185,125.00
+  Integrality Gap       : 536.0027 %
+  MIP Best Bound (Final)  : 1,177,400.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 169.1121 sec
+  Iterations      : 338
+  RMP Time  : 88.1684 s
+  MIP Time  : 4.5654 s
+  Pool Search Time: 40.8325 s
+  Graph Search Time: 35.3576 s
+  MIP Decision Variables: 1529 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 9273
+  Pool Hits (Reused from History)   : 388
+  Graph Gen (Newly Created)         : 1131
+  Pool Hit Rate                     : 25.5%
+
+
+============================================================
+ FILE: report_wk8.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 2,190,000.00
+  RMP Relaxed Value (Root): 940,650.00
+  Integrality Gap       : 132.8177 %
+  MIP Best Bound (Final)  : 2,190,000.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 172.3046 sec
+  Iterations      : 335
+  RMP Time  : 90.7500 s
+  MIP Time  : 2.7881 s
+  Pool Search Time: 45.8912 s
+  Graph Search Time: 32.6891 s
+  MIP Decision Variables: 1537 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 10335
+  Pool Hits (Reused from History)   : 465
+  Graph Gen (Newly Created)         : 1062
+  Pool Hit Rate                     : 30.5%
+
+
+============================================================
+ FILE: report_wk9.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 2,185,600.00
+  RMP Relaxed Value (Root): 1,680,150.00
+  Integrality Gap       : 30.0836 %
+  MIP Best Bound (Final)  : 2,185,600.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 146.8632 sec
+  Iterations      : 294
+  RMP Time  : 69.0607 s
+  MIP Time  : 3.9996 s
+  Pool Search Time: 43.9292 s
+  Graph Search Time: 29.7072 s
+  MIP Decision Variables: 1393 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 11299
+  Pool Hits (Reused from History)   : 419
+  Graph Gen (Newly Created)         : 964
+  Pool Hit Rate                     : 30.3%
+
+
+============================================================
+ FILE: report_wk10.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 1,190,100.00
+  RMP Relaxed Value (Root): 525,033.33
+  Integrality Gap       : 126.6713 %
+  MIP Best Bound (Final)  : 1,190,100.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 325.3728 sec
+  Iterations      : 476
+  RMP Time  : 181.8541 s
+  MIP Time  : 3.4900 s
+  Pool Search Time: 88.6228 s
+  Graph Search Time: 51.0736 s
+  MIP Decision Variables: 2193 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 12911
+  Pool Hits (Reused from History)   : 571
+  Graph Gen (Newly Created)         : 1612
+  Pool Hit Rate                     : 26.2%
+
+
+============================================================
+ FILE: report_wk11.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 2,194,500.00
+  RMP Relaxed Value (Root): 740,990.90
+  Integrality Gap       : 196.1575 %
+  MIP Best Bound (Final)  : 2,194,500.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 170.6365 sec
+  Iterations      : 300
+  RMP Time  : 76.4811 s
+  MIP Time  : 11.3855 s
+  Pool Search Time: 56.1030 s
+  Graph Search Time: 26.4901 s
+  MIP Decision Variables: 1410 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 13789
+  Pool Hits (Reused from History)   : 522
+  Graph Gen (Newly Created)         : 878
+  Pool Hit Rate                     : 37.3%
+
+
+============================================================
+ FILE: report_wk12.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 3,189,200.00
+  RMP Relaxed Value (Root): 2,189,850.00
+  Integrality Gap       : 45.6355 %
+  MIP Best Bound (Final)  : 3,189,200.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 212.8715 sec
+  Iterations      : 349
+  RMP Time  : 98.4859 s
+  MIP Time  : 3.5299 s
+  Pool Search Time: 72.7411 s
+  Graph Search Time: 37.8941 s
+  MIP Decision Variables: 1538 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 14921
+  Pool Hits (Reused from History)   : 396
+  Graph Gen (Newly Created)         : 1132
+  Pool Hit Rate                     : 25.9%
+
+
+============================================================
+ FILE: report_wk13.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 1,186,500.00
+  RMP Relaxed Value (Root): 680,400.00
+  Integrality Gap       : 74.3827 %
+  MIP Best Bound (Final)  : 1,186,500.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 138.7265 sec
+  Iterations      : 259
+  RMP Time  : 55.1951 s
+  MIP Time  : 2.1111 s
+  Pool Search Time: 54.9392 s
+  Graph Search Time: 26.3303 s
+  MIP Decision Variables: 1250 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 15804
+  Pool Hits (Reused from History)   : 357
+  Graph Gen (Newly Created)         : 883
+  Pool Hit Rate                     : 28.8%
+
+
+============================================================
+ FILE: report_wk14.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 194,100.00
+  RMP Relaxed Value (Root): 190,350.00
+  Integrality Gap       : 1.9701 %
+  MIP Best Bound (Final)  : 194,100.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 131.6196 sec
+  Iterations      : 248
+  RMP Time  : 52.1788 s
+  MIP Time  : 1.4574 s
+  Pool Search Time: 55.1386 s
+  Graph Search Time: 22.6959 s
+  MIP Decision Variables: 1208 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 16588
+  Pool Hits (Reused from History)   : 414
+  Graph Gen (Newly Created)         : 784
+  Pool Hit Rate                     : 34.6%
+
+
+============================================================
+ FILE: report_wk15.txt
+============================================================
+1. Performance Metrics
+----------------------
+  Objective Value : 159,900.00
+  RMP Relaxed Value (Root): 154,000.00
+  Integrality Gap       : 3.8312 %
+  MIP Best Bound (Final)  : 159,900.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 300.4580 sec
+  Iterations      : 425
+  RMP Time  : 139.9004 s
+  MIP Time  : 2.7826 s
+  Pool Search Time: 113.0357 s
+  Graph Search Time: 44.4404 s
+  MIP Decision Variables: 1933 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 17972
+  Pool Hits (Reused from History)   : 539
+  Graph Gen (Newly Created)         : 1384
+  Pool Hit Rate                     : 28.0%
+
+

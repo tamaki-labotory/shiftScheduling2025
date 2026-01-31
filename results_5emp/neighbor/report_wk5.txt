@@ -1,0 +1,61 @@
+==========================================================
+ ANALYSIS REPORT: Week 5
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 6,166,200.00
+  RMP Relaxed Value (Root): 6,166,200.00
+  Integrality Gap       : 0.0000 %
+  MIP Best Bound (Final)  : 6,166,200.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 33.3380 sec
+  MIP Start Time  : 29.1226 s
+  Iterations      : 4
+  RMP Time  : 0.1036 s
+  MIP Time  : 0.0332 s
+  Pool Search Time: 4.0761 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 32 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 32
+  Columns Added to RMP              : 17
+  Columns Added to Queue (Backlog)  : 249786
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:    3 / Total Gen:    3
+       -> Avg Length of Unique Patterns: 26.7 hours
+  Type: TypeB  | Unique Patterns:   11 / Total Gen:   12
+       -> Avg Length of Unique Patterns: 29.0 hours
+  Type: TypeC  | Unique Patterns:   11 / Total Gen:   12
+       -> Avg Length of Unique Patterns: 20.7 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 48 hours worked
+  Emp 1  (TypeB): 31 hours worked
+  Emp 2  (TypeB): 32 hours worked
+  Emp 3  (TypeC): 22 hours worked
+  Emp 4  (TypeC): 23 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 6,166,200.00    | 4          | 67965     
+2     | 6,166,200.00    | 4          | 55024     
+3     | 6,166,200.00    | 4          | 88604     
+4     | 6,166,200.00    | 5          | 38193     

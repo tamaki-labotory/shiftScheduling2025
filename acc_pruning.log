@@ -1,0 +1,426 @@
+=== 実験準備: マスタ設定ファイルの確認 ===
+Using existing master config: master_problem_config.json
+
+=== Starting Experiment 1 (ACC & Pruning): CG Termination Criteria ===
+Running Exp1 (acc) with Patience = 5 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Acc
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 5, 'mip_rc_threshold': inf, 'mip_gap': 0.01}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Acc (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/acc/pool_wk1.csv (Total 556 columns, Used in MIP: 556, Selected: 5)
+1   | 30.38        |
+  -> Pool saved to: results_5emp/acc/pool_wk2.csv (Total 1127 columns, Used in MIP: 750, Selected: 5)
+2   | 40.67        |
+  -> Pool saved to: results_5emp/acc/pool_wk3.csv (Total 1699 columns, Used in MIP: 810, Selected: 5)
+3   | 44.36        |
+  -> Pool saved to: results_5emp/acc/pool_wk4.csv (Total 2616 columns, Used in MIP: 1182, Selected: 5)
+4   | 82.81        |
+  -> Pool saved to: results_5emp/acc/pool_wk5.csv (Total 3196 columns, Used in MIP: 855, Selected: 5)
+5   | 45.83        |
+  -> Pool saved to: results_5emp/acc/pool_wk6.csv (Total 3903 columns, Used in MIP: 1035, Selected: 5)
+6   | 70.26        |
+  -> Pool saved to: results_5emp/acc/pool_wk7.csv (Total 4607 columns, Used in MIP: 1006, Selected: 5)
+7   | 64.26        |
+  -> Pool saved to: results_5emp/acc/pool_wk8.csv (Total 5239 columns, Used in MIP: 1025, Selected: 5)
+8   | 69.64        |
+  -> Pool saved to: results_5emp/acc/pool_wk9.csv (Total 5702 columns, Used in MIP: 810, Selected: 5)
+9   | 46.95        |
+  -> Pool saved to: results_5emp/acc/pool_wk10.csv (Total 6323 columns, Used in MIP: 1126, Selected: 5)
+10  | 78.59        |
+  -> Pool saved to: results_5emp/acc/pool_wk11.csv (Total 6803 columns, Used in MIP: 907, Selected: 5)
+11  | 66.17        |
+  -> Pool saved to: results_5emp/acc/pool_wk12.csv (Total 7254 columns, Used in MIP: 825, Selected: 5)
+12  | 53.44        |
+  -> Pool saved to: results_5emp/acc/pool_wk13.csv (Total 7723 columns, Used in MIP: 796, Selected: 5)
+13  | 51.22        |
+  -> Pool saved to: results_5emp/acc/pool_wk14.csv (Total 8021 columns, Used in MIP: 690, Selected: 5)
+14  | 41.06        |
+  -> Pool saved to: results_5emp/acc/pool_wk15.csv (Total 8648 columns, Used in MIP: 1091, Selected: 5)
+15  | 86.88        |
+
+All plots and reports saved to: results_5emp/
+Finished Exp1 (acc, Patience=5). Saved to results_exp1_pat_5_acc
+Running Exp1 (pruning) with Patience = 5 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Pruning
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 5, 'mip_rc_threshold': inf, 'mip_gap': 0.01}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Pruning (s)     |
+--------------------------
+  -> Pool saved to: results_5emp/pruning/pool_wk1.csv (Total 556 columns, Used in MIP: 556, Selected: 5)
+1   | 30.55        |
+  -> Pool saved to: results_5emp/pruning/pool_wk2.csv (Total 1127 columns, Used in MIP: 750, Selected: 5)
+2   | 41.02        |
+  -> Pool saved to: results_5emp/pruning/pool_wk3.csv (Total 1699 columns, Used in MIP: 810, Selected: 5)
+3   | 44.40        |
+  -> Pool saved to: results_5emp/pruning/pool_wk4.csv (Total 2616 columns, Used in MIP: 1182, Selected: 5)
+4   | 82.43        |
+DEBUG: Cleaning pool... Current size: 2616
+DEBUG: Pool cleaned. New size: 1000 (Removed 1616 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk5.csv (Total 1588 columns, Used in MIP: 750, Selected: 5)
+5   | 36.36        |
+  -> Pool saved to: results_5emp/pruning/pool_wk6.csv (Total 2262 columns, Used in MIP: 909, Selected: 5)
+6   | 54.84        |
+DEBUG: Cleaning pool... Current size: 2262
+DEBUG: Pool cleaned. New size: 1000 (Removed 1262 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk7.csv (Total 1617 columns, Used in MIP: 835, Selected: 5)
+7   | 46.10        |
+  -> Pool saved to: results_5emp/pruning/pool_wk8.csv (Total 2237 columns, Used in MIP: 895, Selected: 5)
+8   | 51.78        |
+DEBUG: Cleaning pool... Current size: 2237
+DEBUG: Pool cleaned. New size: 1000 (Removed 1237 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk9.csv (Total 1626 columns, Used in MIP: 824, Selected: 5)
+9   | 45.67        |
+  -> Pool saved to: results_5emp/pruning/pool_wk10.csv (Total 2226 columns, Used in MIP: 910, Selected: 5)
+10  | 49.15        |
+DEBUG: Cleaning pool... Current size: 2226
+DEBUG: Pool cleaned. New size: 1000 (Removed 1226 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk11.csv (Total 1682 columns, Used in MIP: 889, Selected: 5)
+11  | 62.29        |
+  -> Pool saved to: results_5emp/pruning/pool_wk12.csv (Total 2132 columns, Used in MIP: 669, Selected: 5)
+12  | 34.40        |
+DEBUG: Cleaning pool... Current size: 2132
+DEBUG: Pool cleaned. New size: 1000 (Removed 1132 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk13.csv (Total 1322 columns, Used in MIP: 510, Selected: 5)
+13  | 20.70        |
+  -> Pool saved to: results_5emp/pruning/pool_wk14.csv (Total 1830 columns, Used in MIP: 710, Selected: 5)
+14  | 35.10        |
+  -> Pool saved to: results_5emp/pruning/pool_wk15.csv (Total 2536 columns, Used in MIP: 1008, Selected: 5)
+15  | 57.56        |
+
+All plots and reports saved to: results_5emp/
+Finished Exp1 (pruning, Patience=5). Saved to results_exp1_pat_5_pruning
+Running Exp1 (acc) with Patience = 10 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Acc
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 10, 'mip_rc_threshold': inf, 'mip_gap': 0.01}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Acc (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/acc/pool_wk1.csv (Total 678 columns, Used in MIP: 678, Selected: 5)
+1   | 43.88        |
+  -> Pool saved to: results_5emp/acc/pool_wk2.csv (Total 1780 columns, Used in MIP: 1298, Selected: 5)
+2   | 102.88       |
+  -> Pool saved to: results_5emp/acc/pool_wk3.csv (Total 2738 columns, Used in MIP: 1232, Selected: 5)
+3   | 94.57        |
+  -> Pool saved to: results_5emp/acc/pool_wk4.csv (Total 4033 columns, Used in MIP: 1629, Selected: 5)
+4   | 141.14       |
+  -> Pool saved to: results_5emp/acc/pool_wk5.csv (Total 4668 columns, Used in MIP: 958, Selected: 5)
+5   | 58.93        |
+  -> Pool saved to: results_5emp/acc/pool_wk6.csv (Total 5495 columns, Used in MIP: 1170, Selected: 5)
+6   | 92.58        |
+  -> Pool saved to: results_5emp/acc/pool_wk7.csv (Total 6089 columns, Used in MIP: 929, Selected: 5)
+7   | 61.42        |
+  -> Pool saved to: results_5emp/acc/pool_wk8.csv (Total 6862 columns, Used in MIP: 1128, Selected: 5)
+8   | 88.89        |
+  -> Pool saved to: results_5emp/acc/pool_wk9.csv (Total 7700 columns, Used in MIP: 1217, Selected: 5)
+9   | 103.31       |
+  -> Pool saved to: results_5emp/acc/pool_wk10.csv (Total 8581 columns, Used in MIP: 1335, Selected: 5)
+10  | 113.47       |
+  -> Pool saved to: results_5emp/acc/pool_wk11.csv (Total 9186 columns, Used in MIP: 1071, Selected: 5)
+11  | 95.20        |
+  -> Pool saved to: results_5emp/acc/pool_wk12.csv (Total 9556 columns, Used in MIP: 755, Selected: 5)
+12  | 52.73        |
+  -> Pool saved to: results_5emp/acc/pool_wk13.csv (Total 10167 columns, Used in MIP: 933, Selected: 5)
+13  | 71.32        |
+  -> Pool saved to: results_5emp/acc/pool_wk14.csv (Total 10961 columns, Used in MIP: 1205, Selected: 5)
+14  | 116.48       |
+  -> Pool saved to: results_5emp/acc/pool_wk15.csv (Total 11650 columns, Used in MIP: 1199, Selected: 5)
+15  | 109.67       |
+
+All plots and reports saved to: results_5emp/
+Finished Exp1 (acc, Patience=10). Saved to results_exp1_pat_10_acc
+Running Exp1 (pruning) with Patience = 10 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Pruning
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 10, 'mip_rc_threshold': inf, 'mip_gap': 0.01}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Pruning (s)     |
+--------------------------
+  -> Pool saved to: results_5emp/pruning/pool_wk1.csv (Total 678 columns, Used in MIP: 678, Selected: 5)
+1   | 43.98        |
+  -> Pool saved to: results_5emp/pruning/pool_wk2.csv (Total 1780 columns, Used in MIP: 1298, Selected: 5)
+2   | 102.88       |
+  -> Pool saved to: results_5emp/pruning/pool_wk3.csv (Total 2738 columns, Used in MIP: 1232, Selected: 5)
+3   | 94.51        |
+DEBUG: Cleaning pool... Current size: 2738
+DEBUG: Pool cleaned. New size: 1000 (Removed 1738 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk4.csv (Total 2105 columns, Used in MIP: 1314, Selected: 5)
+4   | 92.59        |
+DEBUG: Cleaning pool... Current size: 2105
+DEBUG: Pool cleaned. New size: 1000 (Removed 1105 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk5.csv (Total 1607 columns, Used in MIP: 765, Selected: 5)
+5   | 39.53        |
+  -> Pool saved to: results_5emp/pruning/pool_wk6.csv (Total 2385 columns, Used in MIP: 1015, Selected: 5)
+6   | 65.67        |
+DEBUG: Cleaning pool... Current size: 2385
+DEBUG: Pool cleaned. New size: 1000 (Removed 1385 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk7.csv (Total 1812 columns, Used in MIP: 1028, Selected: 5)
+7   | 62.53        |
+  -> Pool saved to: results_5emp/pruning/pool_wk8.csv (Total 2539 columns, Used in MIP: 977, Selected: 5)
+8   | 59.76        |
+DEBUG: Cleaning pool... Current size: 2539
+DEBUG: Pool cleaned. New size: 1000 (Removed 1539 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk9.csv (Total 1673 columns, Used in MIP: 869, Selected: 5)
+9   | 52.36        |
+  -> Pool saved to: results_5emp/pruning/pool_wk10.csv (Total 2377 columns, Used in MIP: 1054, Selected: 5)
+10  | 64.35        |
+DEBUG: Cleaning pool... Current size: 2377
+DEBUG: Pool cleaned. New size: 1000 (Removed 1377 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk11.csv (Total 1723 columns, Used in MIP: 906, Selected: 5)
+11  | 64.68        |
+  -> Pool saved to: results_5emp/pruning/pool_wk12.csv (Total 2495 columns, Used in MIP: 993, Selected: 5)
+12  | 65.35        |
+DEBUG: Cleaning pool... Current size: 2495
+DEBUG: Pool cleaned. New size: 1000 (Removed 1495 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk13.csv (Total 1745 columns, Used in MIP: 932, Selected: 5)
+13  | 54.99        |
+  -> Pool saved to: results_5emp/pruning/pool_wk14.csv (Total 2389 columns, Used in MIP: 848, Selected: 5)
+14  | 48.86        |
+DEBUG: Cleaning pool... Current size: 2389
+DEBUG: Pool cleaned. New size: 1000 (Removed 1389 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk15.csv (Total 1666 columns, Used in MIP: 921, Selected: 5)
+15  | 55.79        |
+
+All plots and reports saved to: results_5emp/
+Finished Exp1 (pruning, Patience=10). Saved to results_exp1_pat_10_pruning
+Running Exp1 (acc) with Patience = 15 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Acc
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 15, 'mip_rc_threshold': inf, 'mip_gap': 0.01}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Acc (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/acc/pool_wk1.csv (Total 678 columns, Used in MIP: 678, Selected: 5)
+1   | 43.07        |
+  -> Pool saved to: results_5emp/acc/pool_wk2.csv (Total 1805 columns, Used in MIP: 1323, Selected: 5)
+2   | 100.84       |
+  -> Pool saved to: results_5emp/acc/pool_wk3.csv (Total 2983 columns, Used in MIP: 1450, Selected: 5)
+3   | 124.36       |
+  -> Pool saved to: results_5emp/acc/pool_wk4.csv (Total 4135 columns, Used in MIP: 1538, Selected: 5)
+4   | 127.26       |
+  -> Pool saved to: results_5emp/acc/pool_wk5.csv (Total 4922 columns, Used in MIP: 1095, Selected: 5)
+5   | 72.72        |
+  -> Pool saved to: results_5emp/acc/pool_wk6.csv (Total 5827 columns, Used in MIP: 1258, Selected: 5)
+6   | 100.94       |
+  -> Pool saved to: results_5emp/acc/pool_wk7.csv (Total 6651 columns, Used in MIP: 1125, Selected: 5)
+7   | 88.76        |
+  -> Pool saved to: results_5emp/acc/pool_wk8.csv (Total 7458 columns, Used in MIP: 1138, Selected: 5)
+8   | 96.81        |
+  -> Pool saved to: results_5emp/acc/pool_wk9.csv (Total 8378 columns, Used in MIP: 1292, Selected: 5)
+9   | 124.94       |
+  -> Pool saved to: results_5emp/acc/pool_wk10.csv (Total 9037 columns, Used in MIP: 1150, Selected: 5)
+10  | 88.00        |
+  -> Pool saved to: results_5emp/acc/pool_wk11.csv (Total 9856 columns, Used in MIP: 1234, Selected: 5)
+11  | 125.41       |
+  -> Pool saved to: results_5emp/acc/pool_wk12.csv (Total 10302 columns, Used in MIP: 814, Selected: 5)
+12  | 62.66        |
+  -> Pool saved to: results_5emp/acc/pool_wk13.csv (Total 11230 columns, Used in MIP: 1231, Selected: 5)
+13  | 114.30       |
+  -> Pool saved to: results_5emp/acc/pool_wk14.csv (Total 11974 columns, Used in MIP: 1174, Selected: 5)
+14  | 110.23       |
+  -> Pool saved to: results_5emp/acc/pool_wk15.csv (Total 12691 columns, Used in MIP: 1222, Selected: 5)
+15  | 116.01       |
+
+All plots and reports saved to: results_5emp/
+Finished Exp1 (acc, Patience=15). Saved to results_exp1_pat_15_acc
+Running Exp1 (pruning) with Patience = 15 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Pruning
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 15, 'mip_rc_threshold': inf, 'mip_gap': 0.01}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Pruning (s)     |
+--------------------------
+  -> Pool saved to: results_5emp/pruning/pool_wk1.csv (Total 678 columns, Used in MIP: 678, Selected: 5)
+1   | 43.30        |
+  -> Pool saved to: results_5emp/pruning/pool_wk2.csv (Total 1805 columns, Used in MIP: 1323, Selected: 5)
+2   | 101.32       |
+  -> Pool saved to: results_5emp/pruning/pool_wk3.csv (Total 2983 columns, Used in MIP: 1450, Selected: 5)
+3   | 125.17       |
+DEBUG: Cleaning pool... Current size: 2983
+DEBUG: Pool cleaned. New size: 1000 (Removed 1983 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk4.csv (Total 2180 columns, Used in MIP: 1399, Selected: 5)
+4   | 101.76       |
+DEBUG: Cleaning pool... Current size: 2180
+DEBUG: Pool cleaned. New size: 1000 (Removed 1180 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk5.csv (Total 1980 columns, Used in MIP: 1165, Selected: 5)
+5   | 73.96        |
+  -> Pool saved to: results_5emp/pruning/pool_wk6.csv (Total 3115 columns, Used in MIP: 1425, Selected: 5)
+6   | 119.17       |
+DEBUG: Cleaning pool... Current size: 3115
+DEBUG: Pool cleaned. New size: 1000 (Removed 2115 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk7.csv (Total 1761 columns, Used in MIP: 916, Selected: 5)
+7   | 57.96        |
+  -> Pool saved to: results_5emp/pruning/pool_wk8.csv (Total 2742 columns, Used in MIP: 1213, Selected: 5)
+8   | 93.74        |
+DEBUG: Cleaning pool... Current size: 2742
+DEBUG: Pool cleaned. New size: 1000 (Removed 1742 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk9.csv (Total 1675 columns, Used in MIP: 848, Selected: 5)
+9   | 45.03        |
+  -> Pool saved to: results_5emp/pruning/pool_wk10.csv (Total 2539 columns, Used in MIP: 1166, Selected: 5)
+10  | 74.92        |
+DEBUG: Cleaning pool... Current size: 2539
+DEBUG: Pool cleaned. New size: 1000 (Removed 1539 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk11.csv (Total 1887 columns, Used in MIP: 1127, Selected: 5)
+11  | 82.15        |
+  -> Pool saved to: results_5emp/pruning/pool_wk12.csv (Total 2659 columns, Used in MIP: 1014, Selected: 5)
+12  | 65.23        |
+DEBUG: Cleaning pool... Current size: 2659
+DEBUG: Pool cleaned. New size: 1000 (Removed 1659 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk13.csv (Total 1915 columns, Used in MIP: 1085, Selected: 5)
+13  | 66.89        |
+  -> Pool saved to: results_5emp/pruning/pool_wk14.csv (Total 2590 columns, Used in MIP: 897, Selected: 5)
+14  | 55.18        |
+DEBUG: Cleaning pool... Current size: 2590
+DEBUG: Pool cleaned. New size: 1000 (Removed 1590 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk15.csv (Total 1854 columns, Used in MIP: 1073, Selected: 5)
+15  | 72.18        |
+
+All plots and reports saved to: results_5emp/
+Finished Exp1 (pruning, Patience=15). Saved to results_exp1_pat_15_pruning
+Running Exp1 (acc) with Patience = 100 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Acc
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 100, 'mip_rc_threshold': inf, 'mip_gap': 0.01}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Acc (s)         |
+--------------------------
+  -> Pool saved to: results_5emp/acc/pool_wk1.csv (Total 678 columns, Used in MIP: 678, Selected: 5)
+1   | 43.30        |
+  -> Pool saved to: results_5emp/acc/pool_wk2.csv (Total 2590 columns, Used in MIP: 2108, Selected: 5)
+2   | 281.43       |
+  -> Pool saved to: results_5emp/acc/pool_wk3.csv (Total 3824 columns, Used in MIP: 1531, Selected: 5)
+3   | 145.47       |
+  -> Pool saved to: results_5emp/acc/pool_wk4.csv (Total 5147 columns, Used in MIP: 1731, Selected: 5)
+4   | 165.45       |
+  -> Pool saved to: results_5emp/acc/pool_wk5.csv (Total 7007 columns, Used in MIP: 2178, Selected: 5)
+5   | 267.43       |
+  -> Pool saved to: results_5emp/acc/pool_wk6.csv (Total 8142 columns, Used in MIP: 1527, Selected: 5)
+6   | 156.71       |
+  -> Pool saved to: results_5emp/acc/pool_wk7.csv (Total 9273 columns, Used in MIP: 1529, Selected: 5)
+7   | 169.11       |
+  -> Pool saved to: results_5emp/acc/pool_wk8.csv (Total 10335 columns, Used in MIP: 1537, Selected: 5)
+8   | 172.30       |
+  -> Pool saved to: results_5emp/acc/pool_wk9.csv (Total 11299 columns, Used in MIP: 1393, Selected: 5)
+9   | 146.86       |
+  -> Pool saved to: results_5emp/acc/pool_wk10.csv (Total 12911 columns, Used in MIP: 2193, Selected: 5)
+10  | 325.37       |
+  -> Pool saved to: results_5emp/acc/pool_wk11.csv (Total 13789 columns, Used in MIP: 1410, Selected: 5)
+11  | 170.64       |
+  -> Pool saved to: results_5emp/acc/pool_wk12.csv (Total 14921 columns, Used in MIP: 1538, Selected: 5)
+12  | 212.87       |
+  -> Pool saved to: results_5emp/acc/pool_wk13.csv (Total 15804 columns, Used in MIP: 1250, Selected: 5)
+13  | 138.73       |
+  -> Pool saved to: results_5emp/acc/pool_wk14.csv (Total 16588 columns, Used in MIP: 1208, Selected: 5)
+14  | 131.62       |
+  -> Pool saved to: results_5emp/acc/pool_wk15.csv (Total 17972 columns, Used in MIP: 1933, Selected: 5)
+15  | 300.46       |
+
+All plots and reports saved to: results_5emp/
+Finished Exp1 (acc, Patience=100). Saved to results_exp1_pat_100_acc
+Running Exp1 (pruning) with Patience = 100 ...
+Initializing Problem: 5 Employees
+Found existing configuration up to Week 15.
+Goal: Ensure results up to Week 15 (adding 0 new weeks).
+Selected Methods: CG Pruning
+Solver Parameters: {'max_iter': 1000, 'time_limit': 3600.0, 'tol': 1e-08, 'patience': 100, 'mip_rc_threshold': inf, 'mip_gap': 0.01}
+Output Directory: results_5emp
+
+Starting Comparison Benchmark...
+==================================
+Wk  | CG Pruning (s)     |
+--------------------------
+  -> Pool saved to: results_5emp/pruning/pool_wk1.csv (Total 678 columns, Used in MIP: 678, Selected: 5)
+1   | 43.81        |
+  -> Pool saved to: results_5emp/pruning/pool_wk2.csv (Total 2590 columns, Used in MIP: 2108, Selected: 5)
+2   | 280.71       |
+DEBUG: Cleaning pool... Current size: 2590
+DEBUG: Pool cleaned. New size: 1000 (Removed 1590 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk3.csv (Total 2276 columns, Used in MIP: 1473, Selected: 5)
+3   | 122.13       |
+DEBUG: Cleaning pool... Current size: 2276
+DEBUG: Pool cleaned. New size: 1000 (Removed 1276 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk4.csv (Total 2433 columns, Used in MIP: 1670, Selected: 5)
+4   | 149.40       |
+DEBUG: Cleaning pool... Current size: 2433
+DEBUG: Pool cleaned. New size: 1000 (Removed 1433 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk5.csv (Total 2722 columns, Used in MIP: 1884, Selected: 5)
+5   | 202.06       |
+DEBUG: Cleaning pool... Current size: 2722
+DEBUG: Pool cleaned. New size: 1000 (Removed 1722 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk6.csv (Total 2002 columns, Used in MIP: 1235, Selected: 5)
+6   | 94.39        |
+DEBUG: Cleaning pool... Current size: 2002
+DEBUG: Pool cleaned. New size: 1000 (Removed 1002 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk7.csv (Total 2252 columns, Used in MIP: 1450, Selected: 5)
+7   | 122.78       |
+DEBUG: Cleaning pool... Current size: 2252
+DEBUG: Pool cleaned. New size: 1000 (Removed 1252 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk8.csv (Total 2169 columns, Used in MIP: 1366, Selected: 5)
+8   | 126.66       |
+DEBUG: Cleaning pool... Current size: 2169
+DEBUG: Pool cleaned. New size: 1000 (Removed 1169 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk9.csv (Total 2038 columns, Used in MIP: 1220, Selected: 5)
+9   | 91.32        |
+DEBUG: Cleaning pool... Current size: 2038
+DEBUG: Pool cleaned. New size: 1000 (Removed 1038 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk10.csv (Total 2363 columns, Used in MIP: 1576, Selected: 5)
+10  | 131.58       |
+DEBUG: Cleaning pool... Current size: 2363
+DEBUG: Pool cleaned. New size: 1000 (Removed 1363 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk11.csv (Total 1967 columns, Used in MIP: 1166, Selected: 5)
+11  | 99.72        |
+  -> Pool saved to: results_5emp/pruning/pool_wk12.csv (Total 3091 columns, Used in MIP: 1356, Selected: 5)
+12  | 121.01       |
+DEBUG: Cleaning pool... Current size: 3091
+DEBUG: Pool cleaned. New size: 1000 (Removed 2091 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk13.csv (Total 1941 columns, Used in MIP: 1188, Selected: 5)
+13  | 79.38        |
+  -> Pool saved to: results_5emp/pruning/pool_wk14.csv (Total 2808 columns, Used in MIP: 1134, Selected: 5)
+14  | 78.97        |
+DEBUG: Cleaning pool... Current size: 2808
+DEBUG: Pool cleaned. New size: 1000 (Removed 1808 cols)
+  -> Pool saved to: results_5emp/pruning/pool_wk15.csv (Total 2176 columns, Used in MIP: 1395, Selected: 5)
+15  | 112.59       |
+
+All plots and reports saved to: results_5emp/
+Finished Exp1 (pruning, Patience=100). Saved to results_exp1_pat_100_pruning
+
+=== All ACC & Pruning Experiments Completed ===

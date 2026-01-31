@@ -16,9 +16,7 @@ class ColumnGenerationSolver:
         self.graphs = {}
         self.pattern_to_id = {} 
         self.history = []
-        
-        # ★追加: 最終結果の追跡用変数
-        self.final_selected_ids = set() # 最終解で選ばれた列ID
+        self.final_selected_ids = set() 
         
         self.stats = {
             'time_rmp': 0.0,
@@ -31,15 +29,32 @@ class ColumnGenerationSolver:
             'iterations': 0,
             'pool_size': 0,
             'mip_total_columns': 0,
-            'mip_filtered_columns': 0 
+            'mip_filtered_columns': 0,
+            'time_first_sol': None, # ★追加
+            'time_best_sol': None   # ★追加
         }
 
     def reset_stats(self):
-        self.stats = {k: 0 for k in self.stats}
+        # 辞書を再初期化（初期値設定）
+        self.stats = {
+            'time_rmp': 0.0,
+            'time_mip': 0.0,
+            'time_pool': 0.0,
+            'time_graph': 0.0,
+            'count_pool_hit': 0,
+            'count_graph_new': 0,
+            'count_graph_skip': 0,
+            'iterations': 0,
+            'pool_size': 0,
+            'mip_total_columns': 0,
+            'mip_filtered_columns': 0,
+            'time_first_sol': None,
+            'time_best_sol': None
+        }
 
     def reset_for_new_period(self):
         self.rmp_indices = []
-        self.final_selected_ids = set() # リセット
+        self.final_selected_ids = set()
         if not self.use_pool:
             self.pool = []
             self.graphs = {}
@@ -88,7 +103,7 @@ class ColumnGenerationSolver:
                 self.add_column(k, schedule)
                 if len(self.pool) > prev_pool_size:
                     loaded_count += 1
-            print(f"  -> Loaded pool from {filename}: Added {loaded_count} new columns (Total pool: {len(self.pool)})")
+            print(f"  -> Loaded pool from {filename}: Added {loaded_count} new columns")
         except Exception as e:
             print(f"  [Warning] Failed to load pool from {filename}: {e}")
 
@@ -116,11 +131,10 @@ class ColumnGenerationSolver:
             model += expr == 1
             cons_c.append(model.constraints[list(model.constraints.keys())[-1]])
             
-        # ★修正: PULP_CBC_CMD ではなく COIN_CMD を使用する
-        # threads=1 は引数ではなく options に 'threads 1' として追加するのが確実です
         base_options = ['randomSeed 42', 'randomCbcSeed 42', 'threads 1']
-
+        
         if integer:
+            # 最終MIP用: maxSolutions 1 は削除 (複数の解を見つけてログに残すため)
             if log_path:
                 solver = pulp.COIN_CMD(path='cbc', msg=0, timeLimit=mip_time_limit, gapRel=mip_gap, logPath=log_path, options=base_options)
             else:
@@ -133,20 +147,20 @@ class ColumnGenerationSolver:
         if integer: self.stats['time_mip'] += elapsed
         else: self.stats['time_rmp'] += elapsed
 
-        if model.status != pulp.LpStatusOptimal: return None
+        if model.status != pulp.LpStatusOptimal and model.status != pulp.LpStatusInteger: 
+            return None
 
         if integer:
             self.stats['mip_total_columns'] = len(active_cols)
             final_schedule = np.zeros((self.prob.K, self.prob.T))
-            selected_ids = [] # 選ばれた列IDを記録するリスト
+            selected_ids = []
             
             for c in active_cols:
                 val = x[c['id']].varValue
                 if val is not None and val > 0.5:
                     final_schedule[c['group_id']] = c['schedule']
-                    selected_ids.append(c['id']) # IDを保存
+                    selected_ids.append(c['id'])
             
-            # ★変更: selected_ids も返す
             return pulp.value(model.objective), final_schedule, selected_ids
         else:
             pi = [c.pi for c in cons_d]
@@ -174,14 +188,11 @@ class ColumnGenerationSolver:
                     continue
             trajectory.sort(key=lambda x: x[0])
 
-            # 正規表現を少し緩和（コロンがなくてもヒットするように ? を追加）
             pattern_lb = re.compile(r"(?:Lower bound|Best possible):?\s*([-\d\.]+)")
             match_lb = pattern_lb.search(content)
             if match_lb:
                 final_lower_bound = float(match_lb.group(1))
             elif trajectory:
-                # ログからLBが取れなかったが、解は見つかっている場合
-                # 小規模問題で即座に最適解が出たケースとみなし、最良解をLBとする
                 final_lower_bound = trajectory[-1][1]  
 
             return trajectory, final_lower_bound
@@ -189,33 +200,34 @@ class ColumnGenerationSolver:
     def pricing(self, pi, sigma):
         pool_added_count = 0
         graph_added_count = 0
-        t_pool_start = time.perf_counter()
         
-        candidates = []
+        candidates_by_emp = {k: [] for k in range(self.prob.K)}
+        
+        t_pool_start = time.perf_counter()
         if self.use_pool:
             for i, col in enumerate(self.pool):
                 if i in self.rmp_indices: continue 
                 k = col['group_id']
                 rc = col['cost'] - np.dot(pi, col['schedule']) - sigma[k]
-                if rc < -1e-5: candidates.append((rc, i))
-        
-        candidates.sort(key=lambda x: x[0])
-        limit_add = self.prob.K * 2 
-        for rc, i in candidates[:limit_add]:
-            self.rmp_indices.append(i)
-            pool_added_count += 1
-            self.stats['count_pool_hit'] += 1
-        
+                if rc < -1e-5:
+                    candidates_by_emp[k].append((rc, i))
         self.stats['time_pool'] += (time.perf_counter() - t_pool_start)
-        if self.use_pool and pool_added_count > 5:
-            self.stats['count_graph_skip'] += self.prob.K 
-            return pool_added_count, 0
 
         t_graph_start = time.perf_counter()
         for k in range(self.prob.K):
+            if candidates_by_emp[k]:
+                candidates_by_emp[k].sort(key=lambda x: x[0])
+                best_rc, best_idx = candidates_by_emp[k][0]
+                if best_idx not in self.rmp_indices:
+                    self.rmp_indices.append(best_idx)
+                    pool_added_count += 1
+                    self.stats['count_pool_hit'] += 1
+                continue
+
             if k not in self.graphs: self.graphs[k] = GraphBuilder.build_graph(self.prob, k)
             G, src, sink = self.graphs[k]
             emp = self.prob.employees[k]
+            
             for u, v, d in G.edges(data=True):
                 etype = d.get('type')
                 if etype in ['work_start', 'work_cont']:
@@ -234,13 +246,15 @@ class ColumnGenerationSolver:
                     d = G[u][v]
                     rc_val += d['weight']
                     if d.get('type') in ['work_start', 'work_cont']: sched[d['time']] = 1
+                
                 if rc_val < -1e-5:
                     idx = self.add_column(k, sched)
                     if idx not in self.rmp_indices:
                         self.rmp_indices.append(idx)
                         graph_added_count += 1
                         self.stats['count_graph_new'] += 1
-            except nx.NetworkXNoPath: pass
+            except nx.NetworkXNoPath:
+                pass
 
         self.stats['time_graph'] += (time.perf_counter() - t_graph_start)
         return pool_added_count, graph_added_count
@@ -256,6 +270,7 @@ class ColumnGenerationSolver:
         last_pi = None
         last_sigma = None
         
+        # --- CG Phase ---
         for i in range(max_iter):
             if time.time() - start_total > time_limit: break
             
@@ -278,16 +293,15 @@ class ColumnGenerationSolver:
             
             if total_added == 0: break
             if no_improve_iter >= patience: break
-            
+        
+        # --- Pre-MIP Filtering ---
         if last_pi is not None and last_sigma is not None:
             filtered_indices = []
             removed_count = 0
             for idx in self.rmp_indices:
                 col = self.pool[idx]
                 k = col['group_id']
-                # 正確には last_sigma を使う
                 rc = col['cost'] - np.dot(last_pi, col['schedule']) - last_sigma[k]
-                
                 if rc <= mip_rc_threshold:
                     filtered_indices.append(idx)
                 else:
@@ -297,39 +311,59 @@ class ColumnGenerationSolver:
 
         self.stats['rmp_obj_lp'] = prev_obj
         
+        # --- Final MIP Phase ---
+        # CGフェーズ終了時点の時刻を記録（ここまでの経過時間がオフセットになる）
+        time_until_mip = time.time() - start_total
+        
         timestamp = int(time.time())
         log_file = f"cbc_mip_log_{timestamp}.txt"
         
-        res_mip = self.solve_rmp(integer=True, mip_time_limit=time_limit, log_path=log_file, mip_gap=mip_gap)
+        # 残り時間を計算してMIPに渡す
+        remaining_time = max(1.0, time_limit - time_until_mip)
         
-        self.stats['mip_trajectory'], self.stats['mip_lower_bound'] = self.parse_cbc_log(log_file)
+        res_mip = self.solve_rmp(integer=True, mip_time_limit=remaining_time, log_path=log_file, mip_gap=mip_gap)
+        
+        # ログ解析
+        trajectory, lb = self.parse_cbc_log(log_file)
+        self.stats['mip_trajectory'] = trajectory
+        self.stats['mip_lower_bound'] = lb
         
         if os.path.exists(log_file):
             os.remove(log_file)
             
         if res_mip: 
-            # ★変更: selected_ids を受け取り、クラス変数に保存
             final_obj, final_schedule, selected_ids = res_mip
             self.final_selected_ids = set(selected_ids)
+            
+            # ★追加: 経過時間の計算 (CG時間 + MIP内時間)
+            if trajectory:
+                # trajectory = [(time_in_mip, obj), ...]
+                first_mip_time = trajectory[0][0]
+                best_mip_time = trajectory[-1][0]
+                self.stats['time_first_sol'] = time_until_mip + first_mip_time
+                self.stats['time_best_sol'] = time_until_mip + best_mip_time
+            else:
+                # ログから取れなかったが解はある場合 (即座に終わった場合など)
+                # 全体のelapsedを使う
+                current_total = time.time() - start_total
+                self.stats['time_first_sol'] = current_total
+                self.stats['time_best_sol'] = current_total
         else:
             final_obj = 0.0
             final_schedule = np.zeros((self.prob.K, self.prob.T))
             self.final_selected_ids = set()
+            self.stats['time_first_sol'] = None
+            self.stats['time_best_sol'] = None
             
         self.stats['pool_size'] = len(self.pool)
         return final_obj, time.time() - start_total, self.stats, final_schedule
-    
-    # === ★変更: フラグを追加してCSV保存 ===
+
     def save_pool_to_csv(self, filename):
-        # 最終MIPに残った列のインデックスセット（高速検索用）
         final_mip_indices_set = set(self.rmp_indices)
-        
         data = []
         for i, col in enumerate(self.pool):
             emp = self.prob.employees[col['group_id']]
             sched_str = "".join(map(str, map(int, col['schedule'])))
-            
-            # フラグ判定
             is_in_mip = 1 if i in final_mip_indices_set else 0
             is_selected = 1 if col['id'] in self.final_selected_ids else 0
             
@@ -339,10 +373,10 @@ class ColumnGenerationSolver:
                 'emp_type': emp['type'],
                 'cost': col['cost'],
                 'schedule_pattern': sched_str,
-                'in_final_mip': is_in_mip,   # ★追加
-                'is_selected': is_selected   # ★追加
+                'in_final_mip': is_in_mip,
+                'is_selected': is_selected
             })
         
         df = pd.DataFrame(data)
         df.to_csv(filename, index=False)
-        print(f"  -> Pool saved to: {filename} (Total {len(df)} columns, Used in MIP: {sum(d['in_final_mip'] for d in data)}, Selected: {sum(d['is_selected'] for d in data)})")
+        print(f"  -> Pool saved to: {filename}")
