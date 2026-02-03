@@ -1,0 +1,55 @@
+==========================================================
+ ANALYSIS REPORT: Week 6
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 657,000.00
+  Execution Time  : 3465.1147 sec
+  Iterations      : 0
+  RMP Time  : 0.0000 s
+  MIP Time  : 0.0000 s
+  Pool Search Time: 0.0000 s
+  Graph Search Time: 0.0000 s
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 45 hours worked
+  Emp 1  (TypeA): 46 hours worked
+  Emp 2  (TypeA): 44 hours worked
+  Emp 3  (TypeA): 48 hours worked
+  Emp 4  (TypeB): 39 hours worked
+  Emp 5  (TypeB): 36 hours worked
+  Emp 6  (TypeB): 31 hours worked
+  Emp 7  (TypeB): 39 hours worked
+  Emp 8  (TypeB): 37 hours worked
+  Emp 9  (TypeB): 32 hours worked
+  Emp 10 (TypeB): 33 hours worked
+  Emp 11 (TypeB): 33 hours worked
+  Emp 12 (TypeC): 25 hours worked
+  Emp 13 (TypeC): 18 hours worked
+  Emp 14 (TypeC): 21 hours worked
+  Emp 15 (TypeC): 18 hours worked
+  Emp 16 (TypeC): 24 hours worked
+  Emp 17 (TypeC): 22 hours worked
+  Emp 18 (TypeC): 22 hours worked
+  Emp 19 (TypeC): 20 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+No iteration history available.

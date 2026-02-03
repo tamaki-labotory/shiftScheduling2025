@@ -1,0 +1,116 @@
+Welcome to the CBC MILP Solver 
+Version: 2.10.3 
+Build Date: Dec 15 2019 
+
+command line - /Users/matsumura/miniconda3/lib/python3.11/site-packages/pulp/apis/../solverdir/cbc/osx/i64/cbc /var/folders/g5/hmhs0_854jn5qmfthymtztb80000gn/T/a2fae4c5eeeb41a1ade9760196cb7be9-pulp.mps -sec 3600.0 -randomSeed 42 -randomCbcSeed 42 -threads 1 -ratio 0.0001 -timeMode elapsed -branch -printingOptions all -solution /var/folders/g5/hmhs0_854jn5qmfthymtztb80000gn/T/a2fae4c5eeeb41a1ade9760196cb7be9-pulp.sol (default strategy 1)
+At line 2 NAME          MODEL
+At line 3 ROWS
+At line 232913 COLUMNS
+At line 1594330 RHS
+At line 1827239 BOUNDS
+At line 2116740 ENDATA
+Problem MODEL has 232908 rows, 289668 columns and 680708 elements
+Coin0008I MODEL read with 0 errors
+seconds was changed from 1e+100 to 3600
+randomSeed was changed from 1234567 to 42
+randomCbcSeed was changed from -1 to 42
+threads was changed from 0 to 1
+ratioGap was changed from 0 to 0.0001
+Option for timeMode changed from cpu to elapsed
+Continuous objective value is 683550 - 185.91 seconds
+Cgl0003I 0 fixed, 0 tightened bounds, 0 strengthened rows, 8 substitutions
+Cgl0003I 0 fixed, 0 tightened bounds, 0 strengthened rows, 37 substitutions
+Cgl0003I 0 fixed, 0 tightened bounds, 0 strengthened rows, 32 substitutions
+Cgl0003I 0 fixed, 0 tightened bounds, 0 strengthened rows, 19 substitutions
+Cgl0004I processed model has 59212 rows, 114836 columns (114685 integer (114685 of which binary)) and 322357 elements
+Cutoff increment increased from 1e-05 to 0.9999
+Cbc0038I Initial state - 838 integers unsatisfied sum - 321.833
+Cbc0038I Pass   1: (606.58 seconds) suminf.    0.00000 (0) obj. 3.66681e+07 iterations 38552
+Cbc0038I Solution found of 3.66681e+07
+Cbc0038I Relaxing continuous gives 3.66681e+07
+Cbc0038I Before mini branch and bound, 113830 integers at bound fixed and 118 continuous
+Cbc0038I Full problem 59212 rows 114836 columns, reduced to 78 rows 66 columns
+Cbc0038I Mini branch and bound improved solution from 3.66681e+07 to 5.6838e+06 (607.25 seconds)
+Cbc0038I Round again with cutoff of 5.18377e+06
+Cbc0038I Pass   2: (696.75 seconds) suminf.    2.47158 (5) obj. 5.18377e+06 iterations 24356
+Cbc0038I Pass   3: (940.01 seconds) suminf.    0.00000 (0) obj. 5.18377e+06 iterations 44067
+Cbc0038I Solution found of 5.18377e+06
+Cbc0038I Relaxing continuous gives 4.6901e+06
+Cbc0038I Before mini branch and bound, 113812 integers at bound fixed and 145 continuous
+Cbc0038I Full problem 59212 rows 114836 columns, reduced to 60 rows 40 columns
+Cbc0038I Mini branch and bound improved solution from 4.6901e+06 to 4.6875e+06 (940.77 seconds)
+Cbc0038I Round again with cutoff of 3.88671e+06
+Cbc0038I Pass   4: (971.45 seconds) suminf.   21.62133 (46) obj. 3.88671e+06 iterations 5744
+Cbc0038I Pass   5: (1065.01 seconds) suminf.    0.87719 (9) obj. 3.88671e+06 iterations 34088
+Cbc0038I Pass   6: (1174.89 seconds) suminf.    0.03764 (11829) obj. 3.88671e+06 iterations 47170
+Cbc0038I Pass   7: (1179.81 seconds) suminf.    0.00000 (0) obj. 3.88671e+06 iterations 3482
+Cbc0038I Solution found of 3.88671e+06
+Cbc0038I Relaxing continuous gives 3.6921e+06
+Cbc0038I Before mini branch and bound, 94040 integers at bound fixed and 59 continuous
+Cbc0038I Full problem 59212 rows 114836 columns, reduced to 166 rows 191 columns
+Cbc0038I Mini branch and bound improved solution from 3.6921e+06 to 2.6865e+06 (1180.22 seconds)
+Cbc0038I Round again with cutoff of 2.08561e+06
+Cbc0038I Pass   8: (1191.87 seconds) suminf.    6.63501 (17) obj. 2.08561e+06 iterations 4001
+Cbc0038I Pass   9: (1302.34 seconds) suminf.    0.00000 (0) obj. 2.08561e+06 iterations 44587
+Cbc0038I Solution found of 2.08561e+06
+Cbc0038I Relaxing continuous gives 1.6961e+06
+Cbc0038I Before mini branch and bound, 113785 integers at bound fixed and 149 continuous
+Cbc0038I Full problem 59212 rows 114836 columns, reduced to 61 rows 39 columns
+Cbc0038I Mini branch and bound improved solution from 1.6961e+06 to 1.6935e+06 (1302.72 seconds)
+Cbc0038I Round again with cutoff of 1.39051e+06
+Cbc0038I Pass  10: (1325.73 seconds) suminf.   26.81378 (88) obj. 1.39051e+06 iterations 8875
+Cbc0038I Pass  11: (1389.52 seconds) suminf.   14.67341 (264) obj. 1.39051e+06 iterations 26497
+Cbc0038I Pass  12: (1407.18 seconds) suminf.   15.67197 (205) obj. 1.39051e+06 iterations 7009
+Cbc0038I Pass  13: (1421.21 seconds) suminf.   14.37245 (263) obj. 1.39051e+06 iterations 5505
+Cbc0038I Pass  14: (1433.76 seconds) suminf.   14.46541 (225) obj. 1.39051e+06 iterations 4830
+Cbc0038I Pass  15: (1463.58 seconds) suminf.   11.20829 (36) obj. 1.39051e+06 iterations 11183
+Cbc0038I Pass  16: (1487.03 seconds) suminf.    8.76345 (28) obj. 1.39051e+06 iterations 8553
+Cbc0038I Pass  17: (1490.51 seconds) suminf.    8.76345 (28) obj. 1.39051e+06 iterations 1215
+Cbc0038I Pass  18: (1509.21 seconds) suminf.    3.14765 (10) obj. 1.39051e+06 iterations 6956
+Cbc0038I Pass  19: (1509.77 seconds) suminf.    3.14765 (10) obj. 1.39051e+06 iterations 111
+Cbc0038I Solution found of 1.39003e+06
+Cbc0038I Relaxing continuous gives 704800
+Cbc0038I Before mini branch and bound, 113505 integers at bound fixed and 150 continuous
+Cbc0038I Full problem 59212 rows 114836 columns, reduced to 105 rows 87 columns
+Cbc0038I Mini branch and bound improved solution from 704800 to 691700 (1510.21 seconds)
+Cbc0038I Round again with cutoff of 688439
+Cbc0038I Reduced cost fixing fixed 1374 variables on major pass 6
+Cbc0038I Pass  20: (1527.61 seconds) suminf.    3.55738 (141) obj. 688439 iterations 8176
+Cbc0038I Pass  21: (1548.24 seconds) suminf.    0.56210 (7) obj. 688439 iterations 7817
+Cbc0038I Solution found of 686600
+Cbc0038I Relaxing continuous gives 686600
+Cbc0038I Before mini branch and bound, 113732 integers at bound fixed and 151 continuous
+Cbc0038I Full problem 59212 rows 114836 columns, reduced to 62 rows 44 columns
+Cbc0038I Mini branch and bound did not improve solution (1548.58 seconds)
+Cbc0038I Freeing continuous variables gives a solution of 686600
+Cbc0038I After 1548.80 seconds - Feasibility pump exiting with objective of 686600 - took 1071.79 seconds
+Cbc0012I Integer solution of 686600 found by feasibility pump after 0 iterations and 0 nodes (1548.82 seconds)
+Cbc0038I Full problem 59212 rows 114836 columns, reduced to 123 rows 148 columns
+Cbc0030I Thread 0 used 0 times,  waiting to start 0.049171209, 0 cpu time, 0 locks, 0 locked, 0 waiting for locks
+Cbc0030I Main thread 0 waiting for threads,  1 locks, 1.2159348e-05 locked, 9.5367432e-07 waiting for locks
+Cbc0027I Exiting on user event
+Cbc0005I Partial search - best objective 686600 (best possible 683550), took 0 iterations and 0 nodes (1552.28 seconds)
+Cbc0035I Maximum depth 0, 2656 variables fixed on reduced cost
+Cuts at root node changed objective from 683550 to 683550
+Probing was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+Gomory was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+Knapsack was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+Clique was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+MixedIntegerRounding2 was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+FlowCover was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+TwoMirCuts was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+ZeroHalf was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+
+Result - User ctrl-cuser ctrl-c
+
+Objective value:                686600.00000000
+Lower bound:                    683550.000
+Gap:                            0.00
+Enumerated nodes:               0
+Total iterations:               0
+Time (CPU seconds):             1534.66
+Time (Wallclock seconds):       1552.94
+
+Option for printingOptions changed from normal to all
+Total time (CPU seconds):       1536.35   (Wallclock seconds):       1555.01
+

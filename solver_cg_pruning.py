@@ -1,22 +1,28 @@
 from solver_cg import ColumnGenerationSolver
-import math
+from problem import GraphBuilder
 import time
 import numpy as np
-from collections import defaultdict
 import os
+import networkx as nx
 
 class ColumnGenerationSolverWithPruning(ColumnGenerationSolver):
-    def __init__(self, problem, use_pool=True, pool_cleanup_threshold=2000):
+    def __init__(self, problem, use_pool=True, pool_cleanup_threshold=8000):
         # 親クラスの初期化
         super().__init__(problem, use_pool)
         
-        # ★変更点: この閾値は「1従業員あたりの最大保持数列」として扱います
         self.pool_cleanup_threshold = pool_cleanup_threshold
         
         # --- 実験設定パラメータ ---
-        self.cg_stall_limit = 3
-        self.ip_selection_ratio = 0.20
-        self.mip_time_limit = 30
+        self.cg_stall_limit = 3         # CG終了条件: 3回停滞
+        self.ip_selection_ratio = 0.20  # IP列選定: 上位20%
+        self.mip_time_limit = 120        # MIP制限時間: 30秒
+        
+        # 新規追加: RMP除外の閾値
+        self.rmp_pruning_threshold = 100000.0 
+
+        # Iterationごとの列追加上限
+        self.max_pool_cols_per_iter = 5 # プールからは最大3つ
+        self.max_graph_cols_per_iter = 1 # グラフからは最大1つ
 
     def reset_for_new_period(self):
         """
@@ -24,133 +30,202 @@ class ColumnGenerationSolverWithPruning(ColumnGenerationSolver):
         プールサイズが肥大化しすぎていないかチェックし、必要なら掃除する。
         """
         self.rmp_indices = []
+        self.final_selected_ids = set()
         if not self.use_pool:
             self.pool = []
             self.graphs = {}
             self.pattern_to_id = {} 
         else:
-            # 掃除が必要かどうかの簡易チェック
-            # 「従業員数 x 閾値」を超えていれば、誰かが溢れている可能性が高いので詳細チェックへ
-            total_threshold = self.prob.K * self.pool_cleanup_threshold
-            if len(self.pool) > total_threshold:
+            if len(self.pool) > self.pool_cleanup_threshold:
                 self.cleanup_pool(pi=None, sigma=None)
 
     def cleanup_pool(self, pi=None, sigma=None):
         """
-        【従業員別】プールのメンテナンスを行う。
-        各従業員について、保持している列数が threshold を超えた場合のみ、
-        古い列や質の悪い列を削除する。
+        プール全体の列数が threshold を超えた場合、古い列や質の悪い列を削除する。
         """
-        # 現在RMPで使用中の列IDセット（これらは絶対に消さない）
         active_indices_set = set(self.rmp_indices)
+        total_cols = len(self.pool)
         
-        # 1. 従業員ごとに列を分類する
-        # cols_by_emp[k] = [col_obj, col_obj, ...]
-        cols_by_emp = defaultdict(list)
-        for col in self.pool:
-            cols_by_emp[col['group_id']].append(col)
-            
+        if total_cols <= self.pool_cleanup_threshold:
+            return
+
         new_pool = []
         new_pattern_to_id = {}
         new_rmp_indices = []
         
-        removed_count = 0
+        keep_recent_count = max(1, int(self.pool_cleanup_threshold * 0.5))
+        cutoff_index = total_cols - keep_recent_count
         
-        print(f"DEBUG: Checking pool limits per employee (Threshold={self.pool_cleanup_threshold})...")
-
-        # 2. 従業員ごとに選別処理
-        # 全従業員ループ（プールに列がない従業員もいるかもしれないが、cols_by_empのキー分で十分）
-        # ただし、順序保持のため 0..K-1 で回すのが安全
-        sorted_emp_ids = sorted(cols_by_emp.keys())
-        
-        for k in sorted_emp_ids:
-            emp_cols = cols_by_emp[k]
-            num_cols = len(emp_cols)
+        for old_idx, col in enumerate(self.pool):
+            should_keep = False
             
-            # 閾値を超えていなければ、そのまま全列キープ
-            if num_cols <= self.pool_cleanup_threshold:
-                for col in emp_cols:
-                    self._add_col_to_new_lists(col, new_pool, new_pattern_to_id, new_rmp_indices, active_indices_set)
-                continue
-            
-            # --- 閾値を超えている場合の選別ロジック ---
-            
-            # 基準1: Recency (最近追加された N 列は残す)
-            # emp_cols は self.pool への追加順（時系列順）に並んでいると仮定できる
-            keep_recent_count = 1000 # 直近1000列は無条件保護
-            cutoff_index = num_cols - keep_recent_count
-            
-            kept_for_k = 0
-            
-            for local_idx, col in enumerate(emp_cols):
-                should_keep = False
-                
-                # A. 現在RMPに含まれている (Must Keep)
-                if col['id'] in active_indices_set:
+            # A. 現在RMPに含まれている
+            if col['id'] in active_indices_set:
+                should_keep = True
+            # B. 最近追加された
+            elif old_idx >= cutoff_index:
+                should_keep = True
+            # C. 被約費用が良い
+            elif pi is not None and sigma is not None:
+                k = col['group_id']
+                sched = np.array(col['schedule'])
+                val = np.dot(pi, sched)
+                rc = col['cost'] - val - sigma[k]
+                if rc < 1e-5:
                     should_keep = True
-                
-                # B. 最近追加された (Recency)
-                elif local_idx >= cutoff_index:
-                    should_keep = True
-                    
-                # C. 被約費用が良い (Quality)
-                elif pi is not None and sigma is not None:
-                    # まだKeep判定されていない古い列についてのみ計算
-                    sched = np.array(col['schedule'])
-                    val = np.dot(pi, sched)
-                    rc = col['cost'] - val - sigma[k]
-                    # 有望なら残す (閾値は適宜調整、ここでは負または0に近いもの)
-                    if rc < 1e-5:
-                        should_keep = True
-                
-                if should_keep:
-                    self._add_col_to_new_lists(col, new_pool, new_pattern_to_id, new_rmp_indices, active_indices_set)
-                    kept_for_k += 1
-                else:
-                    removed_count += 1
             
-            # (Option) もし削りすぎてRMP維持に必要な列まで消えるリスクがあるなら、
-            # 最低限の列数を確保するロジックをここに入れるが、
-            # 上記 A. で active_indices_set を守っているので大丈夫。
-
-        # 3. メンバ変数を更新
+            if should_keep:
+                self._add_col_to_new_lists(col, new_pool, new_pattern_to_id, new_rmp_indices, active_indices_set)
+            
         self.pool = new_pool
         self.pattern_to_id = new_pattern_to_id
         self.rmp_indices = new_rmp_indices
         
-        print(f"DEBUG: Pool cleanup done. Removed {removed_count} cols. New total size: {len(self.pool)}")
+        # print(f"DEBUG: Pool cleanup done. New total size: {len(self.pool)}")
 
     def _add_col_to_new_lists(self, col, new_pool, new_pattern_to_id, new_rmp_indices, active_indices_set):
-        """
-        残すと決めた列を新しいリストに追加し、IDを振り直すヘルパー
-        """
-        # 元のIDがActiveだったか？
         was_active = (col['id'] in active_indices_set)
-        
-        # 新しいIDを発行
         new_id = len(new_pool)
-        
-        # 列オブジェクトのIDを更新
-        # (注意: colは辞書なので参照渡し。ここで書き換えても良いが、念のためコピーはしない)
         col['id'] = new_id
         new_pool.append(col)
-        
-        # マップ更新
         pat_key = (col['group_id'], tuple(col['schedule']))
         new_pattern_to_id[pat_key] = new_id
-        
-        # RMPインデックス更新
         if was_active:
             new_rmp_indices.append(new_id)
 
+    def prune_rmp_by_rc(self, pi, sigma):
+        """
+        【追加機能】
+        RMPに含まれている列のうち、被約費用(RC)が閾値(10^5)を超えるものを
+        RMPのインデックスリストから削除する。
+        """
+        original_count = len(self.rmp_indices)
+        new_indices = []
+        
+        for idx in self.rmp_indices:
+            col = self.pool[idx]
+            k = col['group_id']
+            # 被約費用の計算: RC = Cost - (pi * schedule) - sigma
+            sched = np.array(col['schedule'])
+            val = np.dot(pi, sched)
+            rc = col['cost'] - val - sigma[k]
+            
+            # 閾値以下のものだけ残す
+            if rc <= self.rmp_pruning_threshold:
+                new_indices.append(idx)
+        
+        self.rmp_indices = new_indices
+        removed_count = original_count - len(self.rmp_indices)
+        # 必要であればログ出力
+        # if removed_count > 0:
+        #     print(f"  [Pruning] Removed {removed_count} cols with RC > {self.rmp_pruning_threshold}")
+
+    def pricing(self, pi, sigma):
+        """
+        Pricing問題を解くメソッド（オーバーライド）。
+        従業員ごとに「プール内探索」を行い、被約費用が負の列が見つかればそれを追加して終了。
+        見つからなかった場合のみ「グラフ探索」を行う、二段階構成。
+        """
+        pool_added_count = 0
+        graph_added_count = 0
+        
+        # 各従業員のプール内候補列を計算
+        candidates_by_emp = {k: [] for k in range(self.prob.K)}
+        
+        t_pool_start = time.perf_counter()
+        if self.use_pool:
+            for i, col in enumerate(self.pool):
+                if i in self.rmp_indices: continue 
+                k = col['group_id']
+                rc = col['cost'] - np.dot(pi, col['schedule']) - sigma[k]
+                if rc < -1e-5:
+                    candidates_by_emp[k].append((rc, i))
+        self.stats['time_pool'] += (time.perf_counter() - t_pool_start)
+
+        t_graph_start = time.perf_counter()
+        
+        for k in range(self.prob.K):
+            found_in_pool = False
+            
+            # -----------------------------------------------------------
+            # Step 1: Pool Check
+            # プール内に有望な列があるか確認
+            # -----------------------------------------------------------
+            if candidates_by_emp[k]:
+                # 被約費用の小さい順（昇順）にソート
+                candidates_by_emp[k].sort(key=lambda x: x[0])
+                
+                added_count = 0
+                for _, idx in candidates_by_emp[k]:
+                    if added_count >= self.max_pool_cols_per_iter:
+                        break
+                    
+                    if idx not in self.rmp_indices:
+                        self.rmp_indices.append(idx)
+                        pool_added_count += 1
+                        self.stats['count_pool_hit'] += 1
+                        added_count += 1
+                
+                # プールから1つでも追加できれば、この従業員のグラフ探索はスキップ
+                if added_count > 0:
+                    found_in_pool = True
+
+            # -----------------------------------------------------------
+            # Step 2: Graph Search (Conditional)
+            # プールで見つからなかった場合のみ実行
+            # -----------------------------------------------------------
+            if not found_in_pool:
+                # グラフ構築（キャッシュ利用）
+                if k not in self.graphs: self.graphs[k] = GraphBuilder.build_graph(self.prob, k)
+                G, src, sink = self.graphs[k]
+                emp = self.prob.employees[k]
+                
+                # エッジ重みの更新
+                for u, v, d in G.edges(data=True):
+                    etype = d.get('type')
+                    if etype in ['work_start', 'work_cont']:
+                        t = d['time']
+                        w = (emp['hourly_wage'] + emp['rho'][t]) - pi[t]
+                        d['weight'] = w
+                    elif etype == 'start': d['weight'] = -sigma[k]
+                    elif etype == 'leave': d['weight'] = 0
+                    else: d['weight'] = 0
+                
+                try:
+                    # 最短路探索（1つだけ）
+                    path = nx.shortest_path(G, src, sink, weight='weight', method='bellman-ford')
+                    
+                    sched = [0]*self.prob.T
+                    rc_val = 0
+                    for u, v in zip(path, path[1:]):
+                        d = G[u][v]
+                        rc_val += d['weight']
+                        if d.get('type') in ['work_start', 'work_cont']: sched[d['time']] = 1
+                    
+                    # 負の被約費用を持つ場合のみ追加
+                    if rc_val < -1e-5:
+                        idx = self.add_column(k, sched)
+                        if idx not in self.rmp_indices:
+                            self.rmp_indices.append(idx)
+                            graph_added_count += 1
+                            self.stats['count_graph_new'] += 1
+                
+                except nx.NetworkXNoPath:
+                    pass
+                except Exception as e:
+                    print(f"Warning: Pricing failed for emp {k}: {e}")
+
+        self.stats['time_graph'] += (time.perf_counter() - t_graph_start)
+        return pool_added_count, graph_added_count
+
     def solve(self, max_iter=1000, time_limit=3600, tol=1e-8, patience=10, mip_rc_threshold=1e10, mip_gap=0.0001):
         """
-        メインのsolveメソッド（シグネチャはmain.pyからの呼び出しに合わせる）
+        メインのsolveメソッド
         """
         start_total = time.time()
         self.reset_stats()
         self.initialize_rmp()
-
+        
         self.history = []
         
         print("START: Column Generation Phase")
@@ -168,6 +243,10 @@ class ColumnGenerationSolverWithPruning(ColumnGenerationSolver):
             if res is None: break
             current_obj, pi, sigma = res
             current_pi, current_sigma = pi, sigma
+
+            # --- RMP Pruning (RC Check) ---
+            # ここで被約費用が大きすぎる列をRMPから除外する
+            self.prune_rmp_by_rc(pi, sigma)
             
             # --- Stall Check ---
             obj_history.append(current_obj)
@@ -177,7 +256,7 @@ class ColumnGenerationSolverWithPruning(ColumnGenerationSolver):
                     print(f"INFO: CG Stalled. Stopping CG.")
                     break
 
-            # Pricing
+            # Pricing (Overrideしたメソッドが呼ばれる)
             pool_add, graph_add = self.pricing(pi, sigma)
             
             self.stats['iterations'] += 1
@@ -187,13 +266,9 @@ class ColumnGenerationSolverWithPruning(ColumnGenerationSolver):
                 print("INFO: No new columns found.")
                 break
                 
-            # --- Cleanup (Per Employee) ---
+            # --- Cleanup (Global) ---
             if self.use_pool:
-                # 誰か一人でも閾値を超えているかチェックするために、総数をチェック
-                # （厳密には個別にチェックすべきだが、ループごとのオーバーヘッドを減らすため
-                #   全体サイズが「K * threshold」を超えたときだけ詳細チェックに入る運用とする）
-                total_threshold = self.prob.K * self.pool_cleanup_threshold
-                if len(self.pool) > total_threshold:
+                if len(self.pool) > self.pool_cleanup_threshold:
                     self.cleanup_pool(pi, sigma)
         
         if obj_history:
@@ -212,6 +287,7 @@ class ColumnGenerationSolverWithPruning(ColumnGenerationSolver):
             
             pool_with_rc.sort(key=lambda x: x[0])
             
+            # 上位 N% を選定
             cutoff_count = int(len(pool_with_rc) * self.ip_selection_ratio)
             selected_columns = [item[1] for item in pool_with_rc[:cutoff_count]]
             

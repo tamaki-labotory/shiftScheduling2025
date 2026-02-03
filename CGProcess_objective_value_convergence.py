@@ -1,26 +1,21 @@
 import matplotlib
-# サーバー環境等でGUIがない場合のエラー回避
+# GUI (Tkinter) との競合を防ぐため、プロット処理はAggバックエンド(非表示)で行う設定は維持
 matplotlib.use('Agg') 
 from matplotlib import ticker
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import os
 import glob
-import re
 import numpy as np
+
+# --- GUI用ライブラリのインポート ---
+import tkinter as tk
+from tkinter import filedialog, messagebox
 
 def build_path(base_prefix, patience, method):
     """
     ディレクトリ構造のルールに従ってパスを生成する
-    
-    ルール:
-    1. method == 'std' の場合:
-       {base_prefix}_pat_{patience} / std
-       
-    2. method != 'std' (例: acc) の場合:
-       {base_prefix}_pat_{patience}_{method} / {method}
     """
-    # フォルダ名が浮動小数点表記か整数表記かで揺れる場合を考慮し文字列化
     p_val = str(patience)
     
     if method == 'std':
@@ -94,9 +89,6 @@ def parse_and_plot(base_prefix, patience, method, week):
 
     # --- 3. プロット作成用関数 ---
     def create_plot(x_start, x_end, suffix):
-        """
-        指定されたX軸範囲(x_start, x_end)でグラフを作成し保存する関数
-        """
         if x_start >= x_end:
             return
 
@@ -133,7 +125,6 @@ def parse_and_plot(base_prefix, patience, method, week):
 
         ax1.set_xlim(x_start, x_end)
         
-        # Y軸自動調整
         if len(sliced_obj) > 0:
             y_min = sliced_obj.min()
             y_max = sliced_obj.max()
@@ -147,7 +138,6 @@ def parse_and_plot(base_prefix, patience, method, week):
             labels1.append('Stagnation')
         ax1.legend(handles1, labels1, loc='upper right')
 
-        # 最終値
         last_iter_in_range = iterations[mask][-1] if len(iterations[mask]) > 0 else None
         if last_iter_in_range is not None and last_iter_in_range == iterations[-1]:
              ax1.annotate(f'Final: {obj_values[-1]:,.2f}', 
@@ -169,20 +159,16 @@ def parse_and_plot(base_prefix, patience, method, week):
 
         plt.tight_layout(rect=[0, 0, 1, 0.95])
         
-        # 保存
         outname = os.path.join(target_dir, f'convergence_{suffix}_wk{week}.png')
         plt.savefig(outname)
         plt.close(fig)
         print(f"  Saved: {outname}")
 
-    # --- 画像生成の実行 ---
     first_iter = iterations[0]
     last_iter = iterations[-1]
     
-    # 1. Overall
     create_plot(first_iter, last_iter, "Overall")
     
-    # 2. Start (Iteration 15-50)
     start_offset = 15
     end_offset = 50
     if total_len > start_offset:
@@ -191,7 +177,6 @@ def parse_and_plot(base_prefix, patience, method, week):
         if s_val < e_val:
             create_plot(s_val, e_val, "Start")
     
-    # 3. End (Last 30% or 20 iter)
     num_display = max(20, int(total_len * 0.30))
     start_idx_end = max(0, total_len - num_display)
     s_val_end = iterations[start_idx_end]
@@ -199,42 +184,40 @@ def parse_and_plot(base_prefix, patience, method, week):
 
 
 def scan_and_process(base_prefix, patience, week):
+    """
+    指定されたパラメータに基づいてフォルダをスキャンし処理を実行する
+    （GUIから呼び出すためにロジックを分離）
+    """
     print(f"Scanning for methods in {base_prefix} with patience={patience}...")
     
     found_methods = set()
     
-    # 1. 'std' の確認 (results_exp1_pat_100/std)
+    # 1. 'std' の確認
     std_dir = f"{base_prefix}_pat_{patience}"
     std_path = os.path.join(std_dir, "std")
     if os.path.isdir(std_path):
         found_methods.add("std")
         
-    # 2. その他の手法の確認 (results_exp1_pat_100_*)
-    # パターン: results_exp1_pat_100_{method}
+    # 2. その他の手法の確認
     search_pattern = f"{base_prefix}_pat_{patience}_*"
     candidates = glob.glob(search_pattern)
     
     for c_dir in candidates:
         if not os.path.isdir(c_dir): continue
-        
-        # ディレクトリ名から手法名を抽出
-        # 例: results_exp1_pat_100_acc -> acc
         dirname = os.path.basename(c_dir)
-        # プレフィックス部分を除去
         prefix_part = f"{base_prefix}_pat_{patience}_"
         
         if dirname.startswith(prefix_part):
             method_name = dirname[len(prefix_part):]
             if method_name:
-                # 念のため内部にその手法名のフォルダがあるか確認
                 if os.path.isdir(os.path.join(c_dir, method_name)):
                     found_methods.add(method_name)
 
-    # 見つかった手法に対して実行
     sorted_methods = sorted(list(found_methods))
     if not sorted_methods:
-        print("No methods found. Please check the directory names.")
-        return
+        msg = f"No methods found matching '{base_prefix}_pat_{patience}' in current directory."
+        print(msg)
+        return False, msg
 
     print(f"Found methods: {sorted_methods}")
     print("-" * 40)
@@ -244,12 +227,113 @@ def scan_and_process(base_prefix, patience, week):
     
     print("-" * 40)
     print("All processing complete.")
+    return True, "Processing Complete!"
+
+# --- GUI構築クラス ---
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Convergence Plot Generator")
+        self.geometry("450x350")
+        
+        # デフォルト値
+        self.default_prefix = "results_exp1"
+        self.default_patience = "100"
+        self.default_week = "15"
+        
+        self.create_widgets()
+        
+    def create_widgets(self):
+        # コンテナ
+        padding_opts = {'padx': 10, 'pady': 5}
+        
+        # 1. Prefix Input
+        frame_prefix = tk.Frame(self)
+        frame_prefix.pack(fill='x', **padding_opts)
+        tk.Label(frame_prefix, text="Experiment Prefix:", width=15, anchor='w').pack(side='left')
+        self.entry_prefix = tk.Entry(frame_prefix)
+        self.entry_prefix.pack(side='left', fill='x', expand=True)
+        self.entry_prefix.insert(0, self.default_prefix)
+        
+        # 2. Patience Input
+        frame_pat = tk.Frame(self)
+        frame_pat.pack(fill='x', **padding_opts)
+        tk.Label(frame_pat, text="Patience:", width=15, anchor='w').pack(side='left')
+        self.entry_patience = tk.Entry(frame_pat)
+        self.entry_patience.pack(side='left', fill='x', expand=True)
+        self.entry_patience.insert(0, self.default_patience)
+        
+        # 3. Week Input
+        frame_week = tk.Frame(self)
+        frame_week.pack(fill='x', **padding_opts)
+        tk.Label(frame_week, text="Week:", width=15, anchor='w').pack(side='left')
+        self.entry_week = tk.Entry(frame_week)
+        self.entry_week.pack(side='left', fill='x', expand=True)
+        self.entry_week.insert(0, self.default_week)
+        
+        # Divider
+        tk.Frame(self, height=2, bd=1, relief="sunken").pack(fill="x", padx=10, pady=15)
+        
+        # 4. Instructions
+        lbl_instruct = tk.Label(self, text="Click below to select the ROOT folder\ncontaining your 'results_exp...' folders.", fg="gray")
+        lbl_instruct.pack(**padding_opts)
+        
+        # 5. Run Button
+        btn_run = tk.Button(self, text="Select Directory & Run", command=self.on_run, 
+                            bg="#dddddd", height=2, font=("Arial", 10, "bold"))
+        btn_run.pack(fill='x', padx=20, pady=10)
+
+        # 6. Status Label
+        self.lbl_status = tk.Label(self, text="Ready", fg="blue")
+        self.lbl_status.pack(**padding_opts)
+
+    def on_run(self):
+        # 入力値の取得
+        prefix = self.entry_prefix.get().strip()
+        patience_str = self.entry_patience.get().strip()
+        week_str = self.entry_week.get().strip()
+        
+        if not prefix or not patience_str or not week_str:
+            messagebox.showwarning("Input Error", "All fields are required.")
+            return
+            
+        try:
+            patience = int(patience_str)
+            week = int(week_str)
+        except ValueError:
+            messagebox.showerror("Input Error", "Patience and Week must be integers.")
+            return
+        
+        # ディレクトリ選択ダイアログ
+        target_dir = filedialog.askdirectory(title="Select Root Directory containing results folders")
+        if not target_dir:
+            return  # キャンセルされた場合
+        
+        self.lbl_status.config(text="Processing...", fg="orange")
+        self.update_idletasks() # UI更新
+        
+        try:
+            # 作業ディレクトリを選択されたフォルダに変更
+            # これにより既存の glob や相対パスロジックがそのまま機能する
+            os.chdir(target_dir)
+            print(f"Changed working directory to: {target_dir}")
+            
+            # 処理実行
+            success, msg = scan_and_process(prefix, patience, week)
+            
+            if success:
+                self.lbl_status.config(text="Done", fg="green")
+                messagebox.showinfo("Success", msg)
+            else:
+                self.lbl_status.config(text="Failed", fg="red")
+                messagebox.showwarning("Warning", msg)
+                
+        except Exception as e:
+            self.lbl_status.config(text="Error", fg="red")
+            messagebox.showerror("Error", str(e))
+            print(f"Error: {e}")
 
 # --- メイン処理 ---
 if __name__ == "__main__":
-    # 設定値 (固定)
-    EXP_PREFIX = "results_exp1"
-    PATIENCE = 100
-    WEEK = 15
-    
-    scan_and_process(EXP_PREFIX, PATIENCE, WEEK)
+    app = App()
+    app.mainloop()

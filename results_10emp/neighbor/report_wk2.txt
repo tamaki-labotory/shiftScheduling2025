@@ -1,0 +1,73 @@
+==========================================================
+ ANALYSIS REPORT: Week 2
+==========================================================
+
+0. Solver Configuration
+-----------------------
+
+1. Performance Metrics
+----------------------
+  Objective Value : 7,338,300.00
+  Total Execution Time    : 202.2791 sec
+
+  [Detailed Timing Breakdown]
+  - Neighbor Search (Gen) : 11.6738 s
+  - RMP Solving (LP)      : 0.0000 s
+
+1. Performance Metrics
+----------------------
+  Objective Value : 7,338,300.00
+  Execution Time  : 202.2791 sec
+  MIP Start Time  : 0.0000 s
+  Iterations      : 12
+  RMP Time  : 0.0000 s
+  MIP Time  : 0.0000 s
+  Pool Search Time: 11.6738 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 0 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 11912
+  Columns Added to RMP              : 0
+  Columns Added to Queue (Backlog)  : 533801
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns: 3042 / Total Gen: 3043
+       -> Avg Length of Unique Patterns: 43.2 hours
+  Type: TypeB  | Unique Patterns: 2516 / Total Gen: 5522
+       -> Avg Length of Unique Patterns: 28.7 hours
+  Type: TypeC  | Unique Patterns: 3313 / Total Gen: 3337
+       -> Avg Length of Unique Patterns: 19.5 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 37 hours worked
+  Emp 1  (TypeA): 43 hours worked
+  Emp 2  (TypeB): 30 hours worked
+  Emp 3  (TypeB): 35 hours worked
+  Emp 4  (TypeB): 36 hours worked
+  Emp 5  (TypeB): 40 hours worked
+  Emp 6  (TypeC): 26 hours worked
+  Emp 7  (TypeC): 28 hours worked
+  Emp 8  (TypeC): 24 hours worked
+  Emp 9  (TypeC): 24 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 6,324,600.00    | 7356       | 335476    
+2     | 6,324,600.00    | 1190       | 56048     
+3     | 6,324,600.00    | 946        | 43458     
+4     | 6,083,304.12    | 413        | 14252     
+5     | 4,021,999.99    | 689        | 26324     
+6     | 3,590,158.37    | 126        | 7374      
+7     | 3,466,525.00    | 651        | 23983     
+8     | 2,641,352.96    | 225        | 13678     
+9     | 2,623,855.20    | 79         | 4430      
+10    | 2,623,855.20    | 179        | 7843      
+11    | 2,619,763.62    | 28         | 650       
+12    | 2,619,763.62    | 0          | 285       

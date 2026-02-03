@@ -8,7 +8,6 @@ import time
 from collections import defaultdict
 
 # モジュール群のインポート
-# ※ ユーザー環境に合わせてクラス名などが正しいか確認してください
 try:
     from problem import ShiftProblemData
     from solver_exact import ExactMIPSolver
@@ -97,10 +96,13 @@ def parse_report_stats(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
-            m_obj = re.search(r"Objective Value\s*:\s*([\d,]+\.?\d*)", content)
+            # Objective Value の取得
+            m_obj = re.search(r"Objective Value\s*:\s*([\d,]+\.?\d*)", content, re.IGNORECASE)
             if m_obj:
                 obj_val = float(m_obj.group(1).replace(',', ''))
-            m_time = re.search(r"Execution Time\s*:\s*([\d\.]+)", content)
+            
+            # Execution Time の取得 (修正: re.IGNORECASEを追加し、TOTAL EXECUTION TIME等にも対応)
+            m_time = re.search(r"Execution Time\s*:\s*([\d\.]+)", content, re.IGNORECASE)
             if m_time:
                 elapsed = float(m_time.group(1))
     except Exception as e:
@@ -135,7 +137,6 @@ def run_benchmark_engine(n_weeks, n_employees, selected_methods, solver_params, 
     # 4. 問題設定の読み込み/作成
     config_file = os.path.join(output_dir_root, "problem_config.json")
     
-    # 【修正】指定された n_weeks で終了する（追加ではない）
     target_week_num = n_weeks 
     
     if os.path.exists(config_file):
@@ -274,9 +275,16 @@ def run_benchmark_engine(n_weeks, n_employees, selected_methods, solver_params, 
                 )
             
             if not skip_execution:
-                BenchmarkReporter.save_analysis_report(
-                    report_file, current_week, solver, prob, obj_val, elapsed, final_sched, solver_params=solver_params
-                )
+                # 【修正】手法に応じてレポート出力メソッドを切り替え
+                if name == 'neighbor':
+                    BenchmarkReporter.save_neighbor_report(
+                        report_file, current_week, solver, prob, obj_val, elapsed, final_sched
+                    )
+                else:
+                    BenchmarkReporter.save_analysis_report(
+                        report_file, current_week, solver, prob, obj_val, elapsed, final_sched, solver_params=solver_params
+                    )
+                
                 if hasattr(solver, 'save_pool_to_csv'):
                      solver.save_pool_to_csv(pool_file)
                 if 'mip_trajectory' in stats and stats['mip_trajectory']:
@@ -323,11 +331,10 @@ def run_experiment_1(n_weeks, n_employees,target_methods=None):
     
     for p in patience_values:
         out_dir = f"results_exp1_pat_{p}"
-        final_report = os.path.join(out_dir, "std", f"report_wk{n_weeks}.txt")
-        if os.path.exists(final_report):
-            print(f"[SKIP] Patience={p} is already done.")
-            continue
-            
+        # 簡易チェック用ファイルパス (stdがある場合)
+        check_file = os.path.join(out_dir, "std", f"report_wk{n_weeks}.txt")
+        # メソッド指定によってはstdがない場合もあるので、ディレクトリだけチェックでも可だが既存ロジック維持
+        
         print(f"Running with patience={p}...")
         current_params = base_params.copy()
         current_params['patience'] = p
@@ -360,10 +367,6 @@ def run_experiment_2(n_weeks, n_employees,target_methods=None):
     for t in thresholds:
         t_label = "inf" if t >= 1e9 else str(t)
         out_dir = f"results_exp2_rc_{t_label}"
-        final_report = os.path.join(out_dir, "std", f"report_wk{n_weeks}.txt")
-        if os.path.exists(final_report):
-            print(f"[SKIP] Threshold={t_label} is already done.")
-            continue
         
         print(f"Running with RC Threshold={t_label}...")
         current_params = base_params.copy()
@@ -394,8 +397,6 @@ if __name__ == "__main__":
     parser.add_argument('--methods', nargs='+', default=all_keys, choices=all_keys, help='Methods for simple mode')
     parser.add_argument('--patience', type=int, default=5)
     parser.add_argument('--rc_threshold', type=float, default=1e10)
-    
-    # ★修正箇所: time_limit 引数を追加
     parser.add_argument('--time_limit', type=float, default=3600, help='Time limit in seconds')
 
     args = parser.parse_args()
@@ -403,7 +404,7 @@ if __name__ == "__main__":
     if args.mode == 'simple':
         params = {
             'max_iter': 1000, 
-            'time_limit': args.time_limit, # ★修正箇所: 引数の値を使用
+            'time_limit': args.time_limit,
             'tol': 1e-8,
             'patience': args.patience,
             'mip_rc_threshold': args.rc_threshold, 

@@ -1,0 +1,72 @@
+==========================================================
+ ANALYSIS REPORT: Week 3
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 3,260,000.00
+  RMP Relaxed Value (Root): 3,260,000.00
+  Integrality Gap       : 0.0000 %
+  MIP Best Bound (Final)  : 3,260,000.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 43.2028 sec
+  MIP Start Time  : 28.1092 s
+  Iterations      : 12
+  RMP Time  : 0.4410 s
+  MIP Time  : 0.0632 s
+  Pool Search Time: 14.5840 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 83 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 83
+  Columns Added to RMP              : 59
+  Columns Added to Queue (Backlog)  : 819310
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:   16 / Total Gen:   17
+       -> Avg Length of Unique Patterns: 34.8 hours
+  Type: TypeB  | Unique Patterns:   25 / Total Gen:   27
+       -> Avg Length of Unique Patterns: 27.2 hours
+  Type: TypeC  | Unique Patterns:   28 / Total Gen:   31
+       -> Avg Length of Unique Patterns: 18.3 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 46 hours worked
+  Emp 1  (TypeA): 42 hours worked
+  Emp 2  (TypeB): 29 hours worked
+  Emp 3  (TypeB): 33 hours worked
+  Emp 4  (TypeB): 35 hours worked
+  Emp 5  (TypeC): 24 hours worked
+  Emp 6  (TypeC): 24 hours worked
+  Emp 7  (TypeC): 21 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 6,260,300.00    | 7          | 19778     
+2     | 5,260,000.00    | 8          | 10897     
+3     | 4,260,000.00    | 6          | 51180     
+4     | 4,260,000.00    | 7          | 34644     
+5     | 3,261,300.00    | 7          | 38046     
+6     | 3,261,300.00    | 7          | 31508     
+7     | 3,261,000.00    | 4          | 78093     
+8     | 3,261,000.00    | 4          | 68264     
+9     | 3,260,000.00    | 3          | 105508    
+10    | 3,260,000.00    | 4          | 79043     
+11    | 3,260,000.00    | 2          | 131506    
+12    | 3,260,000.00    | 0          | 170843    

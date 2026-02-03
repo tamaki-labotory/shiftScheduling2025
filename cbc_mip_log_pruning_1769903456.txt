@@ -1,0 +1,23 @@
+Welcome to the CBC MILP Solver 
+Version: 2.10.12 
+Build Date: Aug 20 2024 
+
+command line - cbc /var/folders/g5/hmhs0_854jn5qmfthymtztb80000gn/T/f7d055dbf2294f1cbbacf843d7ccc21c-pulp.mps -sec 30 -randomSeed 42 -randomCbcSeed 42 -threads 1 -ratio 0.0001 -timeMode elapsed -branch -printingOptions all -solution /var/folders/g5/hmhs0_854jn5qmfthymtztb80000gn/T/f7d055dbf2294f1cbbacf843d7ccc21c-pulp.sol (default strategy 1)
+At line 2 NAME          MODEL
+At line 3 ROWS
+At line 193 COLUMNS
+At line 5186 RHS
+At line 5375 BOUNDS
+At line 5535 ENDATA
+Problem MODEL has 188 rows, 327 columns and 4347 elements
+Coin0008I MODEL read with 0 errors
+seconds was changed from 1e+100 to 30
+randomSeed was changed from 1234567 to 42
+randomCbcSeed was changed from -1 to 42
+threads was changed from 0 to 1
+ratioGap was changed from 0 to 0.0001
+Option for timeMode changed from cpu to elapsed
+Problem is infeasible - 0.00 seconds
+Option for printingOptions changed from normal to all
+Total time (CPU seconds):       0.00   (Wallclock seconds):       0.00
+

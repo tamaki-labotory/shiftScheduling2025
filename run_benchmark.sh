@@ -4,11 +4,13 @@
 # 実験設定: 20名, 15週間, 3手法比較
 # ==========================================
 # 従業員数
-EMP_NUM=8
+EMP_NUM=20
 # シミュレーション週数
 WEEKS=15
 # 比較手法 (Exact, Neighbor, Pruning)
-METHODS="exact neighbor pruning"
+# METHODS="std"
+# METHODS="exact pruning neighbor"
+METHODS="pruning neighbor"
 # 出力ディレクトリ
 OUT_DIR="results_comparison_20emp"
 
@@ -27,11 +29,7 @@ echo " Methods   : $METHODS"
 echo " Patience  : $PATIENCE"
 echo "=========================================="
 
-# 既存の結果ディレクトリがある場合は警告して削除
-if [ -d "$OUT_DIR" ]; then
-    echo "Warning: Cleaning up old results in $OUT_DIR ..."
-    rm -rf "$OUT_DIR"
-fi
+
 
 # Pythonスクリプトの実行 (simpleモード)
 python main.py simple \

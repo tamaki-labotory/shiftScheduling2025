@@ -1,0 +1,88 @@
+==========================================================
+ ANALYSIS REPORT: Week 7
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 673,400.00
+  Execution Time  : 627.4054 sec
+  MIP Start Time  : 0.0000 s
+  Iterations      : 20
+  RMP Time  : 0.0000 s
+  MIP Time  : 0.0000 s
+  Pool Search Time: 45.4156 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 0 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 47684
+  Columns Added to RMP              : 0
+  Columns Added to Queue (Backlog)  : 1490288
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns: 25415 / Total Gen: 27386
+       -> Avg Length of Unique Patterns: 52.4 hours
+  Type: TypeB  | Unique Patterns: 11961 / Total Gen: 13341
+       -> Avg Length of Unique Patterns: 42.1 hours
+  Type: TypeC  | Unique Patterns: 6206 / Total Gen: 6937
+       -> Avg Length of Unique Patterns: 30.6 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 26 hours worked
+  Emp 1  (TypeA): 26 hours worked
+  Emp 2  (TypeA): 60 hours worked
+  Emp 3  (TypeA): 49 hours worked
+  Emp 4  (TypeB): 0 hours worked
+  Emp 5  (TypeB): 36 hours worked
+  Emp 6  (TypeB): 25 hours worked
+  Emp 7  (TypeB): 45 hours worked
+  Emp 8  (TypeB): 0 hours worked
+  Emp 9  (TypeB): 39 hours worked
+  Emp 10 (TypeB): 38 hours worked
+  Emp 11 (TypeB): 35 hours worked
+  Emp 12 (TypeC): 23 hours worked
+  Emp 13 (TypeC): 27 hours worked
+  Emp 14 (TypeC): 30 hours worked
+  Emp 15 (TypeC): 0 hours worked
+  Emp 16 (TypeC): 0 hours worked
+  Emp 17 (TypeC): 20 hours worked
+  Emp 18 (TypeC): 32 hours worked
+  Emp 19 (TypeC): 21 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 37,626,400.00   | 5528       | 307831    
+2     | 2,694,300.00    | 2829       | 151904    
+3     | 688,885.87      | 510        | 28653     
+4     | 674,515.04      | 415        | 29269     
+5     | 671,802.09      | 2801       | 134684    
+6     | 663,559.31      | 3062       | 119829    
+7     | 659,390.73      | 8524       | 155609    
+8     | 656,694.73      | 3649       | 65285     
+9     | 655,351.94      | 2558       | 40080     
+10    | 653,842.11      | 1285       | 60021     
+11    | 652,831.91      | 2000       | 13224     
+12    | 652,831.91      | 4837       | 63541     
+13    | 652,236.50      | 3736       | 72002     
+14    | 651,434.05      | 578        | 37169     
+15    | 650,308.91      | 1533       | 97829     
+16    | 649,488.09      | 399        | 27599     
+17    | 649,144.39      | 2163       | 24311     
+18    | 649,013.98      | 384        | 23053     
+19    | 648,785.34      | 833        | 38395     
+20    | 648,599.68      | 0          | 0         

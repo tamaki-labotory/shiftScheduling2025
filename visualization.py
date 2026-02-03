@@ -88,6 +88,8 @@ class BenchmarkReporter:
             f.write(f"==========================================================\n")
             f.write(f" ANALYSIS REPORT: Week {week}\n")
             f.write(f"==========================================================\n\n")
+            
+            # ... (Solver Configuration 部分は変更なし) ...
             if solver_params:
                 f.write(f"0. Solver Configuration\n")
                 f.write(f"-----------------------\n")
@@ -100,6 +102,7 @@ class BenchmarkReporter:
                 for k, v in solver_params.items():
                     if k not in priority_keys: f.write(f"  {k:<20} : {v}\n")
                 f.write(f"\n")
+
             f.write(f"1. Performance Metrics\n")
             f.write(f"----------------------\n")
             if abs(final_obj) > 1e15: f.write(f"  Objective Value : {final_obj:.4e}\n")
@@ -198,6 +201,110 @@ class BenchmarkReporter:
                     f.write(f"{log['iter']:<5} | {log['obj']:<15,.2f} | {log['pool_hits']:<10} | {log['graph_gen']:<10}\n")
             else:
                 f.write("No iteration history available.\n")
+
+    @staticmethod
+    def save_neighbor_report(filename, week, solver, problem, final_obj, elapsed_time, final_schedule):
+        """
+        Neighbor法専用のレポート出力メソッド
+        不要な項目（Graph Searchなど）を削除し、時間内訳を詳細化。
+        """
+        with open(filename, 'w', encoding='utf-8') as f:
+            f.write(f"==========================================================\n")
+            f.write(f" NEIGHBOR METHOD REPORT: Week {week}\n")
+            f.write(f"==========================================================\n\n")
+            
+            # --- 1. Execution Time Breakdown (ご要望の項目) ---
+            f.write(f"1. Execution Time Breakdown\n")
+            f.write(f"---------------------------\n")
+            
+            # (1) 初期整数解導出時間
+            t_init = solver.stats.get('time_mip_start', 0.0)
+            f.write(f"  (1) Initial Integer Solution : {t_init:9.4f} s\n")
+
+            # (2) 列生成過程の総計算時間
+            #   - RMP (LP) 時間
+            #   - Neighbor Search (Pricing) 時間 (solver_cg_neighborでは time_pool に加算されている)
+            t_rmp = solver.stats.get('time_rmp', 0.0)
+            t_search = solver.stats.get('time_pool', 0.0)
+            t_cg_total = t_rmp + t_search
+            
+            f.write(f"  (2) Column Generation Total  : {t_cg_total:9.4f} s\n")
+            f.write(f"       |- RMP Solving (LP)     : {t_rmp:9.4f} s\n")
+            f.write(f"       |- Neighbor Search      : {t_search:9.4f} s\n")
+
+            # (3) 最終整数解構築時間
+            t_final = solver.stats.get('time_final_mip', 0.0)
+            f.write(f"  (3) Final Integer Solution   : {t_final:9.4f} s\n")
+            
+            f.write(f"  ------------------------------------------\n")
+            f.write(f"  TOTAL EXECUTION TIME         : {elapsed_time:9.4f} s\n\n")
+
+            # --- 2. Solution Quality ---
+            f.write(f"2. Solution Quality\n")
+            f.write(f"-------------------\n")
+            if abs(final_obj) > 1e15: 
+                f.write(f"  Objective Value       : {final_obj:.4e}\n")
+            else: 
+                f.write(f"  Objective Value       : {final_obj:,.2f}\n")
+
+            # RMPの緩和解とのギャップ（あれば表示）
+            if 'rmp_obj_lp' in solver.stats:
+                rmp_val = solver.stats['rmp_obj_lp']
+                # Neighbor法の場合、rmp_obj_lp が正しく入っていない場合もあるためチェック
+                if isinstance(rmp_val, (int, float)) and abs(rmp_val) > 1e-9:
+                    f.write(f"  Relaxed Bound (LP)    : {rmp_val:,.2f}\n")
+                    gap = (final_obj - rmp_val) / abs(rmp_val) * 100
+                    f.write(f"  Integrality Gap       : {gap:.4f} %\n")
+            f.write(f"\n")
+
+            # --- 3. Statistics ---
+            f.write(f"3. Statistics\n")
+            f.write(f"-------------\n")
+            iter_count = solver.stats.get('iterations', 0)
+            f.write(f"  CG Iterations         : {iter_count}\n")
+            
+            # 列生成数など
+            if 'count_backlog_push' in solver.stats:
+                push_count = solver.stats['count_backlog_push']
+                f.write(f"  Total Neighbors Gen   : {push_count}\n")
+            
+            if hasattr(solver, 'pool'):
+                f.write(f"  Total Columns in Pool : {len(solver.pool)}\n")
+
+            # 最終MIPで使われた列数
+            # solve_final_mip 内でカウントしていない場合は表示できませんが、
+            # cleanup_rmp の戻り値などから推測は可能です。ここでは省略またはstatsにあれば表示します。
+            
+            f.write(f"\n")
+
+            # --- 4. Shift Pattern Diversity (有用なので維持) ---
+            f.write(f"4. Shift Pattern Diversity\n")
+            f.write(f"--------------------------\n")
+            if hasattr(solver, 'pool') and solver.pool:
+                type_patterns = defaultdict(set)
+                for col in solver.pool:
+                    emp_id = col['group_id']
+                    if 0 <= emp_id < len(problem.employees):
+                        emp_type = problem.employees[emp_id]['type']
+                        pat = tuple(col['schedule'])
+                        if sum(pat) > 0: 
+                            type_patterns[emp_type].add(pat)
+                
+                for t_name in sorted(type_patterns.keys()):
+                    unique_count = len(type_patterns[t_name])
+                    f.write(f"  Type: {t_name:<6} | Unique Patterns: {unique_count:>4}\n")
+
+            # --- 5. Convergence History (簡易版) ---
+            f.write(f"\n5. Convergence History (Last 10 iters)\n")
+            f.write(f"--------------------------------------\n")
+            if hasattr(solver, 'history') and solver.history:
+                history = solver.history
+                f.write(f"  Iter | Obj Value       | Added\n")
+                f.write(f"  ------------------------------\n")
+                for h in history:
+                    # pool_hits は neighbor法では「RMPに追加された列数」として使われている
+                    added = h.get('pool_hits', 0) 
+                    f.write(f"  {h['iter']:<4} | {h['obj']:<15,.2f} | {added:<5}\n")
 
 class ComparisonPlotter:
     @staticmethod

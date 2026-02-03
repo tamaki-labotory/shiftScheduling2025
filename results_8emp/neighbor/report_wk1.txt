@@ -18,30 +18,30 @@
   Integrality Gap       : 0.0000 %
   MIP Best Bound (Final)  : 1,249,700.00
   Final MIP Gap           : 0.0000 %
-  Execution Time  : 47.3636 sec
-  MIP Start Time  : 27.7720 s
+  Execution Time  : 28.7691 sec
+  MIP Start Time  : 27.6142 s
   Iterations      : 4
-  RMP Time  : 0.1554 s
-  MIP Time  : 0.0648 s
-  Pool Search Time: 19.3687 s
+  RMP Time  : 0.0851 s
+  MIP Time  : 0.0302 s
+  Pool Search Time: 1.0366 s
   Graph Search Time: 0.0000 s
-  MIP Decision Variables: 42 (Columns used in Final MIP)
+  MIP Decision Variables: 52 (Columns used in Final MIP)
   MIP Filtered Columns  : 0 (Removed before MIP)
 
 2. Column Generation & Pool Statistics
 --------------------------------------
-  Total Columns Generated (History) : 42
-  Columns Added to RMP              : 18
-  Columns Added to Queue (Backlog)  : 1218269
+  Total Columns Generated (History) : 52
+  Columns Added to RMP              : 28
+  Columns Added to Queue (Backlog)  : 39748
 
 3. Shift Pattern Diversity (Unique Patterns)
 ------------------------------------------
-  Type: TypeA  | Unique Patterns:    4 / Total Gen:    5
-       -> Avg Length of Unique Patterns: 35.5 hours
-  Type: TypeB  | Unique Patterns:    9 / Total Gen:   11
-       -> Avg Length of Unique Patterns: 25.9 hours
-  Type: TypeC  | Unique Patterns:   16 / Total Gen:   18
-       -> Avg Length of Unique Patterns: 18.9 hours
+  Type: TypeA  | Unique Patterns:   10 / Total Gen:   12
+       -> Avg Length of Unique Patterns: 27.0 hours
+  Type: TypeB  | Unique Patterns:   10 / Total Gen:   14
+       -> Avg Length of Unique Patterns: 22.1 hours
+  Type: TypeC  | Unique Patterns:   12 / Total Gen:   18
+       -> Avg Length of Unique Patterns: 15.2 hours
 
 4. Final Schedule Assignment Breakdown
 --------------------------------------
@@ -58,7 +58,7 @@
 --------------------------------------
 Iter  | RMP Obj Value   | RMP Add    | Queue Add 
 --------------------------------------------------
-1     | 1,249,700.00    | 5          | 301700    
-2     | 1,249,700.00    | 4          | 299998    
-3     | 1,249,700.00    | 4          | 313755    
-4     | 1,249,700.00    | 5          | 302816    
+1     | 1,249,700.00    | 8          | 243       
+2     | 1,249,700.00    | 8          | 39        
+3     | 1,249,700.00    | 6          | 20495     
+4     | 1,249,700.00    | 6          | 18971     

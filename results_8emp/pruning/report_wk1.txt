@@ -18,12 +18,12 @@
   Integrality Gap       : 791.6996 %
   MIP Best Bound (Final)  : 2,256,000.00
   Final MIP Gap           : 0.0000 %
-  Execution Time  : 183.3669 sec
+  Execution Time  : 157.7597 sec
   Iterations      : 267
-  RMP Time  : 103.0611 s
-  MIP Time  : 6.0311 s
-  Pool Search Time: 0.8238 s
-  Graph Search Time: 73.2959 s
+  RMP Time  : 90.9886 s
+  MIP Time  : 6.0199 s
+  Pool Search Time: 0.8282 s
+  Graph Search Time: 59.7711 s
   MIP Decision Variables: 419 (Columns used in Final MIP)
   MIP Filtered Columns  : 1680 (Removed before MIP)
 

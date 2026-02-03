@@ -13,31 +13,32 @@
 
 1. Performance Metrics
 ----------------------
-  Objective Value : 511,088,900.00
-  RMP Relaxed Value (Root): 511,088,900.00
+  Objective Value : 514,088,000.00
+  RMP Relaxed Value (Root): 514,088,000.00
   Integrality Gap       : 0.0000 %
-  Execution Time  : 27.6446 sec
+  Execution Time  : 78.8241 sec
+  MIP Start Time  : 16.7287 s
   Iterations      : 10
-  RMP Time  : 0.7242 s
-  MIP Time  : 0.1241 s
-  Pool Search Time: 0.2793 s
+  RMP Time  : 0.6876 s
+  MIP Time  : 0.1468 s
+  Pool Search Time: 61.2531 s
   Graph Search Time: 0.0000 s
-  MIP Decision Variables: 240 (Columns used in Final MIP)
+  MIP Decision Variables: 120 (Columns used in Final MIP)
   MIP Filtered Columns  : 0 (Removed before MIP)
 
 2. Column Generation & Pool Statistics
 --------------------------------------
-  Total Columns Generated (History) : 240
-  Columns Added to RMP              : 200
-  Columns Added to Queue (Backlog)  : 2376
+  Total Columns Generated (History) : 120
+  Columns Added to RMP              : 80
+  Columns Added to Queue (Backlog)  : 3961276
 
 3. Shift Pattern Diversity (Unique Patterns)
 ------------------------------------------
-  Type: TypeA  | Unique Patterns:   11 / Total Gen:   44
+  Type: TypeA  | Unique Patterns:    1 / Total Gen:    4
        -> Avg Length of Unique Patterns: 8.0 hours
-  Type: TypeB  | Unique Patterns:   11 / Total Gen:   88
+  Type: TypeB  | Unique Patterns:    5 / Total Gen:   40
        -> Avg Length of Unique Patterns: 4.0 hours
-  Type: TypeC  | Unique Patterns:   11 / Total Gen:   88
+  Type: TypeC  | Unique Patterns:    7 / Total Gen:   56
        -> Avg Length of Unique Patterns: 3.0 hours
 
 4. Final Schedule Assignment Breakdown
@@ -67,13 +68,13 @@
 --------------------------------------
 Iter  | RMP Obj Value   | RMP Add    | Queue Add 
 --------------------------------------------------
-1     | 557,052,000.00  | 20         | 1212      
-2     | 534,077,800.00  | 20         | 156       
-3     | 513,092,800.00  | 20         | 120       
-4     | 511,090,700.00  | 20         | 128       
-5     | 511,090,700.00  | 20         | 112       
-6     | 511,089,800.00  | 20         | 128       
-7     | 511,088,900.00  | 20         | 128       
-8     | 511,088,900.00  | 20         | 152       
-9     | 511,088,900.00  | 20         | 120       
-10    | 511,088,900.00  | 20         | 120       
+1     | 557,052,000.00  | 16         | 131376    
+2     | 543,073,000.00  | 16         | 91532     
+3     | 533,082,900.00  | 16         | 91412     
+4     | 523,090,700.00  | 16         | 84372     
+5     | 518,090,700.00  | 8          | 703388    
+6     | 514,088,900.00  | 8          | 323708    
+7     | 514,088,000.00  | 0          | 696648    
+8     | 514,088,000.00  | 0          | 617792    
+9     | 514,088,000.00  | 0          | 670312    
+10    | 514,088,000.00  | 0          | 550736    

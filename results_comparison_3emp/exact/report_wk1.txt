@@ -1,0 +1,41 @@
+==========================================================
+ ANALYSIS REPORT: Week 1
+==========================================================
+
+0. Solver Configuration
+-----------------------
+
+1. Performance Metrics
+----------------------
+  Objective Value : 17,119,900.00
+  Total Execution Time    : 10.9962 sec
+
+  [Detailed Timing Breakdown]
+  - Pricing Search Total  : 0.0000 s (Pool: 0.00s, Graph: 0.00s)
+  - RMP Solving (LP)      : 0.0000 s
+
+1. Performance Metrics
+----------------------
+  Objective Value : 17,119,900.00
+  Execution Time  : 10.9962 sec
+  Iterations      : 0
+  RMP Time  : 0.0000 s
+  MIP Time  : 0.0000 s
+  Pool Search Time: 0.0000 s
+  Graph Search Time: 0.0000 s
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 48 hours worked
+  Emp 1  (TypeB): 35 hours worked
+  Emp 2  (TypeC): 27 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+No iteration history available.

@@ -1,0 +1,79 @@
+==========================================================
+ ANALYSIS REPORT: Week 1
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 18,129,400.00
+  RMP Relaxed Value (Root): 16,226,665.00
+  Integrality Gap       : 11.7260 %
+  MIP Best Bound (Final)  : 18,129,400.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 2.8081 sec
+  Iterations      : 24
+  RMP Time  : 0.7051 s
+  MIP Time  : 0.0432 s
+  Pool Search Time: 0.0002 s
+  Graph Search Time: 2.0541 s
+  MIP Decision Variables: 15 (Columns used in Final MIP)
+  MIP Filtered Columns  : 63 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 78
+  Pool Hits (Reused from History)   : 0
+  Graph Gen (Newly Created)         : 72
+  Pool Hit Rate                     : 0.0%
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:   25 / Total Gen:   25
+       -> Avg Length of Unique Patterns: 45.6 hours
+  Type: TypeB  | Unique Patterns:   25 / Total Gen:   25
+       -> Avg Length of Unique Patterns: 35.1 hours
+  Type: TypeC  | Unique Patterns:   25 / Total Gen:   25
+       -> Avg Length of Unique Patterns: 25.8 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 49 hours worked
+  Emp 1  (TypeB): 38 hours worked
+  Emp 2  (TypeC): 28 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | Pool Hits  | Graph Gen 
+--------------------------------------------------
+1     | 82,012,000.00   | 0          | 3         
+2     | 37,093,100.00   | 0          | 3         
+3     | 27,118,400.00   | 0          | 3         
+4     | 24,113,300.00   | 0          | 3         
+5     | 22,453,999.94   | 0          | 3         
+6     | 20,454,966.62   | 0          | 3         
+7     | 20,407,682.16   | 0          | 3         
+8     | 19,437,663.18   | 0          | 3         
+9     | 18,791,966.59   | 0          | 3         
+10    | 18,724,600.04   | 0          | 3         
+11    | 18,045,797.33   | 0          | 3         
+12    | 17,524,920.00   | 0          | 3         
+13    | 17,500,412.50   | 0          | 3         
+14    | 17,279,461.57   | 0          | 3         
+15    | 16,910,073.94   | 0          | 3         
+16    | 16,810,065.02   | 0          | 3         
+17    | 16,715,914.19   | 0          | 3         
+18    | 16,602,985.72   | 0          | 3         
+19    | 16,573,866.67   | 0          | 3         
+20    | 16,484,722.84   | 0          | 3         
+21    | 16,431,253.26   | 0          | 3         
+22    | 16,258,160.53   | 0          | 3         
+23    | 16,226,665.00   | 0          | 3         
+24    | 16,226,665.00   | 0          | 3         

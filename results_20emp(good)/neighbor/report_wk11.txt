@@ -1,0 +1,113 @@
+==========================================================
+ ANALYSIS REPORT: Week 11
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 669,300.00
+  Execution Time  : 2257.9267 sec
+  MIP Start Time  : 0.0000 s
+  Iterations      : 45
+  RMP Time  : 0.0000 s
+  MIP Time  : 0.0000 s
+  Pool Search Time: 73.5556 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 0 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 61827
+  Columns Added to RMP              : 0
+  Columns Added to Queue (Backlog)  : 1826584
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns: 30505 / Total Gen: 31876
+       -> Avg Length of Unique Patterns: 53.4 hours
+  Type: TypeB  | Unique Patterns: 13156 / Total Gen: 17868
+       -> Avg Length of Unique Patterns: 39.1 hours
+  Type: TypeC  | Unique Patterns: 11316 / Total Gen: 12063
+       -> Avg Length of Unique Patterns: 31.7 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 52 hours worked
+  Emp 1  (TypeA): 0 hours worked
+  Emp 2  (TypeA): 44 hours worked
+  Emp 3  (TypeA): 40 hours worked
+  Emp 4  (TypeB): 0 hours worked
+  Emp 5  (TypeB): 35 hours worked
+  Emp 6  (TypeB): 26 hours worked
+  Emp 7  (TypeB): 40 hours worked
+  Emp 8  (TypeB): 34 hours worked
+  Emp 9  (TypeB): 30 hours worked
+  Emp 10 (TypeB): 36 hours worked
+  Emp 11 (TypeB): 43 hours worked
+  Emp 12 (TypeC): 25 hours worked
+  Emp 13 (TypeC): 21 hours worked
+  Emp 14 (TypeC): 3 hours worked
+  Emp 15 (TypeC): 26 hours worked
+  Emp 16 (TypeC): 21 hours worked
+  Emp 17 (TypeC): 22 hours worked
+  Emp 18 (TypeC): 38 hours worked
+  Emp 19 (TypeC): 27 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 18,634,900.00   | 6800       | 347250    
+2     | 690,600.00      | 4851       | 177482    
+3     | 687,300.00      | 1484       | 58502     
+4     | 683,684.10      | 993        | 30817     
+5     | 682,315.93      | 892        | 2305      
+6     | 682,247.18      | 274        | 20262     
+7     | 679,510.42      | 2260       | 105136    
+8     | 677,356.35      | 2960       | 91540     
+9     | 675,800.07      | 2792       | 52074     
+10    | 672,452.59      | 3517       | 105612    
+11    | 670,665.78      | 1358       | 9420      
+12    | 670,618.16      | 2619       | 46395     
+13    | 669,387.36      | 789        | 52985     
+14    | 668,062.77      | 3506       | 120782    
+15    | 665,686.30      | 2699       | 44860     
+16    | 664,616.25      | 528        | 840       
+17    | 664,609.47      | 2487       | 142047    
+18    | 661,570.32      | 322        | 6442      
+19    | 661,488.76      | 777        | 26052     
+20    | 661,055.37      | 2594       | 31920     
+21    | 660,267.93      | 512        | 27099     
+22    | 659,514.84      | 801        | 31515     
+23    | 659,297.36      | 223        | 2209      
+24    | 659,296.34      | 2221       | 19144     
+25    | 658,864.47      | 148        | 7506      
+26    | 658,713.00      | 2698       | 35538     
+27    | 657,850.49      | 734        | 32822     
+28    | 656,993.01      | 203        | 5674      
+29    | 656,993.00      | 389        | 12541     
+30    | 656,834.30      | 162        | 5016      
+31    | 656,684.25      | 1645       | 33353     
+32    | 656,126.62      | 662        | 24151     
+33    | 655,515.57      | 230        | 5460      
+34    | 655,493.82      | 288        | 11264     
+35    | 655,493.82      | 517        | 24782     
+36    | 655,020.01      | 561        | 10846     
+37    | 654,889.29      | 275        | 2516      
+38    | 654,889.29      | 1264       | 27003     
+39    | 654,779.85      | 692        | 6637      
+40    | 654,719.75      | 72         | 576       
+41    | 654,719.75      | 2386       | 15457     
+42    | 654,608.87      | 168        | 3382      
+43    | 654,592.13      | 153        | 5603      
+44    | 654,485.19      | 261        | 3737      
+45    | 654,474.66      | 0          | 30        

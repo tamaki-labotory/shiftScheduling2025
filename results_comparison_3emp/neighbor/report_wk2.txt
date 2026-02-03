@@ -1,0 +1,70 @@
+==========================================================
+ ANALYSIS REPORT: Week 2
+==========================================================
+
+0. Solver Configuration
+-----------------------
+
+1. Performance Metrics
+----------------------
+  Objective Value : 23,123,900.00
+  Total Execution Time    : 130.4512 sec
+
+  [Detailed Timing Breakdown]
+  - Neighbor Search (Gen) : 2.0906 s
+  - RMP Solving (LP)      : 0.0000 s
+
+1. Performance Metrics
+----------------------
+  Objective Value : 23,123,900.00
+  Execution Time  : 130.4512 sec
+  MIP Start Time  : 0.0000 s
+  Iterations      : 16
+  RMP Time  : 0.0000 s
+  MIP Time  : 0.0000 s
+  Pool Search Time: 2.0906 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 0 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 2616
+  Columns Added to RMP              : 0
+  Columns Added to Queue (Backlog)  : 115203
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns: 1081 / Total Gen: 1081
+       -> Avg Length of Unique Patterns: 45.7 hours
+  Type: TypeB  | Unique Patterns:  835 / Total Gen:  835
+       -> Avg Length of Unique Patterns: 31.5 hours
+  Type: TypeC  | Unique Patterns:  697 / Total Gen:  697
+       -> Avg Length of Unique Patterns: 24.9 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 49 hours worked
+  Emp 1  (TypeB): 35 hours worked
+  Emp 2  (TypeC): 27 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 24,128,100.00   | 630        | 27842     
+2     | 24,127,200.00   | 291        | 12930     
+3     | 24,127,200.00   | 279        | 12370     
+4     | 23,620,725.00   | 265        | 10484     
+5     | 22,118,933.18   | 120        | 7414      
+6     | 22,118,933.18   | 119        | 6972      
+7     | 22,117,850.00   | 261        | 8463      
+8     | 20,789,066.53   | 50         | 3791      
+9     | 20,456,933.24   | 58         | 3554      
+10    | 20,122,633.29   | 34         | 2673      
+11    | 19,980,514.31   | 54         | 3351      
+12    | 19,790,599.92   | 112        | 4471      
+13    | 19,760,281.80   | 130        | 3307      
+14    | 19,760,281.79   | 182        | 6095      
+15    | 19,755,384.21   | 22         | 1043      
+16    | 19,755,384.21   | 0          | 443       

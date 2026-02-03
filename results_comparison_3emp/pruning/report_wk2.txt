@@ -1,0 +1,108 @@
+==========================================================
+ ANALYSIS REPORT: Week 2
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 16,130,100.00
+  RMP Relaxed Value (Root): 13,428,752.84
+  Integrality Gap       : 20.1161 %
+  MIP Best Bound (Final)  : 16,130,100.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 7.4704 sec
+  Iterations      : 53
+  RMP Time  : 2.6014 s
+  MIP Time  : 0.4417 s
+  Pool Search Time: 0.0274 s
+  Graph Search Time: 4.3813 s
+  MIP Decision Variables: 44 (Columns used in Final MIP)
+  MIP Filtered Columns  : 176 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 220
+  Pool Hits (Reused from History)   : 40
+  Graph Gen (Newly Created)         : 142
+  Pool Hit Rate                     : 22.0%
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:   71 / Total Gen:   71
+       -> Avg Length of Unique Patterns: 48.0 hours
+  Type: TypeB  | Unique Patterns:   73 / Total Gen:   73
+       -> Avg Length of Unique Patterns: 37.1 hours
+  Type: TypeC  | Unique Patterns:   73 / Total Gen:   73
+       -> Avg Length of Unique Patterns: 27.8 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 50 hours worked
+  Emp 1  (TypeB): 40 hours worked
+  Emp 2  (TypeC): 29 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | Pool Hits  | Graph Gen 
+--------------------------------------------------
+1     | 98,008,000.00   | 9          | 0         
+2     | 42,120,700.00   | 9          | 0         
+3     | 41,123,650.00   | 6          | 1         
+4     | 31,120,950.00   | 7          | 0         
+5     | 30,791,866.64   | 3          | 1         
+6     | 29,788,566.65   | 0          | 3         
+7     | 27,163,961.25   | 4          | 1         
+8     | 24,925,960.00   | 1          | 2         
+9     | 23,697,208.59   | 0          | 3         
+10    | 20,299,225.50   | 0          | 3         
+11    | 19,310,574.99   | 1          | 2         
+12    | 18,416,014.27   | 0          | 3         
+13    | 17,912,925.16   | 0          | 3         
+14    | 16,878,800.00   | 0          | 3         
+15    | 16,629,000.00   | 0          | 3         
+16    | 16,144,706.25   | 0          | 3         
+17    | 16,018,155.52   | 0          | 3         
+18    | 15,909,162.72   | 0          | 3         
+19    | 15,865,055.02   | 0          | 3         
+20    | 15,790,926.35   | 0          | 3         
+21    | 15,535,220.90   | 0          | 3         
+22    | 15,436,312.96   | 0          | 3         
+23    | 15,276,394.02   | 0          | 3         
+24    | 15,147,301.37   | 0          | 3         
+25    | 15,038,614.40   | 0          | 3         
+26    | 14,937,439.48   | 0          | 3         
+27    | 14,813,173.86   | 0          | 3         
+28    | 14,586,684.56   | 0          | 3         
+29    | 14,307,557.56   | 0          | 3         
+30    | 14,213,058.35   | 0          | 3         
+31    | 14,173,174.64   | 0          | 3         
+32    | 14,128,503.97   | 0          | 3         
+33    | 14,104,268.85   | 0          | 3         
+34    | 14,040,990.00   | 0          | 3         
+35    | 13,903,783.93   | 0          | 3         
+36    | 13,859,351.36   | 0          | 3         
+37    | 13,859,037.11   | 0          | 3         
+38    | 13,804,401.96   | 0          | 3         
+39    | 13,712,470.49   | 0          | 3         
+40    | 13,671,398.76   | 0          | 3         
+41    | 13,623,448.35   | 0          | 3         
+42    | 13,609,038.57   | 0          | 3         
+43    | 13,598,844.55   | 0          | 3         
+44    | 13,590,306.33   | 0          | 3         
+45    | 13,580,093.49   | 0          | 3         
+46    | 13,580,093.49   | 0          | 3         
+47    | 13,570,455.55   | 0          | 3         
+48    | 13,509,869.06   | 0          | 3         
+49    | 13,495,372.51   | 0          | 3         
+50    | 13,495,372.51   | 0          | 3         
+51    | 13,457,574.34   | 0          | 3         
+52    | 13,428,752.84   | 0          | 3         
+53    | 13,428,752.84   | 0          | 3         

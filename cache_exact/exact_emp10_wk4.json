@@ -1,1 +1,1 @@
-{"obj_val": 161100.0, "elapsed": 12.075593948364258, "stats": {"mip_trajectory": [[9.33, 161100.0]], "time_first_sol": 9.33, "time_best_sol": 9.33}}
+{"obj_val": 294900.0, "elapsed": 344.8685111999512, "stats": {"mip_trajectory": [[320.67, 295300.0], [328.14, 295000.0], [333.79, 294900.0], [333.81, 294900.0]], "time_first_sol": 320.67, "time_best_sol": 333.81}}

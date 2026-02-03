@@ -1,0 +1,44 @@
+==========================================================
+ NEIGHBOR METHOD REPORT: Week 3
+==========================================================
+
+1. Execution Time Breakdown
+---------------------------
+  (1) Initial Integer Solution :  119.5693 s
+  (2) Column Generation Total  :   11.0214 s
+       |- RMP Solving (LP)     :    8.7463 s
+       |- Neighbor Search      :    2.2751 s
+  (3) Final Integer Solution   :    0.0483 s
+  ------------------------------------------
+  TOTAL EXECUTION TIME         :  130.6654 s
+
+2. Solution Quality
+-------------------
+  Objective Value       : 15,124,200.00
+
+3. Statistics
+-------------
+  CG Iterations         : 13
+  Total Neighbors Gen   : 142685
+  Total Columns in Pool : 3499
+
+4. Shift Pattern Diversity
+--------------------------
+  Type: TypeA  | Unique Patterns: 1438
+  Type: TypeB  | Unique Patterns: 1302
+  Type: TypeC  | Unique Patterns:  756
+
+5. Convergence History (Last 10 iters)
+--------------------------------------
+  Iter | Obj Value       | Added
+  ------------------------------
+  4    | 15,128,500.00   | 90   
+  5    | 15,128,500.00   | 181  
+  6    | 15,128,500.00   | 323  
+  7    | 15,128,500.00   | 314  
+  8    | 15,124,500.00   | 82   
+  9    | 15,124,500.00   | 303  
+  10   | 15,124,500.00   | 304  
+  11   | 15,124,500.00   | 106  
+  12   | 15,124,200.00   | 210  
+  13   | 15,124,200.00   | 0    

@@ -1,0 +1,67 @@
+==========================================================
+ ANALYSIS REPORT: Week 2
+==========================================================
+
+0. Solver Configuration
+-----------------------
+  max_iter             : 1000
+  time_limit           : 3600
+  tol                  : 1e-08
+  patience             : 3
+  mip_rc_threshold     : 1e+10
+  mip_gap              : 0.0001
+
+1. Performance Metrics
+----------------------
+  Objective Value : 5,275,300.00
+  RMP Relaxed Value (Root): 5,275,300.00
+  Integrality Gap       : 0.0000 %
+  MIP Best Bound (Final)  : 5,275,300.00
+  Final MIP Gap           : 0.0000 %
+  Execution Time  : 31.0466 sec
+  MIP Start Time  : 26.9898 s
+  Iterations      : 7
+  RMP Time  : 0.1942 s
+  MIP Time  : 0.0454 s
+  Pool Search Time: 3.8135 s
+  Graph Search Time: 0.0000 s
+  MIP Decision Variables: 72 (Columns used in Final MIP)
+  MIP Filtered Columns  : 0 (Removed before MIP)
+
+2. Column Generation & Pool Statistics
+--------------------------------------
+  Total Columns Generated (History) : 72
+  Columns Added to RMP              : 48
+  Columns Added to Queue (Backlog)  : 203838
+
+3. Shift Pattern Diversity (Unique Patterns)
+------------------------------------------
+  Type: TypeA  | Unique Patterns:   12 / Total Gen:   13
+       -> Avg Length of Unique Patterns: 36.3 hours
+  Type: TypeB  | Unique Patterns:   24 / Total Gen:   26
+       -> Avg Length of Unique Patterns: 30.4 hours
+  Type: TypeC  | Unique Patterns:   16 / Total Gen:   25
+       -> Avg Length of Unique Patterns: 15.9 hours
+
+4. Final Schedule Assignment Breakdown
+--------------------------------------
+  Emp 0  (TypeA): 46 hours worked
+  Emp 1  (TypeA): 43 hours worked
+  Emp 2  (TypeB): 34 hours worked
+  Emp 3  (TypeB): 36 hours worked
+  Emp 4  (TypeB): 36 hours worked
+  Emp 5  (TypeC): 21 hours worked
+  Emp 6  (TypeC): 23 hours worked
+  Emp 7  (TypeC): 24 hours worked
+
+5. Iteration History (Convergence Log)
+--------------------------------------
+Iter  | RMP Obj Value   | RMP Add    | Queue Add 
+--------------------------------------------------
+1     | 5,279,200.00    | 8          | 318       
+2     | 5,277,900.00    | 8          | 498       
+3     | 5,276,600.00    | 8          | 21102     
+4     | 5,275,300.00    | 7          | 27831     
+5     | 5,275,300.00    | 7          | 19785     
+6     | 5,275,300.00    | 6          | 41456     
+7     | 5,275,300.00    | 4          | 92848     
